@@ -4,40 +4,40 @@
 
 @layer base {
   :root {
-    /* ZaPrint Theme - Dark, modern, calm, premium */
-    /* Updated color scheme to soft blue/violet accents */
-    --background: 220 20% 6%; /* Deep charcoal */
+    /* ZaPrint Theme - Cyan/orange shader-aligned */
+    /* Matches interactive MeshGradient hero: #06b6d4 cyan, #f97316 orange */
+    --background: 222 47% 6%; /* Deep navy-charcoal */
     --foreground: 210 20% 95%; /* Light gray-blue */
 
-    --muted: 220 15% 14%; /* Dark blue-gray */
+    --muted: 187 40% 14%; /* Dark cyan-gray */
     --muted-foreground: 210 20% 95% / 0.7;
     --muted-foreground-light: 210 20% 95% / 0.5;
     --muted-foreground-dark: 210 20% 95% / 0.6;
 
-    --card: 220 20% 98% / 0.02;
+    --card: 187 40% 98% / 0.02;
     --card-foreground: 210 20% 95%;
 
-    --popover: 220 20% 6%;
+    --popover: 222 47% 6%;
     --popover-foreground: 210 20% 95%;
 
-    /* Primary Accent Colors - Soft blue/violet */
-    --primary: 230 85% 70%; /* Soft blue-violet */
-    --primary-foreground: 220 20% 6%;
-    --primary-dark: 240 80% 60%; /* Deeper violet */
-    --primary-light: 220 60% 85%; /* Light blue tint */
+    /* Primary - Cyan (#06b6d4) */
+    --primary: 187 94% 43%;
+    --primary-foreground: 222 47% 6%;
+    --primary-dark: 188 86% 37%; /* #0891b2 */
+    --primary-light: 187 80% 65%;
 
-    /* Secondary Accent Colors */
+    /* Secondary / Accent - Orange (#f97316) */
     --secondary: 210 20% 95%;
-    --secondary-foreground: 220 20% 8%;
+    --secondary-foreground: 222 47% 8%;
 
-    --accent: 220 15% 20%;
-    --accent-foreground: 220 15% 96%;
+    --accent: 25 95% 53%; /* Orange */
+    --accent-foreground: 222 47% 96%;
 
-    --border: 220 100% 100% / 0.08;
-    --border-light: 220 17% 6% / 0.1;
-    --border-dark: 220 17% 6% / 0.05;
+    --border: 187 50% 100% / 0.08;
+    --border-light: 222 47% 6% / 0.1;
+    --border-dark: 222 47% 6% / 0.05;
 
-    --ring: 230 85% 70%;
+    --ring: 187 94% 43%;
 
     --radius: 0.625rem;
   }
@@ -50,4 +50,163 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Flow gradient hero (components/ui/flow-gradient-hero-section.tsx) */
+.liquid-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.liquid-canvas-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.liquid-canvas-wrapper canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.cursor-ring {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cursor-ring.dark {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.cursor-dot-element {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  pointer-events: none;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cursor-dot-element.dark {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.title-main {
+  position: relative;
+  z-index: 10;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  padding: 0 1.5rem;
+  color: hsl(var(--foreground));
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.title-main.dark {
+  color: hsl(var(--foreground));
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
+}
+
+.cta-btn {
+  position: relative;
+  z-index: 10;
+  margin-top: 1.5rem;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 4px 14px hsl(var(--primary) / 0.4);
+}
+
+.cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px hsl(var(--primary) / 0.5);
+}
+
+.cta-btn.dark {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.pause-btn {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.8);
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.pause-btn:hover {
+  background: hsl(var(--muted));
+}
+
+.pause-btn.dark {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: hsl(var(--foreground));
+}
+
+.footer-main {
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.footer-main a {
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-main a:hover {
+  color: hsl(var(--foreground));
+}
+
+.footer-main.dark a {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.footer-main.dark a:hover {
+  color: rgba(255, 255, 255, 0.9);
 }
