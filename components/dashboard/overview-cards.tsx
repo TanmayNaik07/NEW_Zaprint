@@ -3,34 +3,40 @@
 import { Printer, CheckCircle, Clock } from "lucide-react"
 import { motion } from "framer-motion"
 
-const stats = [
-  {
-    title: "Active Print Jobs",
-    value: "3",
-    description: "Currently processing",
-    icon: Printer,
-    color: "text-yellow-500",
-    bgColor: "bg-yellow-500/10",
-  },
-  {
-    title: "Completed Prints",
-    value: "47",
-    description: "This month",
-    icon: CheckCircle,
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
-  },
-  {
-    title: "Average Print Time",
-    value: "8 min",
-    description: "Per document",
-    icon: Clock,
-    color: "text-primary",
-    bgColor: "bg-primary/10",
-  },
-]
+export interface OverviewStats {
+  activeJobs: number
+  completedMonth: number
+  avgTime: string
+}
 
-export function OverviewCards() {
+export function OverviewCards({ stats: data }: { stats: OverviewStats }) {
+  const stats = [
+    {
+      title: "Active Print Jobs",
+      value: data.activeJobs.toString(),
+      description: "Currently processing",
+      icon: Printer,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10",
+    },
+    {
+      title: "Completed Prints",
+      value: data.completedMonth.toString(),
+      description: "Total completed",
+      icon: CheckCircle,
+      color: "text-green-500",
+      bgColor: "bg-green-500/10",
+    },
+    {
+      title: "Average Print Time",
+      value: data.avgTime,
+      description: "Per document",
+      icon: Clock,
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
+  ]
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
       {stats.map((stat, index) => (

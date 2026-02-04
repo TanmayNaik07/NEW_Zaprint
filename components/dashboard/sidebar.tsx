@@ -4,12 +4,14 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Printer, HelpCircle, Settings, LogOut, Menu, ChevronLeft } from "lucide-react"
+import { LayoutDashboard, Printer, HelpCircle, Settings, LogOut, Menu, ChevronLeft, Store, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 const navItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Print Shops", href: "/dashboard/shops", icon: Store },
+  { name: "My Orders", href: "/dashboard/orders", icon: FileText },
   { name: "Print", href: "/dashboard/print", icon: Printer },
   { name: "How to Use", href: "/dashboard/how-to-use", icon: HelpCircle },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
