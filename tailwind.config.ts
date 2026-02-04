@@ -70,10 +70,21 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        highlight: {
+          "0%": { backgroundColor: "transparent" },
+          "100%": { backgroundColor: "var(--highlight)" },
+        },
+        flash: {
+          "0%": { backgroundColor: "hsl(var(--card))" },
+          "50%": { backgroundColor: "var(--highlight)" },
+          "100%": { backgroundColor: "hsl(var(--card))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        highlight: "highlight 0.6s ease forwards",
+        flash: "flash 0.6s ease forwards",
       },
     },
   },
