@@ -50,7 +50,22 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         return
       }
 
-      // 2. Upload File
+
+      // 2. Validate File
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'application/pdf']
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Invalid file type. Only PNG, JPG, JPEG, WEBP, and PDF are allowed.")
+        setLoading(false)
+        return
+      }
+
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast.error("File size too large. Max 10MB.")
+        setLoading(false)
+        return
+      }
+
+      // 3. Upload File
       const fileExt = file.name.split('.').pop()
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
       const filePath = `${user.id}/${fileName}`
@@ -61,9 +76,11 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
 
       if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
 
-      const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/documents/${filePath}`
+      const { data: { publicUrl } } = supabase.storage
+        .from('documents')
+        .getPublicUrl(filePath)
 
-      // 3. Create Order
+      // 4. Create Order
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -77,12 +94,12 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
 
       if (orderError) throw new Error(`Order creation failed: ${orderError.message}`)
 
-      // 4. Create Order Item
+      // 5. Create Order Item
       const { error: itemError } = await supabase
         .from('order_items')
         .insert({
           order_id: order.id,
-          file_url: fileUrl,
+          file_url: publicUrl,
           file_name: file.name,
           file_type: fileExt,
           color_mode: service?.service_name.toLowerCase().includes('color') ? 'color' : 'bw',
@@ -105,9 +122,22 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
 
   return (
     <div className="space-y-6">
-      <Card className="border-dashed">
+      <Card className="border-dashed bg-white/5 border-white/10">
         <CardContent className="pt-6">
-            <FileUpload onFileSelect={setFile} />
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+                <Label htmlFor="file">File (PDF, PNG, JPG, WEBP)</Label>
+                <Input 
+                    id="file" 
+                    type="file" 
+                    accept=".pdf,.png,.jpg,.jpeg,.webp"
+                    onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) setFile(file)
+                    }}
+                    className="cursor-pointer file:text-foreground"
+                />
+            </div>
+            {file && <p className="text-sm text-muted-foreground mt-2">Selected: {file.name}</p>}
         </CardContent>
       </Card>
 
@@ -115,7 +145,7 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         <div className="space-y-2">
             <Label>Service Type</Label>
             <Select value={selectedService} onValueChange={setSelectedService}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/5 border-white/10">
                     <SelectValue placeholder="Select a service" />
                 </SelectTrigger>
                 <SelectContent>
@@ -140,13 +170,14 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
                 max={100} 
                 value={copies} 
                 onChange={(e) => setCopies(parseInt(e.target.value) || 1)} 
+                className="bg-white/5 border-white/10"
             />
         </div>
 
         <div className="space-y-2">
             <Label>Pages per Sheet</Label>
             <Select value={pagesPerSheet} onValueChange={setPagesPerSheet}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/5 border-white/10">
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -161,7 +192,9 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
       <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex items-center justify-between">
         <div>
             <p className="text-sm text-muted-foreground">Estimated Total</p>
-            <p className="text-xs text-muted-foreground">(Based on 1 page per file)</p>
+            <p className="text-xs text-muted-foreground text-emerald-400">
+                {service ? `${service.service_name} ($${pricePerPage}/pg)` : 'Select a service'}
+            </p>
         </div>
         <div className="flex items-center gap-1 text-2xl font-bold text-primary">
             <DollarSign className="w-5 h-5" />
@@ -169,7 +202,7 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         </div>
       </div>
 
-      <Button disabled={loading || !file || !selectedService} onClick={handleOrder} size="lg" className="w-full text-lg">
+      <Button disabled={loading || !file || !selectedService} onClick={handleOrder} size="lg" className="w-full text-lg font-semibold">
         {loading ? (
             <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
