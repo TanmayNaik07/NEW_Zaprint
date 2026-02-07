@@ -77,13 +77,13 @@ export function ShopCard({ shop }: ShopCardProps) {
           {bwService && (
             <div className="text-sm">
               <span className="text-muted-foreground">B&W: </span>
-              <span className="font-semibold text-foreground">${bwService.price.toFixed(2)}</span>
+              <span className="font-semibold text-foreground">₹{bwService.price.toFixed(2)}</span>
             </div>
           )}
           {colorService && (
             <div className="text-sm">
               <span className="text-muted-foreground">Color: </span>
-              <span className="font-semibold text-foreground">${colorService.price.toFixed(2)}</span>
+              <span className="font-semibold text-foreground">₹{colorService.price.toFixed(2)}</span>
             </div>
           )}
           {!bwService && !colorService && (

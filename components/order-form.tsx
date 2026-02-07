@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
-import { Loader2, DollarSign } from "lucide-react"
+import { Loader2, DollarSign, IndianRupee } from "lucide-react"
 import { toast } from "sonner"
 import type { ShopWithDetails, ShopService } from "@/lib/types/shop"
 
@@ -152,7 +152,7 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
                     {shop.services.length > 0 ? (
                       shop.services.map((svc) => (
                         <SelectItem key={svc.id} value={svc.id}>
-                          {svc.service_name} (${svc.price.toFixed(2)}/pg)
+                          {svc.service_name} (₹{svc.price.toFixed(2)}/pg)
                         </SelectItem>
                       ))
                     ) : (
@@ -193,11 +193,11 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         <div>
             <p className="text-sm text-muted-foreground">Estimated Total</p>
             <p className="text-xs text-muted-foreground text-emerald-400">
-                {service ? `${service.service_name} ($${pricePerPage}/pg)` : 'Select a service'}
+                {service ? `${service.service_name} (₹${pricePerPage}/pg)` : 'Select a service'}
             </p>
         </div>
         <div className="flex items-center gap-1 text-2xl font-bold text-primary">
-            <DollarSign className="w-5 h-5" />
+            <IndianRupee className="w-5 h-5" />
             {estimatedTotal}
         </div>
       </div>

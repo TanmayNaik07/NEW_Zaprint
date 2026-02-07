@@ -116,7 +116,7 @@ export default async function OrdersPage() {
 
                 <div className="flex items-center justify-between pt-2">
                      <p className="text-xs text-muted-foreground font-mono truncate max-w-[200px]">Order ID: {order.id}</p>
-                     <p className="text-lg font-bold">${order.total_amount}</p>
+                     <p className="text-lg font-bold">₹{order.total_amount}</p>
                 </div>
               </CardContent>
             </Card>

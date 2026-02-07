@@ -18,6 +18,7 @@ interface PageProps {
 }
 
 export default async function ShopPrintPage({ params }: PageProps) {
+  const { id } = await params
   const supabase = await createClient()
   
   // Fetch shop details with services
@@ -29,7 +30,7 @@ export default async function ShopPrintPage({ params }: PageProps) {
       resources:shop_resources(*),
       printers:shop_printers(*)
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .single()
 
   if (error || !shop) {
@@ -108,7 +109,7 @@ export default async function ShopPrintPage({ params }: PageProps) {
                   shopWithDetails.services.map((service) => (
                     <div key={service.id} className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">{service.service_name}</span>
-                      <span className="font-semibold">${service.price.toFixed(2)}</span>
+                      <span className="font-semibold">₹{service.price.toFixed(2)}</span>
                     </div>
                   ))
                 ) : (
