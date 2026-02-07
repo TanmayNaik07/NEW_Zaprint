@@ -4,40 +4,29 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MapPin, Phone, Clock, ArrowRight } from "lucide-react"
+import { MapPin, Phone, Clock, ArrowRight, Printer } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import type { ShopWithDetails } from "@/lib/types/shop"
+import { isShopCurrentlyOpen, formatOperatingHours, getServiceByName } from "@/lib/types/shop"
 
 interface ShopCardProps {
-  id: string
-  name: string
-  description: string
-  address: string
-  phone: string | null
-  imageUrl: string | null
-  isOpen: boolean
-  priceBw: number
-  priceColor: number
+  shop: ShopWithDetails
 }
 
-export function ShopCard({
-  id,
-  name,
-  description,
-  address,
-  phone,
-  imageUrl,
-  isOpen,
-  priceBw,
-  priceColor,
-}: ShopCardProps) {
+export function ShopCard({ shop }: ShopCardProps) {
+  const isOpen = isShopCurrentlyOpen(shop)
+  const bwService = getServiceByName(shop.services, 'B&W Print')
+  const colorService = getServiceByName(shop.services, 'Color Print')
+  const onlinePrinters = shop.printers.filter(p => p.status === 'online').length
+
   return (
     <Card className="overflow-hidden border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300 group">
       <div className="relative h-48 w-full">
-        {imageUrl ? (
+        {shop.image_url ? (
             <Image
-            src={imageUrl}
-            alt={name}
+            src={shop.image_url}
+            alt={shop.shop_name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
@@ -47,44 +36,67 @@ export function ShopCard({
             </div>
         )}
         <div className="absolute top-2 right-2">
-          <Badge variant={isOpen ? "default" : "secondary"} className={isOpen ? "bg-green-500/80 hover:bg-green-500" : "bg-red-500/80 hover:bg-red-500"}>
+          <Badge 
+            variant={isOpen ? "default" : "secondary"} 
+            className={isOpen ? "bg-green-500/80 hover:bg-green-500" : "bg-red-500/80 hover:bg-red-500"}
+          >
             {isOpen ? "Open" : "Closed"}
           </Badge>
         </div>
       </div>
       
       <CardHeader className="p-4 pb-2">
-        <h3 className="text-xl font-semibold text-foreground line-clamp-1">{name}</h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">{description || "No description available."}</p>
+        <h3 className="text-xl font-semibold text-foreground line-clamp-1">{shop.shop_name}</h3>
+        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">{shop.description || "No description available."}</p>
       </CardHeader>
       
       <CardContent className="p-4 pt-0 space-y-3">
         <div className="flex items-start gap-2 text-sm text-muted-foreground">
           <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
-          <span className="line-clamp-2">{address}</span>
+          <span className="line-clamp-2">{shop.location}</span>
         </div>
-        {phone && (
+        
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Phone className="w-4 h-4 shrink-0 text-primary" />
+          <span>{shop.phone}</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Clock className="w-4 h-4 shrink-0 text-primary" />
+          <span>{formatOperatingHours(shop.start_time, shop.end_time)}</span>
+        </div>
+
+        {shop.printers.length > 0 && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Phone className="w-4 h-4 shrink-0 text-primary" />
-            <span>{phone}</span>
+            <Printer className="w-4 h-4 shrink-0 text-primary" />
+            <span>{onlinePrinters}/{shop.printers.length} printers online</span>
           </div>
         )}
         
         <div className="flex items-center justify-between pt-2 border-t border-white/10">
-          <div className="text-sm">
-            <span className="text-muted-foreground">B&W: </span>
-            <span className="font-semibold text-foreground">${priceBw}</span>
-          </div>
-          <div className="text-sm">
-            <span className="text-muted-foreground">Color: </span>
-            <span className="font-semibold text-foreground">${priceColor}</span>
-          </div>
+          {bwService && (
+            <div className="text-sm">
+              <span className="text-muted-foreground">B&W: </span>
+              <span className="font-semibold text-foreground">${bwService.price.toFixed(2)}</span>
+            </div>
+          )}
+          {colorService && (
+            <div className="text-sm">
+              <span className="text-muted-foreground">Color: </span>
+              <span className="font-semibold text-foreground">${colorService.price.toFixed(2)}</span>
+            </div>
+          )}
+          {!bwService && !colorService && (
+            <div className="text-sm text-muted-foreground">
+              See services
+            </div>
+          )}
         </div>
       </CardContent>
       
       <CardFooter className="p-4 pt-0">
         <Button asChild className="w-full gap-2 group-hover:bg-primary group-hover:text-primary-foreground">
-          <Link href={`/dashboard/shops/${id}/print`}>
+          <Link href={`/dashboard/shops/${shop.id}/print`}>
             Order Prints <ArrowRight className="w-4 h-4" />
           </Link>
         </Button>

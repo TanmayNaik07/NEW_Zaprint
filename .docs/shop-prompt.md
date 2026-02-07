@@ -71,4 +71,4 @@ create table public.shop_printers (
   )
 ) TABLESPACE pg_default;
 
-So there are total 4 tables related to shop
+So there are total 4 tables related to shop now the workflow you know i have specified in the initial-prompt.md file so now you can start working on it.

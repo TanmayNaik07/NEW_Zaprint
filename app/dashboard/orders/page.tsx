@@ -27,7 +27,7 @@ export default async function OrdersPage() {
     .select(`
       *,
       shops (
-        name,
+        shop_name,
         image_url
       ),
       order_items (
@@ -81,7 +81,7 @@ export default async function OrdersPage() {
                     <Store className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-base">{order.shops?.name || "Unknown Shop"}</h3>
+                    <h3 className="font-semibold text-base">{order.shops?.shop_name || "Unknown Shop"}</h3>
                     <p className="text-xs text-muted-foreground">
                       {format(new Date(order.created_at), "PPP p")}
                     </p>

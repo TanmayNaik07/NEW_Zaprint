@@ -9,40 +9,34 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Card, CardContent } from "@/components/ui/card"
 import { Loader2, DollarSign } from "lucide-react"
 import { toast } from "sonner"
+import type { ShopWithDetails, ShopService } from "@/lib/types/shop"
 
-interface Shop {
-  id: string
-  name: string
-  price_bw_per_page: number
-  price_color_per_page: number
-}
-
-export function OrderForm({ shop }: { shop: Shop }) {
+export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   const router = useRouter()
   const supabase = createClient()
   
   const [file, setFile] = useState<File | null>(null)
-  const [colorMode, setColorMode] = useState<"bw" | "color">("bw")
+  const [selectedService, setSelectedService] = useState<string>("")
   const [copies, setCopies] = useState(1)
   const [pagesPerSheet, setPagesPerSheet] = useState("1")
   const [loading, setLoading] = useState(false)
   
-  // Calculate estimated price (simplified: assumes 1 page per file for now if we can't parse PDF)
-  // Ideally we use pdf.js to count pages, but for MVP we might just trust user or set default ? 
-  // For now, let's just multiply by copies. 
-  // To make it realistic, we'll assume the file is 1 page long per MB/10? No that's bad.
-  // We will assume 1 page for estimation and show "Estimated (1 page)".
-  
-  const pricePerPage = colorMode === "bw" ? shop.price_bw_per_page : shop.price_color_per_page
+  // Get selected service details
+  const service = shop.services.find(s => s.id === selectedService)
+  const pricePerPage = service?.price || 0
   const estimatedTotal = (pricePerPage * copies).toFixed(2)
 
   const handleOrder = async () => {
     if (!file) {
       toast.error("Please upload a file")
+      return
+    }
+
+    if (!selectedService) {
+      toast.error("Please select a service")
       return
     }
 
@@ -76,7 +70,7 @@ export function OrderForm({ shop }: { shop: Shop }) {
           user_id: user.id,
           shop_id: shop.id,
           status: 'pending',
-          total_amount: parseFloat(estimatedTotal) // This should be calculated backend ideally, but MVP.
+          total_amount: parseFloat(estimatedTotal)
         })
         .select()
         .single()
@@ -91,7 +85,7 @@ export function OrderForm({ shop }: { shop: Shop }) {
           file_url: fileUrl,
           file_name: file.name,
           file_type: fileExt,
-          color_mode: colorMode,
+          color_mode: service?.service_name.toLowerCase().includes('color') ? 'color' : 'bw',
           copies: copies,
           pages_per_sheet: parseInt(pagesPerSheet)
         })
@@ -119,14 +113,21 @@ export function OrderForm({ shop }: { shop: Shop }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="space-y-2">
-            <Label>Color Mode</Label>
-            <Select value={colorMode} onValueChange={(v: any) => setColorMode(v)}>
+            <Label>Service Type</Label>
+            <Select value={selectedService} onValueChange={setSelectedService}>
                 <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select a service" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="bw">Black & White (${shop.price_bw_per_page}/pg)</SelectItem>
-                    <SelectItem value="color">Color (${shop.price_color_per_page}/pg)</SelectItem>
+                    {shop.services.length > 0 ? (
+                      shop.services.map((svc) => (
+                        <SelectItem key={svc.id} value={svc.id}>
+                          {svc.service_name} (${svc.price.toFixed(2)}/pg)
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>No services available</SelectItem>
+                    )}
                 </SelectContent>
             </Select>
         </div>
@@ -168,7 +169,7 @@ export function OrderForm({ shop }: { shop: Shop }) {
         </div>
       </div>
 
-      <Button disabled={loading || !file} onClick={handleOrder} size="lg" className="w-full text-lg">
+      <Button disabled={loading || !file || !selectedService} onClick={handleOrder} size="lg" className="w-full text-lg">
         {loading ? (
             <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
