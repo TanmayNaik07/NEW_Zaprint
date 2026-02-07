@@ -8,11 +8,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 export function LoginForm() {
   const router = useRouter()
+  const supabase = createClient()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,12 +25,26 @@ export function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
 
-    // Mock authentication - redirect to dashboard
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (signInError) throw signInError
+
+      toast.success("Logged in successfully!")
       router.push("/dashboard")
-    }, 1000)
+      router.refresh()
+    } catch (err: any) {
+      console.error("Login error:", err)
+      setError(err.message || "Invalid email or password")
+      toast.error(err.message || "Invalid email or password")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -74,6 +92,12 @@ export function LoginForm() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+          <p className="text-red-500 text-sm">{error}</p>
+        </div>
+      )}
 
       <Button
         type="submit"

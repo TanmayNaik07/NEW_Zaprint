@@ -125,7 +125,6 @@ export default async function OrdersPage() {
           <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10">
             <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium text-foreground">No orders yet</h3>
-            <p className="text-muted-foreground mb-4">You haven&apos;t placed any print orders yet.</p>
           </div>
         )}
       </div>

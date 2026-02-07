@@ -84,7 +84,7 @@ export function ShopCard({
       
       <CardFooter className="p-4 pt-0">
         <Button asChild className="w-full gap-2 group-hover:bg-primary group-hover:text-primary-foreground">
-          <Link href={`/dashboard/shops/${id}`}>
+          <Link href={`/dashboard/shops/${id}/print`}>
             Order Prints <ArrowRight className="w-4 h-4" />
           </Link>
         </Button>

@@ -2,24 +2,34 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { LayoutDashboard, Printer, HelpCircle, Settings, LogOut, Menu, ChevronLeft, Store, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 const navItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { name: "Print Shops", href: "/dashboard/shops", icon: Store },
   { name: "My Orders", href: "/dashboard/orders", icon: FileText },
-  { name: "Print", href: "/dashboard/print", icon: Printer },
   { name: "How to Use", href: "/dashboard/how-to-use", icon: HelpCircle },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 export function DashboardSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClient()
   const [collapsed, setCollapsed] = useState(false)
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    toast.success("Logged out successfully")
+    router.push("/")
+    router.refresh()
+  }
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
     <div className={cn("flex flex-col h-full", mobile ? "p-4" : collapsed ? "p-3" : "p-4")}>
@@ -56,16 +66,16 @@ export function DashboardSidebar() {
 
       {/* Logout */}
       <div className="pt-4 border-t border-white/10">
-        <Link
-          href="/"
+        <button
+          onClick={handleLogout}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground transition-all duration-200",
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground transition-all duration-200",
             collapsed && !mobile && "justify-center px-2",
           )}
         >
           <LogOut className="w-5 h-5 shrink-0" />
           {(!collapsed || mobile) && <span>Logout</span>}
-        </Link>
+        </button>
       </div>
 
       {/* Collapse Button (Desktop only) */}
