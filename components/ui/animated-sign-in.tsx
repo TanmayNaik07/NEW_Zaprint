@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { useNavigationLoading } from "@/components/providers/navigation-loading-provider";
 
 interface AnimatedSignInProps {
   className?: string;
@@ -15,6 +16,7 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const { startLoading } = useNavigationLoading();
 
   const verified = searchParams.get('verified');
   const error = searchParams.get('error');
@@ -65,6 +67,7 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
       if (signInError) throw signInError;
 
       toast.success("Logged in successfully!");
+      startLoading();
       router.push("/dashboard");
       router.refresh();
     } catch (err: any) {

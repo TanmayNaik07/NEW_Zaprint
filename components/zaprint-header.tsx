@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, Printer } from "lucide-react"
 import Link from "next/link"
+import { LoadingLink } from "@/components/ui/loading-link"
 
 export function ZaprintHeader() {
   const navItems = [
@@ -46,16 +47,16 @@ export function ZaprintHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/login" className="hidden md:block">
+          <LoadingLink href="/login" className="hidden md:block">
             <Button variant="ghost" className="text-foreground hover:bg-white/5 px-5 py-2 rounded-full font-medium">
               Login
             </Button>
-          </Link>
-          <Link href="/signup" className="hidden md:block">
+          </LoadingLink>
+          <LoadingLink href="/signup" className="hidden md:block">
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2 rounded-full font-medium shadow-lg shadow-primary/20">
               Start Printing
             </Button>
-          </Link>
+          </LoadingLink>
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="text-foreground">
@@ -78,19 +79,19 @@ export function ZaprintHeader() {
                     {item.name}
                   </Link>
                 ))}
-                <Link href="/login" className="w-full mt-2">
+                <LoadingLink href="/login" className="w-full mt-2">
                   <Button
                     variant="ghost"
                     className="w-full text-foreground hover:bg-white/5 py-2 rounded-full font-medium"
                   >
                     Login
                   </Button>
-                </Link>
-                <Link href="/signup" className="w-full">
+                </LoadingLink>
+                <LoadingLink href="/signup" className="w-full">
                   <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-2 rounded-full font-medium">
                     Start Printing
                   </Button>
-                </Link>
+                </LoadingLink>
               </nav>
             </SheetContent>
           </Sheet>

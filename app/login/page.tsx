@@ -1,8 +1,9 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
 import { Printer } from "lucide-react"
 import AnimatedSignIn from "@/components/ui/animated-sign-in"
+import { useNavigationLoading } from "@/components/providers/navigation-loading-provider"
 
 function LoginLoading() {
   return (
@@ -14,10 +15,21 @@ function LoginLoading() {
   )
 }
 
+function LoginContent() {
+  const { stopLoading } = useNavigationLoading()
+
+  useEffect(() => {
+    // Stop loading when the page mounts
+    stopLoading()
+  }, [stopLoading])
+
+  return <AnimatedSignIn />
+}
+
 export default function LoginPage() {
   return (
     <Suspense fallback={<LoginLoading />}>
-      <AnimatedSignIn />
+      <LoginContent />
     </Suspense>
   )
 }

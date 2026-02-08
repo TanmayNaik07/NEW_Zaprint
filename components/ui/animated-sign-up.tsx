@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { useNavigationLoading } from "@/components/providers/navigation-loading-provider";
 
 interface AnimatedSignUpProps {
   className?: string;
@@ -14,6 +15,7 @@ interface AnimatedSignUpProps {
 const AnimatedSignUp: React.FC<AnimatedSignUpProps> = ({ className }) => {
   const router = useRouter();
   const supabase = createClient();
+  const { startLoading } = useNavigationLoading();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -104,6 +106,7 @@ const AnimatedSignUp: React.FC<AnimatedSignUpProps> = ({ className }) => {
         }
 
         toast.success("Account created successfully!");
+        startLoading();
         router.push("/dashboard");
         router.refresh();
       }
@@ -221,7 +224,10 @@ const AnimatedSignUp: React.FC<AnimatedSignUpProps> = ({ className }) => {
                 </p>
               </div>
               <button
-                onClick={() => router.push("/login")}
+                onClick={() => {
+                  startLoading();
+                  router.push("/login");
+                }}
                 className="auth-submit-button"
                 type="button"
               >
