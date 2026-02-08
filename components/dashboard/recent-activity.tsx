@@ -1,61 +1,30 @@
+
 "use client"
 
 import { motion } from "framer-motion"
 import { FileText, Clock, CheckCircle, Loader2 } from "lucide-react"
+import { formatDistanceToNow } from "date-fns"
 
-type PrintJob = {
-  id: string
-  fileName: string
-  pages: number
-  copies: number
-  status: "processing" | "ready" | "completed"
-  time: string
+interface Order {
+    id: string
+    created_at: string
+    status: string
+    total_amount: number
+    order_items: {
+        file_name: string
+        copies: number
+        pages_per_sheet: number
+    }[]
 }
 
-const mockPrintJobs: PrintJob[] = [
-  {
-    id: "1",
-    fileName: "Project_Report_Final.pdf",
-    pages: 24,
-    copies: 2,
-    status: "processing",
-    time: "Est. 5 min",
+const statusConfig: Record<string, any> = {
+  pending: {
+    label: "Pending",
+    icon: Clock,
+    color: "text-zinc-500",
+    bgColor: "bg-zinc-500/10",
+    iconClass: "",
   },
-  {
-    id: "2",
-    fileName: "Invoice_January.pdf",
-    pages: 3,
-    copies: 1,
-    status: "ready",
-    time: "Ready for pickup",
-  },
-  {
-    id: "3",
-    fileName: "Presentation_Slides.pptx",
-    pages: 15,
-    copies: 5,
-    status: "completed",
-    time: "Completed 2h ago",
-  },
-  {
-    id: "4",
-    fileName: "Contract_Draft_v2.docx",
-    pages: 8,
-    copies: 1,
-    status: "completed",
-    time: "Completed yesterday",
-  },
-  {
-    id: "5",
-    fileName: "Meeting_Notes.pdf",
-    pages: 4,
-    copies: 3,
-    status: "processing",
-    time: "Est. 3 min",
-  },
-]
-
-const statusConfig = {
   processing: {
     label: "Processing",
     icon: Loader2,
@@ -63,9 +32,16 @@ const statusConfig = {
     bgColor: "bg-yellow-500/10",
     iconClass: "animate-spin",
   },
+  printing: {
+      label: "Printing",
+      icon: Loader2,
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
+      iconClass: "animate-spin",
+  },
   ready: {
     label: "Ready",
-    icon: Clock,
+    icon: CheckCircle,
     color: "text-primary",
     bgColor: "bg-primary/10",
     iconClass: "",
@@ -77,14 +53,32 @@ const statusConfig = {
     bgColor: "bg-green-500/10",
     iconClass: "",
   },
+  cancelled: {
+      label: "Cancelled",
+      icon: CheckCircle, // XCircle
+      color: "text-red-500",
+      bgColor: "bg-red-500/10",
+      iconClass: ""
+  }
 }
 
-export function RecentActivity() {
+export function RecentActivity({ orders }: { orders: Order[] }) {
+  if (!orders || orders.length === 0) {
+      return (
+          <div className="space-y-4">
+               <h2 className="text-foreground text-xl font-semibold">Recent Activity</h2>
+               <div className="p-8 text-center text-muted-foreground bg-white/5 rounded-xl border border-white/10">
+                   No recent activity.
+               </div>
+          </div>
+      )
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-foreground text-xl font-semibold">Recent Activity</h2>
-        <a href="/dashboard/print" className="text-primary text-sm font-medium hover:underline">
+        <a href="/dashboard/orders" className="text-primary text-sm font-medium hover:underline">
           View all
         </a>
       </div>
@@ -109,11 +103,12 @@ export function RecentActivity() {
               </tr>
             </thead>
             <tbody>
-              {mockPrintJobs.map((job, index) => {
-                const status = statusConfig[job.status]
+              {orders.map((order, index) => {
+                const status = statusConfig[order.status] || statusConfig['pending']
+                const item = order.order_items[0] // Just show first item
                 return (
                   <motion.tr
-                    key={job.id}
+                    key={order.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -125,13 +120,13 @@ export function RecentActivity() {
                           <FileText className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <span className="text-foreground text-sm font-medium truncate max-w-[180px]">
-                          {job.fileName}
+                          {item?.file_name || "Unknown File"}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 hidden sm:table-cell">
                       <span className="text-muted-foreground text-sm">
-                        {job.pages} pages • {job.copies} {job.copies === 1 ? "copy" : "copies"}
+                        {item ? `${item.copies} copies` : "-"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -141,7 +136,9 @@ export function RecentActivity() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right hidden md:table-cell">
-                      <span className="text-muted-foreground text-sm">{job.time}</span>
+                      <span className="text-muted-foreground text-sm">
+                          {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
+                      </span>
                     </td>
                   </motion.tr>
                 )
