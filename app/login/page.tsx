@@ -24,7 +24,7 @@ function LoginContent() {
         <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
           <Printer className="w-6 h-6 text-primary" />
         </div>
-        <span className="text-foreground text-2xl font-semibold">ZaPrint</span>
+        <span className="text-foreground text-2xl font-semibold">Zaprint</span>
       </Link>
 
       {/* Login Card */}

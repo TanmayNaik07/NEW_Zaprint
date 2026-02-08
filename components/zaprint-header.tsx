@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Menu, Printer } from "lucide-react"
 import Link from "next/link"
 
-export function ZaPrintHeader() {
+export function ZaprintHeader() {
   const navItems = [
     { name: "How It Works", href: "#how-it-works" },
     { name: "Features", href: "#features-section" },
@@ -30,7 +30,7 @@ export function ZaPrintHeader() {
             <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
               <Printer className="w-5 h-5 text-primary" />
             </div>
-            <span className="text-foreground text-xl font-semibold">ZaPrint</span>
+            <span className="text-foreground text-xl font-semibold">Zaprint</span>
           </Link>
           <nav className="hidden md:flex items-center gap-2">
             {navItems.map((item) => (

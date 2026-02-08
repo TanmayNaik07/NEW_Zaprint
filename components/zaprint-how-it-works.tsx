@@ -113,13 +113,13 @@ function StepCard({
   );
 }
 
-export function ZaPrintHowItWorks() {
+export function ZaprintHowItWorks() {
   return (
     <section id="how-it-works" className="w-full px-5 py-16 md:py-24">
       <div className="max-w-[1320px] mx-auto">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-foreground text-3xl md:text-5xl font-semibold mb-4">
-            How ZaPrint Works
+            How Zaprint Works
           </h2>
           <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
             Get your prints in 4 simple steps. No more waiting in queues.

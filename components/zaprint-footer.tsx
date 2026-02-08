@@ -3,7 +3,7 @@
 import { Twitter, Github, Linkedin, Printer } from "lucide-react"
 import Link from "next/link"
 
-export function ZaPrintFooter() {
+export function ZaprintFooter() {
   return (
     <footer className="w-full max-w-[1320px] mx-auto px-5 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-0 py-10 md:py-16">
       {/* Left Section */}
@@ -12,7 +12,7 @@ export function ZaPrintFooter() {
           <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
             <Printer className="w-5 h-5 text-primary" />
           </div>
-          <span className="text-foreground text-xl font-semibold">ZaPrint</span>
+          <span className="text-foreground text-xl font-semibold">Zaprint</span>
         </Link>
         <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-xs">
           Print smarter, skip the queue. Your documents, ready when you are.
