@@ -84,7 +84,7 @@ export default function HowToUsePage() {
     <div className="max-w-4xl mx-auto space-y-12">
       {/* Header */}
       <div>
-        <h1 className="text-foreground text-2xl md:text-3xl font-semibold mb-2">How to Use ZaPrint</h1>
+        <h1 className="text-foreground text-2xl md:text-3xl font-semibold mb-2">How to Use Zaprint</h1>
         <p className="text-muted-foreground">A step-by-step guide to getting your prints done quickly and easily.</p>
       </div>
 

@@ -56,7 +56,7 @@ const pricingTiers = [
   },
 ]
 
-export function ZaPrintPricing() {
+export function ZaprintPricing() {
   return (
     <section id="pricing-section" className="w-full px-5 py-16 md:py-24">
       <div className="max-w-[1320px] mx-auto">

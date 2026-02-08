@@ -7,7 +7,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export const metadata: Metadata = {
-  title: "ZaPrint - Print Smarter. Skip the Queue.",
+  title: "Zaprint - Print Smarter. Skip the Queue.",
   description:
     "Upload your documents, choose print settings, pay online, and pick up your prints exactly when they're ready. No more waiting in queues.",
   generator: "v0.app",

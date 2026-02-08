@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, Printer } from "lucide-react"
 
-export function ZaPrintCTA() {
+export function ZaprintCTA() {
   return (
     <section className="w-full pt-20 md:pt-32 pb-10 md:pb-20 px-5 relative flex flex-col justify-center items-center overflow-visible">
       {/* Background glow */}
@@ -102,7 +102,7 @@ export function ZaPrintCTA() {
             Start your first print in under a minute
           </h2>
           <p className="text-muted-foreground text-base md:text-lg font-medium leading-relaxed max-w-2xl">
-            Join thousands of users who have already saved hours by skipping the queue with ZaPrint.
+            Join thousands of users who have already saved hours by skipping the queue with Zaprint.
           </p>
         </div>
 
