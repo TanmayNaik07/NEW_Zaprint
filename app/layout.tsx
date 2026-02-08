@@ -2,7 +2,11 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+<<<<<<< HEAD
 import { NavigationLoadingProvider } from "@/components/providers/navigation-loading-provider"
+=======
+import { Toaster } from "sonner"
+>>>>>>> 2cab327dd2b156e3a26d4bf14e74b7af5fe215f9
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -39,9 +43,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
+<<<<<<< HEAD
         <NavigationLoadingProvider>
           {children}
         </NavigationLoadingProvider>
+=======
+        {children}
+        <Toaster />
+>>>>>>> 2cab327dd2b156e3a26d4bf14e74b7af5fe215f9
         <Analytics />
       </body>
     </html>
