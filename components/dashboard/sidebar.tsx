@@ -2,13 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Printer, HelpCircle, Settings, LogOut, Menu, ChevronLeft, Store, FileText } from "lucide-react"
+import { LayoutDashboard, Printer, HelpCircle, Settings, Menu, Store, FileText, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "sonner"
 
 const navItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -20,26 +18,32 @@ const navItems = [
 
 export function DashboardSidebar() {
   const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClient()
   const [collapsed, setCollapsed] = useState(false)
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    toast.success("Logged out successfully")
-    router.push("/")
-    router.refresh()
-  }
-
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={cn("flex flex-col h-full", mobile ? "p-4" : collapsed ? "p-3" : "p-4")}>
+    <div className={cn("flex flex-col h-full", mobile ? "p-4" : collapsed ? "p-3" : "p-6")}>
       {/* Logo */}
-      <div className={cn("flex items-center gap-2 mb-8", collapsed && !mobile && "justify-center")}>
+      <div className={cn("flex items-center gap-2 mb-6 transition-all", collapsed && !mobile && "justify-center")}>
         <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
           <Printer className="w-5 h-5 text-primary" />
         </div>
         {(!collapsed || mobile) && <span className="text-foreground text-xl font-semibold">Zaprint</span>}
       </div>
+
+      {/* Menu Header & Toggle */}
+      {!mobile && (
+        <div className={cn("flex items-center justify-between mb-4 px-1", collapsed && "justify-center")}>
+          {!collapsed && <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Menu</span>}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(!collapsed)}
+            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+          >
+            <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
+          </Button>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
@@ -63,32 +67,6 @@ export function DashboardSidebar() {
           )
         })}
       </nav>
-
-      {/* Logout */}
-      <div className="pt-4 border-t border-white/10">
-        <button
-          onClick={handleLogout}
-          className={cn(
-            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground transition-all duration-200",
-            collapsed && !mobile && "justify-center px-2",
-          )}
-        >
-          <LogOut className="w-5 h-5 shrink-0" />
-          {(!collapsed || mobile) && <span>Logout</span>}
-        </button>
-      </div>
-
-      {/* Collapse Button (Desktop only) */}
-      {!mobile && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="mt-4 w-full h-9 text-muted-foreground hover:text-foreground hover:bg-white/5"
-        >
-          <ChevronLeft className={cn("w-4 h-4 transition-transform", collapsed && "rotate-180")} />
-        </Button>
-      )}
     </div>
   )
 
