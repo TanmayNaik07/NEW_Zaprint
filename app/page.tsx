@@ -1,10 +1,9 @@
-import { ZaprintHeader } from "@/components/Zaprint-header"
+import { ZaprintHeader } from "@/components/zaprint-header"
 import { LandingHeroGlassmorphism } from "@/components/landing-hero-glassmorphism"
-import { ZaprintHowItWorks } from "@/components/Zaprint-how-it-works"
-import { ZaprintFeatures } from "@/components/Zaprint-features"
-import { ZaprintPricing } from "@/components/Zaprint-pricing"
-import { ZaprintCTA } from "@/components/Zaprint-cta"
-import { ZaprintFooter } from "@/components/Zaprint-footer"
+import { ZaprintHowItWorks } from "@/components/zaprint-how-it-works"
+import { ZaprintFeatures } from "@/components/zaprint-features"
+import { ZaprintPricing } from "@/components/zaprint-pricing"
+import { ZaprintFooter } from "@/components/zaprint-footer"
 import { AnimatedSection } from "@/components/animated-section"
 import { FooterWithDotShader } from "@/components/footer-with-dot-shader"
 
@@ -32,9 +31,7 @@ export default function LandingPage() {
           <ZaprintPricing />
         </AnimatedSection>
 
-        <AnimatedSection className="relative z-10 max-w-[1320px] mx-auto" delay={0.2}>
-          <ZaprintCTA />
-        </AnimatedSection>
+
 
         <AnimatedSection className="relative z-10" delay={0.2}>
           <FooterWithDotShader />

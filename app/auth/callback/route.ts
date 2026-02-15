@@ -19,11 +19,10 @@ export async function GET(request: Request) {
         const { error: profileError } = await supabase.from('profiles').upsert({
           id: user.id,
           email: user.email,
-          full_name: metadata.name || metadata.full_name,
+          name: metadata.name || metadata.full_name,
           address: metadata.address,
           phone_number: metadata.phone_number || metadata.phone, // Handle both keys
-          avatar_url: metadata.avatar_url,
-          updated_at: new Date().toISOString()
+          avatar_url: metadata.avatar_url
         })
         
         if (profileError) {

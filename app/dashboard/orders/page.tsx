@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import OrdersList from "./components/OrdersList"
+import { OrdersList } from "./components/OrdersList"
 
 export const dynamic = 'force-dynamic'
 
@@ -21,22 +21,48 @@ export default async function OrdersPage() {
   const { data: orders, error } = await supabase
     .from("orders")
     .select(`
-      *,
-      shops (
+      id, created_at, status, total_amount, user_id, receipt_number,
+      shops:shop_id (
         shop_name,
-        image_url
+        image_url,
+        location,
+        phone
       ),
       order_items (
-        *
+        id,
+        file_name,
+        file_type,
+        color_mode,
+        copies,
+        pages_per_sheet
       )
     `)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
+    .limit(20) // Limit to prevent timeout
 
   if (error) {
     console.error("Error fetching orders:", error)
-    return <div className="text-destructive">Error loading orders.</div>
+    // Return empty state instead of error to let page render
+    return (
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-foreground text-2xl md:text-3xl font-semibold mb-2">My Orders</h1>
+          <p className="text-muted-foreground">Track and manage your print requests.</p>
+        </div>
+        <div className="text-destructive bg-destructive/10 p-4 rounded-lg">
+          Unable to load orders. Please check your connection and try again.
+        </div>
+      </div>
+    )
   }
+
+
+  // Normalize the data structure to ensure shops is an object, not an array
+  const normalizedOrders = (orders || []).map(order => ({
+    ...order,
+    shops: Array.isArray(order.shops) ? order.shops[0] : order.shops
+  }))
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -45,7 +71,7 @@ export default async function OrdersPage() {
         <p className="text-muted-foreground">Track and manage your print requests.</p>
       </div>
 
-      <OrdersList initialOrders={orders || []} />
+      <OrdersList initialOrders={normalizedOrders} userId={user.id} />
     </div>
   )
 }
