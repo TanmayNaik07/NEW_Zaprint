@@ -1,107 +1,254 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Printer, HelpCircle, Settings, Menu, Store, FileText, ChevronLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+// Ensure these imports point to your actual UI components
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { motion } from "framer-motion"
 
-const navItems = [
-  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Print Shops", href: "/dashboard/shops", icon: Store },
-  { name: "My Orders", href: "/dashboard/orders", icon: FileText },
-  { name: "How to Use", href: "/dashboard/how-to-use", icon: HelpCircle },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-]
+import {
+  LayoutDashboard,
+  Store,
+  FileText,
+  HelpCircle,
+  Settings,
+  LogOut,
+  Printer,
+  ChevronsUpDown,
+  UserCircle,
+} from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Separator } from "@/components/ui/separator"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
+
+const sidebarVariants = {
+  open: {
+    width: "15rem",
+  },
+  closed: {
+    width: "4rem", // Adjusted for better visual balance with icons
+  },
+}
+
+const contentVariants = {
+  open: { display: "block", opacity: 1 },
+  closed: { display: "block", opacity: 1 },
+}
+
+const variants = {
+  open: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      x: { stiffness: 1000, velocity: -100 },
+    },
+  },
+  closed: {
+    x: -20,
+    opacity: 0,
+    transition: {
+      x: { stiffness: 100 },
+    },
+  },
+}
+
+const transitionProps = {
+  type: "tween",
+  ease: "easeOut",
+  duration: 0.2,
+  // Remove stagger here to make the container smooth
+}
+
+const staggerVariants = {
+  open: {
+    transition: { staggerChildren: 0.03, delayChildren: 0.02 },
+  },
+}
 
 export function DashboardSidebar() {
+  const [isCollapsed, setIsCollapsed] = useState(true)
   const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+  const router = useRouter()
+  const supabase = createClient()
 
-  const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={cn("flex flex-col h-full", mobile ? "p-4" : collapsed ? "p-3" : "p-6")}>
-      {/* Logo */}
-      <div className={cn("flex items-center gap-2 mb-6 transition-all", collapsed && !mobile && "justify-center")}>
-        <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
-          <Printer className="w-5 h-5 text-primary" />
-        </div>
-        {(!collapsed || mobile) && <span className="text-foreground text-xl font-semibold">Zaprint</span>}
-      </div>
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    toast.success("Logged out successfully")
+    router.push("/")
+    router.refresh()
+  }
 
-      {/* Menu Header & Toggle */}
-      {!mobile && (
-        <div className={cn("flex items-center justify-between mb-4 px-1", collapsed && "justify-center")}>
-          {!collapsed && <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Menu</span>}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setCollapsed(!collapsed)}
-            className="h-6 w-6 text-muted-foreground hover:text-foreground"
-          >
-            <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
-          </Button>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200",
-                isActive
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
-                collapsed && !mobile && "justify-center px-2",
-              )}
-            >
-              <item.icon className={cn("w-5 h-5 shrink-0", isActive && "text-primary")} />
-              {(!collapsed || mobile) && <span>{item.name}</span>}
-            </Link>
-          )
-        })}
-      </nav>
-    </div>
-  )
+  // Zaprint Navigation Items
+  const navItems = [
+    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Print Shops", href: "/dashboard/shops", icon: Store },
+    { name: "My Orders", href: "/dashboard/orders", icon: FileText },
+    { name: "How to Use", href: "/dashboard/how-to-use", icon: HelpCircle },
+    // Settings logic is usually separate but I'll add it here for consistency if needed
+    // { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  ]
 
   return (
-    <>
-      {/* Desktop Sidebar */}
-      <aside
-        className={cn(
-          "hidden md:flex flex-col h-screen border-r border-white/10 bg-background/50 backdrop-blur-xl transition-all duration-300",
-          collapsed ? "w-[72px]" : "w-[240px]",
-        )}
+    <motion.div
+      className={cn(
+        "sidebar fixed left-0 z-40 h-full shrink-0 border-r bg-background/50 backdrop-blur-xl border-border/40",
+      )}
+      initial={isCollapsed ? "closed" : "open"}
+      animate={isCollapsed ? "closed" : "open"}
+      variants={sidebarVariants}
+      transition={transitionProps}
+      onMouseEnter={() => setIsCollapsed(false)}
+      onMouseLeave={() => setIsCollapsed(true)}
+    >
+      <motion.div
+        className={`relative z-40 flex text-muted-foreground h-full shrink-0 flex-col bg-transparent transition-all`}
+        variants={contentVariants}
       >
-        <SidebarContent />
-      </aside>
+        <motion.ul variants={staggerVariants} className="flex h-full flex-col">
+          <div className="flex grow flex-col items-center">
 
-      {/* Mobile Sidebar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-background/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-            <Printer className="w-5 h-5 text-primary" />
+            {/* Top Logo / Brand Section */}
+            <div className="flex h-[60px] w-full shrink-0 items-center justify-center border-b border-border/40 p-2">
+              <div className="flex w-full items-center justify-center">
+                <div className="flex items-center gap-2 px-2 w-full">
+                  <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+                    <Printer className="w-5 h-5 text-primary" />
+                  </div>
+                  <motion.div variants={variants} className="overflow-hidden whitespace-nowrap">
+                    {!isCollapsed && (
+                      <span className="text-foreground text-lg font-semibold ml-1">
+                        Zaprint
+                      </span>
+                    )}
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="flex h-full w-full flex-col">
+              <div className="flex grow flex-col gap-4 pt-4">
+                <ScrollArea className="h-full w-full px-2">
+                  <div className={cn("flex w-full flex-col gap-1")}>
+                    {navItems.map((item) => {
+                      const isActive = pathname === item.href
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className={cn(
+                            "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-accent/50 hover:text-foreground",
+                            isActive
+                              ? "bg-primary/15 text-primary hover:bg-primary/20"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-primary")} />
+                          <motion.li variants={variants} className="ml-3 overflow-hidden whitespace-nowrap">
+                            {!isCollapsed && (
+                              <p className="text-sm font-medium">{item.name}</p>
+                            )}
+                          </motion.li>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </ScrollArea>
+              </div>
+
+              {/* Bottom Section: Settings & Profile */}
+              <div className="flex flex-col p-2 space-y-1 mb-2">
+
+                {/* Independent Settings Link */}
+                <Link
+                  href="/dashboard/settings"
+                  className={cn(
+                    "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-accent/50 hover:text-foreground",
+                    pathname === "/dashboard/settings" ? "bg-primary/15 text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  <Settings className="h-5 w-5 shrink-0" />
+                  <motion.li variants={variants} className="ml-3 overflow-hidden whitespace-nowrap">
+                    {!isCollapsed && (
+                      <p className="text-sm font-medium">Settings</p>
+                    )}
+                  </motion.li>
+                </Link>
+
+                <Separator className="bg-border/40" />
+
+                {/* Profile Dropdown */}
+                <div className="pt-1">
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger className="w-full outline-none">
+                      <div className="flex h-12 w-full flex-row items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-accent/50 hover:text-foreground">
+                        <Avatar className="h-8 w-8 border border-border/50">
+                          <AvatarImage src="/placeholder-user.jpg" />
+                          <AvatarFallback className="bg-primary/10 text-primary">TM</AvatarFallback>
+                        </Avatar>
+                        <motion.li
+                          variants={variants}
+                          className="flex w-full items-center gap-2 overflow-hidden whitespace-nowrap"
+                        >
+                          {!isCollapsed && (
+                            <>
+                              <div className="flex flex-col text-left">
+                                <p className="text-sm font-medium truncate">Test Member</p>
+                              </div>
+                              <ChevronsUpDown className="ml-auto h-4 w-4 text-muted-foreground/50" />
+                            </>
+                          )}
+                        </motion.li>
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="right" sideOffset={10} align="end" className="w-[200px]">
+                      <div className="flex flex-row items-center gap-2 p-2">
+                        <Avatar className="size-8">
+                          <AvatarFallback className="bg-primary/10 text-primary">TM</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col text-left overflow-hidden">
+                          <span className="text-sm font-medium truncate">
+                            Test Member
+                          </span>
+                          <span className="line-clamp-1 text-xs text-muted-foreground truncate">
+                            member@zaprint.com
+                          </span>
+                        </div>
+                      </div>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        asChild
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Link href="/dashboard/settings">
+                          <UserCircle className="h-4 w-4" /> Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
+                      >
+                        <LogOut className="h-4 w-4" /> Sign out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </div>
           </div>
-          <span className="text-foreground text-lg font-semibold">Zaprint</span>
-        </Link>
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-foreground">
-              <Menu className="w-6 h-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[280px] p-0 bg-background border-white/10">
-            <SidebarContent mobile />
-          </SheetContent>
-        </Sheet>
-      </div>
-    </>
+        </motion.ul>
+      </motion.div>
+    </motion.div>
   )
 }

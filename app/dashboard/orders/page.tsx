@@ -8,24 +8,20 @@ export default async function OrdersPage() {
 
   // Get user session
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-            <h2 className="text-2xl font-semibold">Please log in to view your orders</h2>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+        <h2 className="text-2xl font-semibold">Please log in to view your orders</h2>
+      </div>
     )
   }
 
-  // Fetch orders
-  const { data: orders, error } = await supabase
+  // Fetch orders with items first (known to work)
+  const { data: rawOrders, error: ordersError } = await supabase
     .from("orders")
     .select(`
       *,
-      shops (
-        shop_name,
-        image_url
-      ),
       order_items (
         *
       )
@@ -33,9 +29,31 @@ export default async function OrdersPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
 
-  if (error) {
-    console.error("Error fetching orders:", error)
+  if (ordersError) {
+    console.error("Error fetching orders:", ordersError)
     return <div className="text-destructive">Error loading orders.</div>
+  }
+
+  // Manually fetch shops to avoid potential join issues
+  let ordersWithShops = rawOrders || []
+  const shopIds = Array.from(new Set(rawOrders?.map((o: any) => o.shop_id).filter(Boolean))) as string[]
+
+  if (shopIds.length > 0) {
+    const { data: shops, error: shopsError } = await supabase
+      .from("shops")
+      .select("id, shop_name, image_url")
+      .in("id", shopIds)
+
+    if (shopsError) {
+      console.error("Error fetching shops:", shopsError)
+      // Continue without shops info if this fails, rather than breaking the page
+    } else {
+      const shopMap = new Map(shops?.map(s => [s.id, s]))
+      ordersWithShops = ordersWithShops.map((order: any) => ({
+        ...order,
+        shops: order.shop_id ? shopMap.get(order.shop_id) : null
+      }))
+    }
   }
 
   return (
@@ -45,7 +63,7 @@ export default async function OrdersPage() {
         <p className="text-muted-foreground">Track and manage your print requests.</p>
       </div>
 
-      <OrdersList initialOrders={orders || []} />
+      <OrdersList initialOrders={ordersWithShops} />
     </div>
   )
 }

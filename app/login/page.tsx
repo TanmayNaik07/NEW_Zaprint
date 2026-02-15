@@ -28,8 +28,10 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<LoginLoading />}>
-      <LoginContent />
-    </Suspense>
+    <div className="zaprint-theme">
+      <Suspense fallback={<LoginLoading />}>
+        <LoginContent />
+      </Suspense>
+    </div>
   )
 }

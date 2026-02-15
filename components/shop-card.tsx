@@ -1,12 +1,7 @@
-
 "use client"
 
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { MapPin, Phone, Clock, ArrowRight, Printer } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { TrailCard } from "@/components/ui/trail-card"
 import type { ShopWithDetails } from "@/lib/types/shop"
 import { isShopCurrentlyOpen, formatOperatingHours, getServiceByName } from "@/lib/types/shop"
 
@@ -15,115 +10,45 @@ interface ShopCardProps {
 }
 
 export function ShopCard({ shop }: ShopCardProps) {
+  const router = useRouter()
   const isOpen = isShopCurrentlyOpen(shop)
   const bwService = getServiceByName(shop.services, 'B&W Print')
-  const colorService = getServiceByName(shop.services, 'Color Print')
-  const onlinePrinters = shop.printers.filter(p => p.status === 'online').length
+
+  // Format price display
+  const priceDisplay = bwService
+    ? `₹${bwService.price.toFixed(2)}`
+    : "Varies"
+
+  // Format hours display
+  const hoursDisplay = formatOperatingHours(shop.start_time, shop.end_time)
+
+  // Handle navigation
+  const handleNavigate = () => {
+    router.push(`/dashboard/shops/${shop.id}/print`)
+  }
+
+  // Handle directions click (could open map or just go to shop page)
+  const handleDirections = (e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    // Open google maps with query
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shop.location)}`, '_blank')
+  }
 
   return (
-    <Card className="overflow-hidden border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300 group">
-      <div className="relative h-48 w-full">
-        {shop.image_url ? (
-            <Image
-            src={shop.image_url}
-            alt={shop.shop_name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-        ) : (
-             <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                 <StoreIcon className="w-12 h-12 text-primary/40" />
-            </div>
-        )}
-        <div className="absolute top-2 right-2">
-          <Badge 
-            variant={isOpen ? "default" : "secondary"} 
-            className={isOpen ? "bg-green-500/80 hover:bg-green-500" : "bg-red-500/80 hover:bg-red-500"}
-          >
-            {isOpen ? "Open" : "Closed"}
-          </Badge>
-        </div>
-      </div>
-      
-      <CardHeader className="p-4 pb-2">
-        <h3 className="text-xl font-semibold text-foreground line-clamp-1">{shop.shop_name}</h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">{shop.description || "No description available."}</p>
-      </CardHeader>
-      
-      <CardContent className="p-4 pt-0 space-y-3">
-        <div className="flex items-start gap-2 text-sm text-muted-foreground">
-          <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
-          <span className="line-clamp-2">{shop.location}</span>
-        </div>
-        
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Phone className="w-4 h-4 shrink-0 text-primary" />
-          <span>{shop.phone}</span>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="w-4 h-4 shrink-0 text-primary" />
-          <span>{formatOperatingHours(shop.start_time, shop.end_time)}</span>
-        </div>
-
-        {shop.printers.length > 0 && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Printer className="w-4 h-4 shrink-0 text-primary" />
-            <span>{onlinePrinters}/{shop.printers.length} printers online</span>
-          </div>
-        )}
-        
-        <div className="flex items-center justify-between pt-2 border-t border-white/10">
-          {bwService && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">B&W: </span>
-              <span className="font-semibold text-foreground">₹{bwService.price.toFixed(2)}</span>
-            </div>
-          )}
-          {colorService && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">Color: </span>
-              <span className="font-semibold text-foreground">₹{colorService.price.toFixed(2)}</span>
-            </div>
-          )}
-          {!bwService && !colorService && (
-            <div className="text-sm text-muted-foreground">
-              See services
-            </div>
-          )}
-        </div>
-      </CardContent>
-      
-      <CardFooter className="p-4 pt-0">
-        <Button asChild className="w-full gap-2 group-hover:bg-primary group-hover:text-primary-foreground">
-          <Link href={`/dashboard/shops/${shop.id}/print`}>
-            Order Prints <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
+    <div onClick={handleNavigate} className="cursor-pointer h-full">
+      <TrailCard
+        imageUrl={shop.image_url || "https://images.unsplash.com/photo-1562564055-71e051d33c19?q=80&w=2070&auto=format&fit=crop"}
+        mapImageUrl="https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-3JYNLpogg5zknunPABpdOpEjJmZN5R.png&w=320&q=75"
+        title={shop.shop_name}
+        location={shop.location}
+        difficulty={isOpen ? "Open Now" : "Closed"}
+        creators={shop.phone}
+        distance="1.2km" // Mock distance for now
+        elevation={priceDisplay}
+        duration={hoursDisplay.split(' - ')[0]} // Show start time or simplified hours
+        onDirectionsClick={() => handleDirections()} // This will trigger the map
+        className="h-full border-border/50 hover:border-border transition-colors bg-card/50 backdrop-blur-sm"
+      />
+    </div>
   )
-}
-
-function StoreIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            className={className}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
-            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-            <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
-            <path d="M2 7h20" />
-            <path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" />
-        </svg>
-    )
 }

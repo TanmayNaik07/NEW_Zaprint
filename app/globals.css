@@ -46,6 +46,74 @@
 
     --radius: 0.625rem;
   }
+
+  /* ===== New Zaprint Theme — Dark Only (applies to everything EXCEPT the landing page) ===== */
+  /* ===== New Zaprint Theme (Applied to Dashboard & Auth - Dark Mode Only) ===== */
+  .zaprint-theme {
+    /* Dark Theme Values (Default & Only) */
+    --background: 0 0% 7%;
+    /* #121212 */
+    --foreground: 210 29% 91%;
+    /* #e2e8f0 */
+    --card: 0 0% 9%;
+    /* #171717 */
+    --card-foreground: 210 29% 91%;
+    /* #e2e8f0 */
+    --popover: 0 0% 14%;
+    /* #242424 */
+    --popover-foreground: 0 0% 66%;
+    /* #a9a9a9 */
+    --primary: 155 100% 19%;
+    /* #006239 */
+    --primary-foreground: 152 23% 89%;
+    /* #dde8e3 */
+    --secondary: 0 0% 14%;
+    /* #242424 */
+    --secondary-foreground: 0 0% 98%;
+    /* #fafafa */
+    --muted: 0 0% 12%;
+    /* #1f1f1f */
+    --muted-foreground: 0 0% 64%;
+    /* #a2a2a2 */
+    --accent: 0 0% 19%;
+    /* #313131 */
+    --accent-foreground: 0 0% 98%;
+    /* #fafafa */
+    --destructive: 7 60% 21%;
+    /* #541c15 */
+    --destructive-foreground: 17 9% 92%;
+    /* #ede9e8 */
+    --border: 0 0% 16%;
+    /* #292929 */
+    --input: 0 0% 14%;
+    /* #242424 */
+    --ring: 142 71% 58%;
+    /* #4ade80 */
+    --radius: 0.5rem;
+    --chart-1: 142 71% 58%;
+    --chart-2: 217 91% 68%;
+    --chart-3: 257 91% 76%;
+    --chart-4: 45 93% 56%;
+    --chart-5: 173 66% 50%;
+
+    /* Sidebar - Dark */
+    --sidebar-background: 0 0% 7%;
+    /* #121212 */
+    --sidebar-foreground: 0 0% 54%;
+    /* #898989 */
+    --sidebar-primary: 155 100% 19%;
+    /* #006239 */
+    --sidebar-primary-foreground: 152 23% 89%;
+    /* #dde8e3 */
+    --sidebar-accent: 0 0% 19%;
+    /* #313131 */
+    --sidebar-accent-foreground: 0 0% 98%;
+    /* #fafafa */
+    --sidebar-border: 0 0% 16%;
+    /* #292929 */
+    --sidebar-ring: 142 71% 58%;
+    /* #4ade80 */
+  }
 }
 
 @layer base {

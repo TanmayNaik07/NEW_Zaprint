@@ -12,5 +12,9 @@ export default function SignupPage() {
     stopLoading()
   }, [stopLoading])
 
-  return <AnimatedSignUp />
+  return (
+    <div className="zaprint-theme">
+      <AnimatedSignUp />
+    </div>
+  )
 }
