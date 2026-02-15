@@ -1,27 +1,31 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
+import { type RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { format } from "date-fns"
 import { FileText, Clock, Store, CheckCircle2, XCircle, Printer, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
-import { MorphingCardStack } from "@/components/ui/morphing-card-stack"
 
-interface OrderItem {
+export interface OrderItem {
   id: string
   file_name: string
+  file_type?: string
   color_mode: string
   copies: number
+  pages_per_sheet?: number
 }
 
-interface Shop {
+export interface Shop {
   shop_name: string
   image_url: string
+  location?: string
+  phone?: string
 }
 
-interface Order {
+export interface Order {
   id: string
   created_at: string
   status: string
@@ -29,18 +33,21 @@ interface Order {
   user_id: string
   shops?: Shop
   order_items?: OrderItem[]
+  receipt_number?: string
+  order_number?: number // New field
 }
 
 interface OrdersListProps {
-  initialOrders: any[]
+  initialOrders: Order[]
+  userId: string
 }
 
-export default function OrdersList({ initialOrders }: OrdersListProps) {
+export function OrdersList({ initialOrders, userId }: OrdersListProps) {
   const [orders, setOrders] = useState<Order[]>(initialOrders)
   const supabase = createClient()
 
   const playNotificationSound = () => {
-    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3")
+    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3") 
     audio.volume = 0.5
     audio.play().catch(e => console.error("Error playing sound:", e))
   }
@@ -69,10 +76,10 @@ export default function OrdersList({ initialOrders }: OrdersListProps) {
             console.log('Realtime change received:', payload)
 
             if (payload.eventType === 'INSERT') {
-              // Fetch the new order with relations
-              const { data: newOrder, error } = await supabase
-                .from('orders')
-                .select(`
+                // Fetch the new order with relations
+                const { data: newOrder, error } = await supabase
+                    .from('orders')
+                    .select(`
                         *,
                         shops (
                             shop_name,
@@ -82,46 +89,54 @@ export default function OrdersList({ initialOrders }: OrdersListProps) {
                             *
                         )
                     `)
-                .eq('id', payload.new.id)
-                .single()
+                    .eq('id', payload.new.id)
+                    .single()
 
-              if (newOrder && !error) {
-                setOrders((prev) => [newOrder, ...prev])
-                toast.success("New order received!")
-                playNotificationSound()
-              }
-            } else if (payload.eventType === 'UPDATE') {
-              const updatedOrder = payload.new as Order
-
-              setOrders((prev) => prev.map((order) => {
-                if (order.id === updatedOrder.id) {
-                  const isNowCompleted = (updatedOrder.status === 'completed' || updatedOrder.status === 'done')
-                  const wasNotCompleted = (order.status !== 'completed' && order.status !== 'done')
-
-                  if (isNowCompleted && wasNotCompleted) {
-                    toast.success(`Order #${order.id.slice(0, 8)} is completed!`)
+                if (newOrder && !error) {
+                    setOrders((prev) => [newOrder, ...prev])
+                    toast.success("New order received!")
                     playNotificationSound()
-                  }
-
-                  return {
-                    ...order,
-                    ...updatedOrder,
-                    // Preserve relations if they exist on the old object
-                    shops: order.shops,
-                    order_items: order.order_items
-                  }
                 }
-                return order
-              }))
+            } else if (payload.eventType === 'UPDATE') {
+                // Determine if we need to fetch fresh data (e.g. if relations usage changed, but here usually just status)
+                // To be safe and keep UI in sync, we can just update the fields we have, 
+                // OR re-fetch if we suspect other things changed.
+                // For status updates, local update is fine, but let's be robust.
+                
+                const updatedOrder = payload.new as Order
+                
+                setOrders((prev) => prev.map((order) => {
+                    if (order.id === updatedOrder.id) {
+                        const isNowCompleted = (updatedOrder.status === 'completed' || updatedOrder.status === 'done')
+                        const wasNotCompleted = (order.status !== 'completed' && order.status !== 'done')
+
+                        if (isNowCompleted && wasNotCompleted) {
+                            toast.success(`Order #${order.id.slice(0, 8)} is completed!`)
+                            playNotificationSound()
+                        }
+                        
+                        // Merge the new data. 
+                        // Note: Realtime payload doesn't include relations (shops, order_items).
+                        // So we preserve the existing relations from `order` and overwrite the scalar fields from `updatedOrder`.
+                        return { 
+                            ...order, 
+                            ...updatedOrder,
+                            shops: order.shops,
+                            order_items: order.order_items
+                        }
+                    }
+                    return order
+                }))
             } else if (payload.eventType === 'DELETE') {
-              setOrders((prev) => prev.filter(order => order.id !== payload.old.id))
+                 setOrders((prev) => prev.filter(order => order.id !== payload.old.id))
             }
           }
         )
         .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            // Optional: show a small indicator or log
-          }
+            console.log(`Realtime subscription status:`, status)
+            if (status === 'SUBSCRIBED') {
+                // Optional: show a small indicator or log
+            }
         })
     }
 
@@ -129,106 +144,109 @@ export default function OrdersList({ initialOrders }: OrdersListProps) {
 
     return () => {
       if (channel) {
+        console.log("Cleaning up realtime setup")
         supabase.removeChannel(channel)
       }
     }
-  }, [])
+  }, [userId])
 
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending": return "bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30"
-      case "processing": return "bg-blue-500/20 text-blue-500 hover:bg-blue-500/30"
-      case "printing": return "bg-purple-500/20 text-purple-500 hover:bg-purple-500/30"
-      case "completed": return "bg-green-500/20 text-green-500 hover:bg-green-500/30"
-      case "cancelled": return "bg-red-500/20 text-red-500 hover:bg-red-500/30"
-      default: return "bg-zinc-500/20 text-zinc-500"
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
+      case "processing":
+      case "printing":
+        return "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20"
+      case "completed":
+        return "bg-green-500/10 text-green-500 hover:bg-green-500/20"
+      case "cancelled":
+        return "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+      default:
+        return "bg-white/5 text-muted-foreground"
     }
   }
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "pending": return <Clock className="w-4 h-4" />
-      case "processing": return <FileText className="w-4 h-4" />
-      case "printing": return <Printer className="w-4 h-4" />
-      case "completed": return <CheckCircle2 className="w-4 h-4" />
-      case "cancelled": return <XCircle className="w-4 h-4" />
-      default: return <Clock className="w-4 h-4" />
+    switch (status.toLowerCase()) {
+      case "pending":
+        return <Clock className="w-3.5 h-3.5" />
+      case "processing":
+      case "printing":
+        return <Printer className="w-3.5 h-3.5" />
+      case "completed":
+        return <CheckCircle2 className="w-3.5 h-3.5" />
+      case "cancelled":
+        return <XCircle className="w-3.5 h-3.5" />
+      default:
+        return <RefreshCw className="w-3.5 h-3.5" />
     }
   }
 
   if (!orders || orders.length === 0) {
-    return (
-      <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10">
-        <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-foreground">No orders yet</h3>
-      </div>
-    )
+     return (
+        <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10">
+            <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground">No orders yet</h3>
+        </div>
+     )
   }
 
   return (
-    <div className="space-y-8 flex flex-col items-center">
-      <div className="w-full max-w-md flex justify-end px-4">
-        <button onClick={() => window.location.reload()} className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
-          <RefreshCw className="w-3 h-3" /> Refresh
-        </button>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+          <button onClick={() => window.location.reload()} className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+              <RefreshCw className="w-3 h-3" /> Refresh
+          </button>
       </div>
-
-      <div className="w-full flex justify-center pb-8">
-        <MorphingCardStack
-          cards={orders.map(order => ({
-            id: order.id,
-            title: order.shops?.shop_name || "Unknown Shop",
-            description: (
-              <div className="space-y-3 pt-2 w-full">
-                <div className="flex justify-between items-start w-full gap-2">
-                  <div className="flex flex-col min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-mono text-muted-foreground bg-white/5 px-1 rounded">#{order.id.slice(0, 8)}</span>
-                      <span className="text-[10px] text-muted-foreground whitespace-nowrap">{format(new Date(order.created_at), "MMM d, h:mm a")}</span>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0.5 h-auto border-0 gap-1 capitalize whitespace-nowrap ${getStatusColor(order.status)}`}>
-                    {getStatusIcon(order.status)}
-                    {order.status}
-                  </Badge>
-                </div>
-
-                <div className="border-t border-white/5 pt-2 flex flex-col gap-1.5">
-                  <div className="flex flex-col gap-1 w-full">
-                    {order.order_items?.slice(0, 2).map((item, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs bg-black/20 p-1.5 rounded w-full">
-                        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                          <FileText className="w-3 h-3 text-muted-foreground shrink-0" />
-                          <span className="truncate font-medium">{item.file_name}</span>
-                        </div>
-                        <span className="text-muted-foreground shrink-0 text-[10px] ml-1">{item.copies}x</span>
-                      </div>
-                    ))}
-                    {(order.order_items?.length || 0) > 2 && (
-                      <div className="text-[10px] text-muted-foreground text-center bg-white/5 rounded py-0.5">
-                        +{(order.order_items?.length || 0) - 2} more items
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs text-muted-foreground">Total Amount</span>
-                    <span className="text-sm font-bold text-foreground">₹{order.total_amount}</span>
-                  </div>
-                </div>
+      {orders.map((order) => (
+        <Card key={order.id} className="bg-white/5 border-white/10 hover:bg-white/[0.07] transition-colors">
+          <CardHeader className="p-4 flex flex-row items-center justify-between space-y-0 pb-2 border-b border-white/5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Store className="w-5 h-5 text-primary" />
               </div>
-            ),
-            icon: order.shops?.image_url ? (
-              <img src={order.shops.image_url} alt={order.shops.shop_name} className="w-full h-full object-cover rounded-lg" />
-            ) : (
-              <Store className="w-5 h-5" />
-            ),
-            color: order.status === 'completed' ? 'rgba(34, 197, 94, 0.1)' : undefined
-          }))}
-          defaultLayout="stack"
-          className="w-full max-w-3xl mx-auto"
-        />
-      </div>
+              <div>
+                <h3 className="font-semibold text-base">{order.shops?.shop_name || "Unknown Shop"}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {format(new Date(order.created_at), "PPP p")}
+                </p>
+              </div>
+            </div>
+            <Badge variant="outline" className={`border-0 gap-1.5 capitalize ${getStatusColor(order.status)}`}>
+              {getStatusIcon(order.status)}
+              {order.status}
+            </Badge>
+          </CardHeader>
+          
+          <CardContent className="p-4 space-y-4">
+            <div className="space-y-2">
+                {order.order_items?.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between bg-black/20 p-3 rounded-lg">
+                         <div className="flex items-center gap-3">
+                            <div className="p-2 rounded bg-white/5">
+                                <FileText className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium line-clamp-1">{item.file_name}</p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span className="capitalize">{item.color_mode === 'bw' ? 'B&W' : 'Color'}</span>
+                                    <span>•</span>
+                                    <span>{item.copies} Cop{item.copies > 1 ? 'ies' : 'y'}</span>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+                 <p className="text-xs text-muted-foreground font-mono truncate max-w-[200px]">Order ID: {order.id}</p>
+                 <p className="text-lg font-bold">₹{order.total_amount}</p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 }

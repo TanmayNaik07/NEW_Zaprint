@@ -1,42 +1,65 @@
-
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { FileUpload } from "@/components/file-upload"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent } from "@/components/ui/card"
-import { Loader2, DollarSign, IndianRupee } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Loader2, IndianRupee, Plus, Trash2, Upload, FileText, X, CheckCircle } from "lucide-react"
 import { toast } from "sonner"
-import type { ShopWithDetails, ShopService } from "@/lib/types/shop"
+import type { ShopWithDetails } from "@/lib/types/shop"
+import { usePrintStore } from "@/lib/print-store"
+import { getPDFPageCount, isPDF } from "@/lib/utils/pdf"
+import { motion, AnimatePresence } from "framer-motion"
 
 export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   const router = useRouter()
   const supabase = createClient()
+  const { sections, addSection, removeSection, updateSection, calculateSubtotal, calculateGrandTotal, reset } = usePrintStore()
   
-  const [file, setFile] = useState<File | null>(null)
-  const [selectedService, setSelectedService] = useState<string>("")
-  const [copies, setCopies] = useState(1)
-  const [pagesPerSheet, setPagesPerSheet] = useState("1")
   const [loading, setLoading] = useState(false)
   
-  // Get selected service details
-  const service = shop.services.find(s => s.id === selectedService)
-  const pricePerPage = service?.price || 0
-  const estimatedTotal = (pricePerPage * copies).toFixed(2)
+  // Get pricing rates from shop services
+  const bwService = shop.services.find(s => s.service_name.toLowerCase().includes('black') || s.service_name.toLowerCase().includes('b&w') || s.service_name.toLowerCase().includes('bw'))
+  const colorService = shop.services.find(s => s.service_name.toLowerCase().includes('color'))
+  
+  const bwRate = bwService?.price || 2
+  const colorRate = colorService?.price || 5
 
-  const handleOrder = async () => {
+  const handleFileSelect = useCallback(async (sectionId: string, file: File | null) => {
     if (!file) {
-      toast.error("Please upload a file")
+      updateSection(sectionId, { file: null, fileName: "", fileSize: 0, pageCount: 1 })
       return
     }
 
-    if (!selectedService) {
-      toast.error("Please select a service")
+    let pageCount = 1
+    if (isPDF(file)) {
+      pageCount = await getPDFPageCount(file)
+    }
+
+    updateSection(sectionId, {
+      file,
+      fileName: file.name,
+      fileSize: file.size,
+      pageCount,
+    })
+  }, [updateSection])
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
+  const handleOrder = async () => {
+    // Validation
+    const validSections = sections.filter(s => s.file !== null)
+    if (validSections.length === 0) {
+      toast.error("Please upload at least one file")
       return
     }
 
@@ -50,35 +73,23 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         return
       }
 
-
-      // 2. Validate File
+      // 2. Validate all files
       const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'application/pdf']
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("Invalid file type. Only PNG, JPG, JPEG, WEBP, and PDF are allowed.")
-        setLoading(false)
-        return
+      for (const section of validSections) {
+        if (!section.file || !allowedTypes.includes(section.file.type)) {
+          toast.error(`Invalid file type for ${section.fileName}. Only PNG, JPG, WEBP, and PDF are allowed.`)
+          setLoading(false)
+          return
+        }
+        if (section.file.size > 10 * 1024 * 1024) {
+          toast.error(`File ${section.fileName} is too large. Max 10MB.`)
+          setLoading(false)
+          return
+        }
       }
 
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        toast.error("File size too large. Max 10MB.")
-        setLoading(false)
-        return
-      }
-
-      // 3. Upload File
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
-      const filePath = `${user.id}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('documents')
-        .upload(filePath, file)
-
-      if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('documents')
-        .getPublicUrl(filePath)
+      // 3. Calculate total
+      const totalAmount = calculateGrandTotal(bwRate, colorRate)
 
       // 4. Create Order
       const { data: order, error: orderError } = await supabase
@@ -87,29 +98,52 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
           user_id: user.id,
           shop_id: shop.id,
           status: 'pending',
-          total_amount: parseFloat(estimatedTotal)
+          total_amount: totalAmount
         })
         .select()
         .single()
 
       if (orderError) throw new Error(`Order creation failed: ${orderError.message}`)
 
-      // 5. Create Order Item
-      const { error: itemError } = await supabase
-        .from('order_items')
-        .insert({
-          order_id: order.id,
-          file_url: publicUrl,
-          file_name: file.name,
-          file_type: fileExt,
-          color_mode: service?.service_name.toLowerCase().includes('color') ? 'color' : 'bw',
-          copies: copies,
-          pages_per_sheet: parseInt(pagesPerSheet)
-        })
+      // 5. Upload files and create order items
+      for (const section of validSections) {
+        if (!section.file) continue
 
-      if (itemError) throw new Error(`Item creation failed: ${itemError.message}`)
+        // Upload file
+        const fileExt = section.file.name.split('.').pop()
+        const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
+        const filePath = `${user.id}/${fileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(filePath, section.file)
+
+        if (uploadError) throw new Error(`Upload failed for ${section.fileName}: ${uploadError.message}`)
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('documents')
+          .getPublicUrl(filePath)
+
+        // Create order item
+        const { error: itemError } = await supabase
+          .from('order_items')
+          .insert({
+            order_id: order.id,
+            file_url: publicUrl,
+            file_name: section.file.name,
+            file_type: fileExt,
+            color_mode: section.printType,
+            copies: section.copies,
+            pages_per_sheet: section.pagesPerSheet,
+            page_count: section.pageCount,
+            is_duplex: section.isDuplex,
+          })
+
+        if (itemError) throw new Error(`Item creation failed for ${section.fileName}: ${itemError.message}`)
+      }
 
       toast.success("Order placed successfully!")
+      reset()
       router.push('/dashboard/orders')
       
     } catch (error: any) {
@@ -120,98 +154,196 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
     }
   }
 
+  const grandTotal = calculateGrandTotal(bwRate, colorRate)
+
   return (
     <div className="space-y-6">
-      <Card className="border-dashed bg-white/5 border-white/10">
-        <CardContent className="pt-6">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="file">File (PDF, PNG, JPG, WEBP)</Label>
-                <Input 
-                    id="file" 
-                    type="file" 
-                    accept=".pdf,.png,.jpg,.jpeg,.webp"
-                    onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) setFile(file)
-                    }}
-                    className="cursor-pointer file:text-foreground"
-                />
-            </div>
-            {file && <p className="text-sm text-muted-foreground mt-2">Selected: {file.name}</p>}
-        </CardContent>
-      </Card>
+      {/* Print Sections */}
+      <AnimatePresence mode="popLayout">
+        {sections.map((section, index) => (
+          <motion.div
+            key={section.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card className="border-white/10 bg-white/5 relative">
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <CardTitle className="text-lg">Print #{index + 1}</CardTitle>
+                {sections.length > 1 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeSection(section.id)}
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* File Upload */}
+                <div className="space-y-2">
+                  <Label>Upload Document</Label>
+                  {!section.file ? (
+                    <div className="relative border-2 border-dashed border-white/20 rounded-xl p-6 text-center hover:border-white/30 transition-colors">
+                      <input
+                        type="file"
+                        accept=".pdf,.png,.jpg,.jpeg,.webp"
+                        onChange={(e) => handleFileSelect(section.id, e.target.files?.[0] || null)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm text-foreground">Click to upload or drag & drop</p>
+                      <p className="text-xs text-muted-foreground mt-1">PDF, PNG, JPG, WEBP</p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{section.fileName}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatFileSize(section.fileSize)} • {section.pageCount} page{section.pageCount !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                      <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleFileSelect(section.id, null)}
+                        className="h-8 w-8 shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="space-y-2">
-            <Label>Service Type</Label>
-            <Select value={selectedService} onValueChange={setSelectedService}>
-                <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue placeholder="Select a service" />
-                </SelectTrigger>
-                <SelectContent>
-                    {shop.services.length > 0 ? (
-                      shop.services.map((svc) => (
-                        <SelectItem key={svc.id} value={svc.id}>
-                          {svc.service_name} (₹{svc.price.toFixed(2)}/pg)
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="none" disabled>No services available</SelectItem>
-                    )}
-                </SelectContent>
-            </Select>
+                {/* Print Type */}
+                <div className="space-y-2">
+                  <Label>Print Type</Label>
+                  <RadioGroup
+                    value={section.printType}
+                    onValueChange={(value) => updateSection(section.id, { printType: value as "bw" | "color" })}
+                    className="flex gap-4"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="bw" id={`${section.id}-bw`} />
+                      <Label htmlFor={`${section.id}-bw`} className="cursor-pointer">
+                        Black & White (₹{bwRate}/page)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="color" id={`${section.id}-color`} />
+                      <Label htmlFor={`${section.id}-color`} className="cursor-pointer">
+                        Color (₹{colorRate}/page)
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                {/* Configuration Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Copies */}
+                  <div className="space-y-2">
+                    <Label>Copies</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={section.copies}
+                      onChange={(e) => updateSection(section.id, { copies: Math.max(1, parseInt(e.target.value) || 1) })}
+                      className="bg-white/5 border-white/10"
+                    />
+                  </div>
+
+                  {/* Pages per Sheet */}
+                  <div className="space-y-2">
+                    <Label>Pages/Sheet</Label>
+                    <select
+                      value={section.pagesPerSheet}
+                      onChange={(e) => updateSection(section.id, { pagesPerSheet: Number(e.target.value) as 1 | 2 | 4 })}
+                      className="w-full h-10 px-3 rounded-md bg-white/5 border border-white/10 text-foreground"
+                    >
+                      <option value={1}>1 Page</option>
+                      <option value={2}>2 Pages</option>
+                      <option value={4}>4 Pages</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Duplex Printing */}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`${section.id}-duplex`}
+                    checked={section.isDuplex}
+                    onCheckedChange={(checked) => updateSection(section.id, { isDuplex: !!checked })}
+                  />
+                  <Label htmlFor={`${section.id}-duplex`} className="cursor-pointer">
+                    Front & Back Side Print (Duplex)
+                  </Label>
+                </div>
+
+                {/* Subtotal */}
+                {section.file && (
+                  <div className="pt-2 border-t border-white/10 flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Subtotal</span>
+                    <div className="flex items-center gap-1 text-lg font-semibold text-primary">
+                      <IndianRupee className="w-4 h-4" />
+                      {calculateSubtotal(section.id, bwRate, colorRate).toFixed(2)}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {/* Add Another Print Button */}
+      <button
+        onClick={addSection}
+        className="w-full py-8 border-2 border-dashed border-white/20 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center gap-2 group"
+      >
+        <div className="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+          <Plus className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
         </div>
+        <span className="text-sm text-muted-foreground group-hover:text-primary">Add Another Print</span>
+      </button>
 
-        <div className="space-y-2">
-            <Label>Copies</Label>
-            <Input 
-                type="number" 
-                min={1} 
-                max={100} 
-                value={copies} 
-                onChange={(e) => setCopies(parseInt(e.target.value) || 1)} 
-                className="bg-white/5 border-white/10"
-            />
-        </div>
-
-        <div className="space-y-2">
-            <Label>Pages per Sheet</Label>
-            <Select value={pagesPerSheet} onValueChange={setPagesPerSheet}>
-                <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="1">1 Page</SelectItem>
-                    <SelectItem value="2">2 Pages</SelectItem>
-                    <SelectItem value="4">4 Pages</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-      </div>
-
-      <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex items-center justify-between">
-        <div>
-            <p className="text-sm text-muted-foreground">Estimated Total</p>
-            <p className="text-xs text-muted-foreground text-emerald-400">
-                {service ? `${service.service_name} (₹${pricePerPage}/pg)` : 'Select a service'}
+      {/* Grand Total (Fixed) */}
+      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border border-white/10 rounded-xl p-4 shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Grand Total</p>
+            <p className="text-xs text-muted-foreground">
+              {sections.filter(s => s.file).length} file(s) • {sections.reduce((sum, s) => sum + (s.file ? s.pageCount * s.copies : 0), 0)} total pages
             </p>
+          </div>
+          <div className="flex items-center gap-1 text-3xl font-bold text-primary">
+            <IndianRupee className="w-6 h-6" />
+            {grandTotal.toFixed(2)}
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-2xl font-bold text-primary">
-            <IndianRupee className="w-5 h-5" />
-            {estimatedTotal}
-        </div>
-      </div>
-
-      <Button disabled={loading || !file || !selectedService} onClick={handleOrder} size="lg" className="w-full text-lg font-semibold">
-        {loading ? (
+        <Button
+          disabled={loading || sections.filter(s => s.file).length === 0}
+          onClick={handleOrder}
+          size="lg"
+          className="w-full text-lg font-semibold"
+        >
+          {loading ? (
             <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Processing...
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Processing...
             </>
-        ) : (
+          ) : (
             "Place Order"
-        )}
-      </Button>
+          )}
+        </Button>
+      </div>
     </div>
   )
 }

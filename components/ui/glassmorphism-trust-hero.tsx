@@ -113,7 +113,7 @@ export default function GlassmorphismTrustHero({
       )}
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 pt-24 pb-12 sm:px-6 md:pt-32 md:pb-20 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8 items-start mb-16">
           <div className="lg:col-span-7 flex flex-col justify-center space-y-8 pt-8">
             <div className="animate-fade-in-hero delay-100">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md transition-colors hover:bg-white/10">
@@ -257,7 +257,42 @@ export default function GlassmorphismTrustHero({
             </div>
           </div>
         </div>
+
+        {/* Hero Video Section */}
+        <div className="animate-fade-in-hero delay-500 relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 shadow-2xl backdrop-blur-sm group">
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 opacity-60"></div>
+            
+            {/* Browser chrome/header simulation for realism */}
+            <div className="h-10 border-b border-white/10 bg-white/5 flex items-center px-4 gap-2">
+                <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <div className="mx-auto w-1/3 h-5 rounded-full bg-white/5 text-[10px] flex items-center justify-center text-zinc-500 font-mono">
+                    zaprint.app
+                </div>
+            </div>
+
+            {/* Video Placeholder or Content */}
+            <div className="aspect-video w-full bg-zinc-900 border-b border-white/5 relative flex items-center justify-center group-hover:scale-[1.01] transition-transform duration-700">
+                <Play className="w-16 h-16 text-white opacity-50 absolute z-20" />
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2674&auto=format&fit=crop')] bg-cover bg-center opacity-60"></div>
+                {/* 
+                   Ideally this would be a real video loop:
+                   <video 
+                     className="w-full h-full object-cover" 
+                     autoPlay 
+                     muted 
+                     loop 
+                     playsInline 
+                     src="/dashboard-preview.mp4" 
+                   />
+                */}
+            </div>
+        </div>
       </div>
     </div>
   );
 }
+

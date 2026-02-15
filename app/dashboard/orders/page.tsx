@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import OrdersList from "./components/OrdersList"
+import { OrdersList } from "./components/OrdersList"
 
 export const dynamic = 'force-dynamic'
 
@@ -21,40 +21,48 @@ export default async function OrdersPage() {
   const { data: rawOrders, error: ordersError } = await supabase
     .from("orders")
     .select(`
-      *,
+      id, created_at, status, total_amount, user_id, receipt_number, order_number,
+      shops:shop_id (
+        shop_name,
+        image_url,
+        location,
+        phone
+      ),
       order_items (
-        *
+        id,
+        file_name,
+        file_type,
+        color_mode,
+        copies,
+        pages_per_sheet
       )
     `)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
+    .limit(10) // Reduced limit to prevent timeout
 
   if (ordersError) {
     console.error("Error fetching orders:", ordersError)
-    return <div className="text-destructive">Error loading orders.</div>
+    // Return empty state instead of error to let page render
+    return (
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-foreground text-2xl md:text-3xl font-semibold mb-2">My Orders</h1>
+          <p className="text-muted-foreground">Track and manage your print requests.</p>
+        </div>
+        <div className="text-destructive bg-destructive/10 p-4 rounded-lg">
+          Unable to load orders. Please check your connection and try again.
+        </div>
+      </div>
+    )
   }
 
-  // Manually fetch shops to avoid potential join issues
-  let ordersWithShops = rawOrders || []
-  const shopIds = Array.from(new Set(rawOrders?.map((o: any) => o.shop_id).filter(Boolean))) as string[]
 
-  if (shopIds.length > 0) {
-    const { data: shops, error: shopsError } = await supabase
-      .from("shops")
-      .select("id, shop_name, image_url")
-      .in("id", shopIds)
-
-    if (shopsError) {
-      console.error("Error fetching shops:", shopsError)
-      // Continue without shops info if this fails, rather than breaking the page
-    } else {
-      const shopMap = new Map(shops?.map(s => [s.id, s]))
-      ordersWithShops = ordersWithShops.map((order: any) => ({
-        ...order,
-        shops: order.shop_id ? shopMap.get(order.shop_id) : null
-      }))
-    }
-  }
+  // Normalize the data structure to ensure shops is an object, not an array
+  const normalizedOrders = (rawOrders || []).map(order => ({
+    ...order,
+    shops: Array.isArray(order.shops) ? order.shops[0] : order.shops
+  }))
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -63,7 +71,7 @@ export default async function OrdersPage() {
         <p className="text-muted-foreground">Track and manage your print requests.</p>
       </div>
 
-      <OrdersList initialOrders={ordersWithShops} />
+      <OrdersList initialOrders={normalizedOrders} userId={user.id} />
     </div>
   )
 }
