@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { NavigationLoadingProvider } from "@/components/providers/navigation-loading-provider"
 import { Toaster } from "sonner"
 import "./globals.css"
 
@@ -39,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
+        <NavigationLoadingProvider>
+          {children}
+        </NavigationLoadingProvider>
         <Toaster />
         <Analytics />
       </body>
