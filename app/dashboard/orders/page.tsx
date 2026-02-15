@@ -21,7 +21,7 @@ export default async function OrdersPage() {
   const { data: orders, error } = await supabase
     .from("orders")
     .select(`
-      id, created_at, status, total_amount, user_id, receipt_number,
+      id, created_at, status, total_amount, user_id, receipt_number, order_number,
       shops:shop_id (
         shop_name,
         image_url,
@@ -39,7 +39,7 @@ export default async function OrdersPage() {
     `)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
-    .limit(20) // Limit to prevent timeout
+    .limit(10) // Reduced limit to prevent timeout
 
   if (error) {
     console.error("Error fetching orders:", error)

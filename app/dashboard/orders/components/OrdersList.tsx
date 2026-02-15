@@ -36,6 +36,7 @@ export interface Order {
   shops?: Shop
   order_items?: OrderItem[]
   receipt_number?: string
+  order_number?: number // New field
 }
 
 interface OrdersListProps {
@@ -69,6 +70,7 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
               .from('orders')
               .select(`
                 *,
+                order_number,
                 shops:shop_id(shop_name, image_url, location, phone),
                 order_items(*)
               `)
@@ -93,6 +95,7 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
               .from('orders')
               .select(`
                 *,
+                order_number,
                 shops:shop_id(shop_name, image_url, location, phone),
                 order_items(*)
               `)
@@ -246,7 +249,9 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
 
                 <div className="flex items-center justify-between pt-2">
                     <div className="flex flex-col">
-                        <p className="text-xs text-muted-foreground font-mono">Order ID: {order.id.slice(0, 8)}...</p>
+                        <p className="text-xs text-muted-foreground font-mono">
+                          Order ID: {order.order_number ? `#${order.order_number}` : order.id.slice(0, 8)}
+                        </p>
                         {order.receipt_number && (
                             <p className="text-xs text-primary font-mono mt-1">Receipt #: {order.receipt_number}</p>
                         )}

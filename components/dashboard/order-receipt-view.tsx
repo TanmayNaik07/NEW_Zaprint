@@ -39,7 +39,7 @@ export function OrderReceiptView({ order }: OrderReceiptViewProps) {
                     {order.status}
                 </Badge>
                 <div className="text-sm text-zinc-500">
-                    Order ID: <span className="font-mono text-zinc-700">{order.id}</span>
+                    Order ID: <span className="font-mono text-zinc-700">{order.order_number ? `#${order.order_number}` : order.id}</span>
                 </div>
             </div>
 

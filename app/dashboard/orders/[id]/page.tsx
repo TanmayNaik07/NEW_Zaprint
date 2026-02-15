@@ -27,7 +27,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
   const { data: order, error } = await supabase
     .from("orders")
     .select(`
-      id, created_at, status, total_amount, user_id, receipt_number,
+      id, created_at, status, total_amount, user_id, receipt_number, order_number,
       shops:shop_id (
         shop_name,
         image_url,

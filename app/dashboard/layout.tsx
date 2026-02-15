@@ -33,21 +33,14 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-background flex">
       <DashboardSidebar />
-<<<<<<< HEAD
-      <main className="flex-1 overflow-auto">
-        <OnboardingModal isOpen={showOnboarding} />
-        {/* Mobile top padding for fixed header */}
-        <div className="md:hidden h-16" />
-        <div className="p-4 md:p-8">{children}</div>
-=======
       <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        <OnboardingModal isOpen={showOnboarding} />
         <div className="hidden md:block">
           <DashboardTopBar />
         </div>
         <div className="flex-1 overflow-auto p-4 md:p-8 pt-20 md:pt-8">
           {children}
         </div>
->>>>>>> a4b516a920bdf4a39159a7b966af78d469b70cba
       </main>
     </div>
   )
