@@ -2,49 +2,115 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Mindfold Landing Page Animations ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Hover underline animation utility */
+.hover-underline {
+  position: relative;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease-in-out;
+}
+
+.hover-underline:hover::after {
+  width: 100%;
+}
+
+/* Custom scrollbar for landing page */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e8e7e5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b3b1ae;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8a8885;
+}
+
+/* Font override for landing page */
+.font-sans {
+  font-family: var(--font-geist), system-ui, sans-serif;
+}
+
 @layer base {
   :root {
-    /* Zaprint Theme - Cyan/orange shader-aligned */
-    /* Matches interactive MeshGradient hero: #06b6d4 cyan, #f97316 orange */
-    --background: 222 47% 6%;
-    /* Deep navy-charcoal */
-    --foreground: 210 20% 95%;
-    /* Light gray-blue */
+    /* Supabase Theme - Dark Green/Black */
+    --background: 240 10% 3.9%;
+    /* Very dark background */
+    --foreground: 0 0% 98%;
 
-    --muted: 187 40% 14%;
-    /* Dark cyan-gray */
-    --muted-foreground: 210 20% 95% / 0.7;
-    --muted-foreground-light: 210 20% 95% / 0.5;
-    --muted-foreground-dark: 210 20% 95% / 0.6;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
-    --card: 187 40% 98% / 0.02;
-    --card-foreground: 210 20% 95%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222 47% 6%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Primary - Cyan (#06b6d4) */
-    --primary: 187 94% 43%;
-    --primary-foreground: 222 47% 6%;
-    --primary-dark: 188 86% 37%;
-    /* #0891b2 */
-    --primary-light: 187 80% 65%;
+    /* Primary - Supabase Green (#3ECF8E -> approx 153 60% 53%) */
+    --primary: 153 60% 53%;
+    --primary-foreground: 144 80% 10%;
+    /* Dark text on bright green */
+    --primary-dark: 158 64% 45%;
+    --primary-light: 153 60% 65%;
 
-    /* Secondary / Accent - Orange (#f97316) */
-    --secondary: 210 20% 95%;
-    --secondary-foreground: 222 47% 8%;
+    /* Secondary - Dark Gray */
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --accent: 25 95% 53%;
-    /* Orange */
-    --accent-foreground: 222 47% 96%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
 
-    --border: 187 50% 100% / 0.08;
-    --border-light: 222 47% 6% / 0.1;
-    --border-dark: 222 47% 6% / 0.05;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
-    --ring: 187 94% 43%;
+    --border: 240 3.7% 15.9%;
+    --border-light: 240 3.7% 20%;
+    --border-dark: 240 3.7% 10%;
 
-    --radius: 0.625rem;
+    --input: 240 3.7% 15.9%;
+    --ring: 153 60% 53%;
+
+    --radius: 0.5rem;
   }
 
   /* ===== New Zaprint Theme — Dark Only (applies to everything EXCEPT the landing page) ===== */

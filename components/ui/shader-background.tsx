@@ -2,8 +2,8 @@
 
 import { MeshGradient } from "@paper-design/shaders-react";
 
-const HERO_COLORS = ["#000000", "#06b6d4", "#0891b2", "#164e63", "#f97316"];
-const WIRE_COLORS = ["#000000", "#ffffff", "#06b6d4", "#f97316"];
+const HERO_COLORS = ["#000000", "#18181b", "#27272a", "#3f3f46", "#000000"];
+const WIRE_COLORS = ["#000000", "#52525b", "#71717a", "#27272a"];
 
 export default function ShaderBackground() {
   return (

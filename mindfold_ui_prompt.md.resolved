@@ -1,0 +1,387 @@
+# MINDFOLD LANDING PAGE — COMPLETE UI REPLICATION PROMPT
+
+> Paste this entire prompt to any AI assistant (ChatGPT, Claude, Gemini, etc.) and it will recreate the exact same landing page UI for your product. Replace **[BRAND NAME]**, **[TAGLINE]**, **[DESCRIPTION]** and other bracketed placeholders with your own content.
+
+---
+
+## DESIGN SYSTEM & TOKENS
+
+**Color Palette:**
+- Background (all sections): `#f7f6f4` (warm off-white / light cream)
+- Hero Scroll Section bg: `#ffffff` (pure white)
+- Primary Dark (headings, buttons, icons): `#0a1128` (very deep navy/almost black)
+- Body muted text / subtitles: `#5b637a` (slate grey-blue)
+- White cards: `#ffffff`
+- Card border: `rgba(0,0,0,0.05)` (very subtle)
+- Section border: `rgba(0,0,0,0.05)`
+- CTA primary button: `#0a1128` text `#ffffff`
+- CTA secondary button: `#ffffff` bg, `#0a1128` text, `rgba(0,0,0,0.1)` border
+- Popular badge: `#0a1128` bg, white text
+- Feature icon colors (pastel):
+  - Blue: bg `bg-blue-100`, icon `text-blue-600`
+  - Purple: bg `bg-purple-100`, icon `text-purple-600`
+  - Emerald: bg `bg-emerald-100`, icon `text-emerald-600`
+  - Yellow: bg `bg-yellow-100`, icon `text-yellow-600`
+  - Pink: bg `bg-pink-100`, icon `text-pink-600`
+  - Indigo: bg `bg-indigo-100`, icon `text-indigo-600`
+- Star ratings: `#facc15` (yellow-400), filled
+- Avatar bg: `#0a1128`
+
+**Typography:**
+- Font family: **Geist Sans** (Google font: `Geist`) — clean, modern, geometric sans-serif
+- Fallback: `system-ui, sans-serif`
+- Heading style: `font-black` (900 weight), `tracking-tight`, `UPPERCASE`
+- Hero H1: `text-7xl sm:text-8xl md:text-[8rem]` (massive display type)
+- Section H2: `text-4xl sm:text-5xl md:text-6xl`
+- Section heading highlight (second word/phrase): same color but at 40% opacity (`text-[#0a1128]/40`)
+- Card H3: `text-xl font-bold`
+- Body/subtitles: `text-lg sm:text-xl font-medium leading-relaxed text-[#5b637a]`
+- Nav links: `text-sm font-medium`
+- Buttons: `text-sm font-semibold`
+- Custom scrollbar: 6px width, muted track, muted thumb with 3px radius
+
+**Border Radius:**
+- Cards: `rounded-[2rem]` (32px, very round pill-like corners)
+- Buttons/pills: `rounded-full`
+- Icon containers: `rounded-2xl` (16px)
+- How-it-works icons: `rounded-[2rem]` (32px)
+- Avatar circles: `rounded-full`
+- Nav bar: `rounded-full`
+- Pricing popular badge: `rounded-full`
+
+**Shadows:**
+- Cards: `shadow-sm`, upgrades to `shadow-md` on hover
+- Highlighted pricing card: `shadow-2xl shadow-black/10`
+- Navbar: `shadow-sm`
+- How-it-works step icons: `shadow-sm`
+
+**Global CSS Animations:**
+```css
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+/* Hover underline animation utility */
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease-in-out;
+}
+.hover-underline:hover::after { width: 100%; }
+```
+
+---
+
+## SECTION 1: NAVBAR
+
+**Layout:** Fixed to the top of the viewport, centered horizontally, full-width container with `padding-top: 1rem`, acts as a floating pill nav bar.
+
+**Container:** `fixed top-0 left-0 right-0 z-50`, inner `max-w-5xl` centered nav pill.
+
+**Nav pill styles:** `bg-white/95 backdrop-blur-lg border border-[rgba(0,0,0,0.05)] shadow-sm rounded-full px-6 py-3 flex items-center justify-between`
+
+**Left - Logo:**
+- Dark square box `bg-[#0a1128] text-white p-2 rounded-xl` containing a Brain icon (Lucide `Brain`, 20x20)
+- Next to it: brand name in `text-base font-bold text-[#0a1128]` + a tiny tagline below in `text-[10px] text-muted font-medium` ("By FRIEREN" or your sub-brand name) — stacked in a column
+
+**Center - Navigation Links (hidden on mobile):**
+- `hidden md:flex items-center gap-8`
+- Links: Features, How It Works, Reviews, Pricing
+- Style: `text-sm font-medium text-muted hover:text-foreground transition-colors`
+- These are anchor links (`#features`, `#how-it-works`, `#reviews`, `#pricing`)
+
+**Right - Auth Buttons:**
+- "Log In" link: `text-sm font-medium text-muted hover:text-foreground transition-colors hidden sm:block`
+- "Get Started" button: `text-sm font-semibold bg-black/5 text-[#0a1128] border border-black/10 px-5 py-2.5 rounded-full hover:bg-[#0a1128] hover:text-white transition-colors` — pill shaped, goes from light grey to full dark on hover
+
+---
+
+## SECTION 2: HERO SECTION
+
+**Background:** `bg-[#f7f6f4]` (warm cream)
+**Padding:** `pt-40 pb-32` (top padding accounts for fixed navbar)
+**Layout:** Centered, flex column, `text-center`
+**Max width:** `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
+
+**Badge (top pill label):**
+- `inline-flex items-center gap-2 bg-transparent border border-black/80 text-black px-4 py-1.5 rounded-full text-[10px] tracking-widest font-semibold uppercase mb-10`
+- Contains a small filled circle `w-1.5 h-1.5 bg-black rounded-full` as a dot indicator
+- Example text: "AI-POWERED SELF REFLECTION" (replace with your badge text)
+
+**Main Heading (H1):**
+- `text-7xl sm:text-8xl md:text-[8rem] font-black tracking-tight text-[#0a1128] max-w-6xl mx-auto leading-none uppercase`
+- Example: "LIFE IMITATES LIFE" — massive, bold, all-caps display heading
+
+**Subtitle paragraph:**
+- `mt-8 text-lg sm:text-xl text-[#5b637a] font-medium max-w-2xl mx-auto leading-relaxed`
+- 1-2 lines describing the product
+
+**CTA Buttons (mt-12, flex row, gap-4, centered):**
+
+*Primary CTA:*
+- `inline-flex items-center gap-2 bg-[#0a1128] text-white px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-black transition-colors`
+- Contains a right arrow icon (Lucide `ArrowRight`, 16x16) at the end
+- Example: "Get Started Free →"
+- Has a decorative **handdrawn arrow + "Click here" annotation** floating to the upper-left of the button (only visible on desktop/md+):
+  - Positioned `absolute -left-[140px] -top-12`
+  - SVG dashed curved arrow drawn in `#0a1128` stroke (strokeWidth 3.5, strokeDasharray "8 8")  
+  - Arrow path: `M30,150 C40,110 80,90 90,120 C100,160 30,160 50,90 C60,55 90,40 140,50`
+  - Arrowhead as filled triangle at the endpoint
+  - Text "Click here" in `text-[28px] font-medium text-[#0a1128]` at `-rotate-[14deg]`, positioned below arrow
+  - The whole element is `pointer-events-none opacity-90`
+
+*Secondary CTA:*
+- `inline-flex items-center gap-2 bg-white text-[#0a1128] border border-black/10 px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-gray-50 hover:border-black/20 transition-all shadow-sm`
+- Contains a play icon (circle with play triangle inside, SVG drawn inline)
+- Example: "Watch Demo"
+
+---
+
+## SECTION 3: HERO SCROLL ANIMATION SECTION
+
+**Background:** `bg-white`
+**Effect:** A scroll-driven 3D tilt/parallax animation container (similar to Aceternity UI's `ContainerScroll` component).
+
+**Title component (shown above the scrolling container):**
+- Two-line heading:
+  - Line 1: `text-4xl font-semibold text-[#0a1128]` — "Experience the future of"
+  - Line 2 (large): `text-4xl md:text-[6rem] font-bold mt-1 leading-none` — "Mental Wellness"
+
+**Content inside scroll container:**
+- A **video player** (`<video>` tag) with `autoplay loop muted playsinline`
+- `className="w-full h-full rounded-2xl object-cover object-left-top"`
+- Video source: your product demo video file (e.g., `/dashboard-demo.mp4`)
+- This video is displayed inside a tablet/screen mockup that tilts as the user scrolls
+
+**Animation behavior:** As the user scrolls down, the view transitions from a tilted 3D perspective view to a flat, straight-on view of the screen content. This is a parallax-style ScrollContainer animation.
+
+---
+
+## SECTION 4: FEATURES SECTION
+
+**id:** `#features`  
+**Background:** `bg-[#f7f6f4]`  
+**Padding:** `py-24`  
+**Max width:** `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
+
+**Section Header (centered, mb-20):**
+- H2: `text-4xl sm:text-5xl md:text-6xl font-black text-[#0a1128] tracking-tight uppercase`
+- Pattern: "[Normal text] [FADED text at 40% opacity]"
+- Example: "Everything You Need for **MENTAL WELLNESS**" (where "MENTAL WELLNESS" is `text-[#0a1128]/40`)
+- Subtitle: `mt-6 text-lg sm:text-xl text-[#5b637a] font-medium max-w-2xl mx-auto leading-relaxed`
+- Example: "Powerful tools designed to help you understand yourself better and take control of your mental health journey."
+
+**Feature Cards Grid:**
+- `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8`
+- Each card: `bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm hover:shadow-md transition-shadow duration-300`
+
+**Each card contains:**
+1. **Icon box**: `w-14 h-14 [pastel-bg] rounded-2xl flex items-center justify-center mb-6`
+   - Icon inside: Lucide icon `h-7 w-7 [pastel-text-color] strokeWidth={2.5}`
+2. **Title**: `text-xl font-bold text-[#0a1128] mb-3`
+3. **Description**: `text-[#5b637a] font-medium leading-relaxed`
+
+**6 Features (adapt for your product):**
+| # | Icon | Icon Color | Title | Description |
+|---|------|-----------|-------|-------------|
+| 1 | BookOpen | blue-100/blue-600 | Smart Journaling | Write daily entries and receive instant AI-generated reflections that help you understand your emotional patterns. |
+| 2 | Brain | purple-100/purple-600 | Mental Health Metrics | Track 5 key metrics — mental health, happiness, accountability, stress, and burnout risk — scored from every entry. |
+| 3 | BarChart3 | emerald-100/emerald-600 | Visual Analytics | Beautiful graphs and charts that show your wellness trends over time, helping you spot patterns and celebrate progress. |
+| 4 | MessageCircle | yellow-100/yellow-600 | Ask Your Journal | Chat with an AI that has read your journal. Ask questions like 'Why do I feel stressed on Mondays?' and get real answers. |
+| 5 | Users | pink-100/pink-600 | Therapist Connect | Browse verified therapists, book sessions, and share selected journal entries for more personalized professional support. |
+| 6 | Shield | indigo-100/indigo-600 | Privacy First | Full control over what your therapist can see. Toggle visibility per entry, or disable sharing entirely. |
+
+---
+
+## SECTION 5: HOW IT WORKS SECTION
+
+**id:** `#how-it-works`  
+**Background:** `bg-[#f7f6f4]`  
+**Padding:** `py-24`
+
+**Section Header (centered, mb-20):**
+- H2: same style as Features section `font-black uppercase text-[#0a1128]`
+- Pattern: "[Word] [FADED word] Works" — e.g., "How **MINDFOLD** Works"
+- Subtitle: same style as Features
+
+**Steps Grid:**
+- `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8`
+- Each step: `text-center group`
+
+**Each step contains:**
+1. **Step icon box**: `relative inline-flex items-center justify-center w-20 h-20 bg-white shadow-sm border border-black/5 text-[#0a1128] rounded-[2rem] mb-6`
+   - Hover effect: `group-hover:-translate-y-2 transition-transform duration-300` (lifts up on hover)
+   - Lucide icon inside: `h-8 w-8 strokeWidth={2.5}`
+   - **Step number badge**: `absolute -top-2 -right-2 w-8 h-8 bg-[#0a1128] text-white text-sm font-bold rounded-full flex items-center justify-center shadow-sm`
+2. **Title**: `text-xl font-bold text-[#0a1128] mb-3`
+3. **Description**: `text-[#5b637a] font-medium leading-relaxed`
+
+**4 Steps (adapt for your product):**
+| Step | Icon | Title | Description |
+|------|------|-------|-------------|
+| 1 | UserPlus | Create Your Account | Sign up in seconds with just your name, email, and password. No credit card required to get started. |
+| 2 | PenLine | Write Daily Entries | Journal about your day in up to 2000 characters. Our clean editor makes it easy to express your thoughts. |
+| 3 | Sparkles | Get AI Insights | Our AI instantly analyzes your entry, generates a reflection, and scores 5 mental health metrics. |
+| 4 | TrendingUp | Track Your Progress | Watch your metrics improve over time. Ask your journal questions and connect with therapists for deeper support. |
+
+---
+
+## SECTION 6: REVIEWS / TESTIMONIALS SECTION
+
+**id:** `#reviews`  
+**Background:** `bg-[#f7f6f4]`  
+**Padding:** `py-24`
+
+**Section Header (centered, mb-20):**
+- Same heading style as other sections
+- Example: "Loved by **THOUSANDS**"
+
+**Reviews Grid:**
+- `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8`
+- Each card: `bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-full`
+
+**Each review card contains:**
+1. **Star Rating (top)**: `flex gap-1 mb-6`
+   - 5 stars rendered as Lucide `Star` icons `h-5 w-5`
+   - Filled stars: `text-yellow-400 fill-yellow-400`
+   - Empty stars: `text-gray-200`
+2. **Quote text**: `text-[#0a1128] font-medium leading-relaxed mb-8 text-lg` (wrapped in curly quotes `"` ... `"`)
+3. **Author row** (at bottom, `mt-auto`): `flex items-center gap-4`
+   - Avatar circle: `w-12 h-12 rounded-full bg-[#0a1128] flex items-center justify-center text-white font-bold text-lg shadow-sm` — shows first letter of name
+   - Author info stacked: Name in `font-bold text-[#0a1128]`, Role in `text-sm font-medium text-[#5b637a]`
+
+**6 Sample Reviewers (adapt for your product):**
+| Name | Role | Rating | Quote |
+|------|------|--------|-------|
+| Sarah M. | Daily Journaler | 5 | "Mindfold has completely changed how I understand my emotions. The AI reflections are surprisingly insightful — it's like having a therapist in my pocket." |
+| James L. | Mental Health Advocate | 5 | "The Ask Journal feature is a game-changer. I asked why I keep procrastinating and it gave me patterns I never noticed. Highly recommend!" |
+| Dr. Emily R. | Licensed Therapist | 5 | "As a therapist on the platform, I love how patients can share specific entries with me. The metrics give me a head start before each session." |
+| Michael K. | Software Engineer | 4 | "The burnout risk metric literally saved me. I could see my scores declining and took action before things got worse. Simple but powerful." |
+| Priya S. | Graduate Student | 5 | "I love the calendar view for my journal. Being able to look back at any day and see my metrics side by side is incredibly useful." |
+| Tom H. | Entrepreneur | 5 | "The deep reflect mode blew my mind. It analyzed months of entries and found patterns in my stress that I had been completely blind to." |
+
+---
+
+## SECTION 7: PRICING SECTION
+
+**id:** `#pricing`  
+**Background:** `bg-[#f7f6f4] relative`  
+**Padding:** `py-24`
+
+**Section Header (centered, mb-20):**  
+- Example: "Simple, Transparent **PRICING**"
+
+**Pricing Cards Grid:**
+- `grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto items-end`
+
+**Regular card:** `p-8 lg:p-10 rounded-[2rem] border border-black/5 bg-white hover:border-black/20 hover:shadow-lg shadow-sm transition-all duration-300`
+
+**Highlighted/Popular card:** `border-2 border-[#0a1128] bg-white shadow-2xl shadow-black/10 z-10 md:scale-105` (slightly scaled up)
+- Has a **"Most Popular" badge**: `absolute -top-4 left-1/2 -translate-x-1/2 bg-[#0a1128] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-sm`
+
+**Each pricing card contains:**
+1. Plan name: `text-xl font-bold text-[#0a1128] mb-4`
+2. Price: Large `text-5xl font-bold tracking-tight text-[#0a1128]` + `/mo` in `text-[#5b637a] font-medium`
+3. Features list: `mb-8 space-y-4`
+   - Each item: `flex items-start gap-3`
+   - Checkmark: `w-5 h-5 rounded-full bg-[#0a1128]/10 flex items-center justify-center` + Lucide `Check` icon `h-3 w-3 text-[#0a1128] stroke-[3]`
+   - Feature text: `text-sm font-medium text-[#0a1128]`
+4. CTA button: Full width, `py-3.5 rounded-full font-semibold`
+   - Popular: `bg-[#0a1128] text-white hover:bg-black`
+   - Regular: `bg-gray-100 text-[#0a1128] hover:bg-gray-200`
+   - Text: "Get Started"
+
+**3 Pricing Plans:**
+| Plan | Price | Highlighted | Features |
+|------|-------|-------------|----------|
+| Basic | $9.99/mo | No | Daily journal entries, AI reflections, Mental health metrics, Ask Journal (Quick Reflect), Basic analytics |
+| Intermediate | $14.99/mo | **Yes (Popular)** | Everything in Basic, Ask Journal (Deep Reflect), Advanced analytics & graphs, Therapist access, Session scheduling, Priority AI responses |
+| Advanced | $24.99/mo | No | Everything in Intermediate, Unlimited AI conversations, Detailed mental health reports, Priority therapist matching, Session recordings & notes, Family wellness sharing |
+
+---
+
+## SECTION 8: FOOTER
+
+**Background:** `bg-[#f7f6f4] text-[#0a1128]`  
+**Padding:** `py-20`  
+**Top border:** `border-t border-black/5`
+
+**Grid Layout:** `grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-8`
+
+**Column 1 — Brand (md:col-span-1):**
+- Logo (same as navbar): dark box with Brain icon + brand name + sub-tagline
+- Brand description paragraph: `text-sm font-medium text-[#5b637a] leading-relaxed max-w-xs`
+- Example: "AI-powered mental health tracking and reflective journaling platform that transforms daily thoughts into measurable wellness insights."
+
+**Columns 2-4 — Links (3 columns):**
+Each column has:
+- Column title: `font-bold mb-6 text-[#0a1128]`
+- Links list: `space-y-4 text-sm font-medium text-[#5b637a]`
+- Each link: `hover:text-black transition-colors block`
+
+**Default link columns:**
+| Column | Title | Links |
+|--------|-------|-------|
+| Product | Product | Features, Pricing, How It Works, Reviews |
+| Company | Company | About, Privacy Policy, Terms of Service, Contact |
+| Therapists | For Therapists | Join as Therapist, Therapist Guidelines, Support |
+
+**Bottom Bar:**
+- `mt-20 pt-8 border-t border-black/5 text-center font-medium text-sm text-[#5b637a]`
+- Copyright text: `© [YEAR] [Brand Name]. All rights reserved.`
+
+---
+
+## FULL IMPLEMENTATION NOTES
+
+### Framework & Stack
+- **React/Next.js** is assumed; adapt accordingly for Vue, plain HTML, etc.
+- Uses **Tailwind CSS v4** for styling (all classes shown are Tailwind utilities)
+- Icons from **Lucide React** (`lucide-react` package)
+- Font: **Geist Sans** via `next/font/google` (or load via Google Fonts CDN: `https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;900&display=swap`)
+
+### Key Behaviors & Interactions
+1. **Navbar is fixed**: appears over content, always visible on scroll
+2. **Hover on feature cards**: `shadow-md` (subtle lift)
+3. **Hover on step icons**: `-translate-y-2` (lifts up card image)
+4. **Hover on pricing cards**: border darkens + shadow grows
+5. **Primary nav button**: transitions from light `bg-black/5` to full `bg-[#0a1128]` on hover
+6. **Scroll animation section**: 3D tilt parallax — content starts tilted (perspective transform) and straightens as user scrolls
+7. **All section headings** follow the same two-part pattern: [Bold part] [Faded/dim part at 40% opacity] in UPPERCASE
+8. **Consistent section spacing**: all content sections use `py-24` (6rem top+bottom)
+
+### Content Customization
+Replace these with your own content:
+- `[BRAND NAME]` → your product name
+- `[BADGE TEXT]` → short all-caps badge e.g. "AI-POWERED DOCUMENT PRINTING"
+- `[HERO HEADLINE]` → massive display heading, uppercase, max 4-5 words
+- `[HERO SUBTITLE]` → 1-2 sentence product description
+- `[FEATURES]` → your 6 key features
+- `[HOW IT WORKS STEPS]` → your 4 onboarding steps
+- `[REVIEWS]` → your 6 testimonials
+- `[PRICING PLANS]` → your 3 tiers
+
+---
+
+## QUICK REFERENCE: Color Cheat Sheet
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--background` | `#f7f6f4` | All section backgrounds |
+| `--foreground` | `#0a1128` | Headings, icons, dark elements |
+| `--muted-text` | `#5b637a` | Subtitles, body text, footer text |
+| `--card-bg` | `#ffffff` | All cards |
+| `--card-border` | `rgba(0,0,0,0.05)` | Card borders |
+| `--hero-scroll-bg` | `#ffffff` | Scroll animation section only |
+| `--btn-primary` | `#0a1128` | Primary CTA buttons |
+| `--btn-primary-text` | `#ffffff` | Primary CTA text |
+| `--btn-secondary` | `#ffffff` | Secondary CTA background |
+| `--btn-secondary-border` | `rgba(0,0,0,0.1)` | Secondary CTA border |
+| `--star-color` | `#facc15` | Review star ratings |

@@ -135,7 +135,7 @@ export default function GlassmorphismTrustHero({
             >
               {headingLine1}
               <br />
-              <span className="bg-gradient-to-br from-white via-cyan-300 to-orange-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-br from-white via-zinc-400 to-zinc-600 bg-clip-text text-transparent">
                 {headingLine2}
               </span>
               {headingLine3 ? (
@@ -260,25 +260,25 @@ export default function GlassmorphismTrustHero({
 
         {/* Hero Video Section */}
         <div className="animate-fade-in-hero delay-500 relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 shadow-2xl backdrop-blur-sm group">
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 opacity-60"></div>
-            
-            {/* Browser chrome/header simulation for realism */}
-            <div className="h-10 border-b border-white/10 bg-white/5 flex items-center px-4 gap-2">
-                <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <div className="mx-auto w-1/3 h-5 rounded-full bg-white/5 text-[10px] flex items-center justify-center text-zinc-500 font-mono">
-                    zaprint.app
-                </div>
-            </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 opacity-60"></div>
 
-            {/* Video Placeholder or Content */}
-            <div className="aspect-video w-full bg-zinc-900 border-b border-white/5 relative flex items-center justify-center group-hover:scale-[1.01] transition-transform duration-700">
-                <Play className="w-16 h-16 text-white opacity-50 absolute z-20" />
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2674&auto=format&fit=crop')] bg-cover bg-center opacity-60"></div>
-                {/* 
+          {/* Browser chrome/header simulation for realism */}
+          <div className="h-10 border-b border-white/10 bg-white/5 flex items-center px-4 gap-2">
+            <div className="flex gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+            </div>
+            <div className="mx-auto w-1/3 h-5 rounded-full bg-white/5 text-[10px] flex items-center justify-center text-zinc-500 font-mono">
+              zaprint.app
+            </div>
+          </div>
+
+          {/* Video Placeholder or Content */}
+          <div className="aspect-video w-full bg-zinc-900 border-b border-white/5 relative flex items-center justify-center group-hover:scale-[1.01] transition-transform duration-700">
+            <Play className="w-16 h-16 text-white opacity-50 absolute z-20" />
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2674&auto=format&fit=crop')] bg-cover bg-center opacity-60"></div>
+            {/* 
                    Ideally this would be a real video loop:
                    <video 
                      className="w-full h-full object-cover" 
@@ -289,7 +289,7 @@ export default function GlassmorphismTrustHero({
                      src="/dashboard-preview.mp4" 
                    />
                 */}
-            </div>
+          </div>
         </div>
       </div>
     </div>

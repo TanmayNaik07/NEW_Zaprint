@@ -113,7 +113,7 @@ function Scene() {
       default:
         return {
           dotColor: "#FFFFFF",
-          bgColor: "#0a0a0f",
+          bgColor: "#09090b",
           dotOpacity: 0.03,
         };
     }

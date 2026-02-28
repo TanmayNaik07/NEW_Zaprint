@@ -47,7 +47,7 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
   const supabase = createClient()
 
   const playNotificationSound = () => {
-    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3") 
+    const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3")
     audio.volume = 0.5
     audio.play().catch(e => console.error("Error playing sound:", e))
   }
@@ -76,10 +76,10 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
             console.log('Realtime change received:', payload)
 
             if (payload.eventType === 'INSERT') {
-                // Fetch the new order with relations
-                const { data: newOrder, error } = await supabase
-                    .from('orders')
-                    .select(`
+              // Fetch the new order with relations
+              const { data: newOrder, error } = await supabase
+                .from('orders')
+                .select(`
                         *,
                         shops (
                             shop_name,
@@ -89,54 +89,54 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
                             *
                         )
                     `)
-                    .eq('id', payload.new.id)
-                    .single()
+                .eq('id', payload.new.id)
+                .single()
 
-                if (newOrder && !error) {
-                    setOrders((prev) => [newOrder, ...prev])
-                    toast.success("New order received!")
-                    playNotificationSound()
-                }
+              if (newOrder && !error) {
+                setOrders((prev) => [newOrder, ...prev])
+                toast.success("New order received!")
+                playNotificationSound()
+              }
             } else if (payload.eventType === 'UPDATE') {
-                // Determine if we need to fetch fresh data (e.g. if relations usage changed, but here usually just status)
-                // To be safe and keep UI in sync, we can just update the fields we have, 
-                // OR re-fetch if we suspect other things changed.
-                // For status updates, local update is fine, but let's be robust.
-                
-                const updatedOrder = payload.new as Order
-                
-                setOrders((prev) => prev.map((order) => {
-                    if (order.id === updatedOrder.id) {
-                        const isNowCompleted = (updatedOrder.status === 'completed' || updatedOrder.status === 'done')
-                        const wasNotCompleted = (order.status !== 'completed' && order.status !== 'done')
+              // Determine if we need to fetch fresh data (e.g. if relations usage changed, but here usually just status)
+              // To be safe and keep UI in sync, we can just update the fields we have, 
+              // OR re-fetch if we suspect other things changed.
+              // For status updates, local update is fine, but let's be robust.
 
-                        if (isNowCompleted && wasNotCompleted) {
-                            toast.success(`Order #${order.id.slice(0, 8)} is completed!`)
-                            playNotificationSound()
-                        }
-                        
-                        // Merge the new data. 
-                        // Note: Realtime payload doesn't include relations (shops, order_items).
-                        // So we preserve the existing relations from `order` and overwrite the scalar fields from `updatedOrder`.
-                        return { 
-                            ...order, 
-                            ...updatedOrder,
-                            shops: order.shops,
-                            order_items: order.order_items
-                        }
-                    }
-                    return order
-                }))
+              const updatedOrder = payload.new as Order
+
+              setOrders((prev) => prev.map((order) => {
+                if (order.id === updatedOrder.id) {
+                  const isNowCompleted = (updatedOrder.status === 'completed' || updatedOrder.status === 'done')
+                  const wasNotCompleted = (order.status !== 'completed' && order.status !== 'done')
+
+                  if (isNowCompleted && wasNotCompleted) {
+                    toast.success(`Order #${order.id.slice(0, 8)} is completed!`)
+                    playNotificationSound()
+                  }
+
+                  // Merge the new data. 
+                  // Note: Realtime payload doesn't include relations (shops, order_items).
+                  // So we preserve the existing relations from `order` and overwrite the scalar fields from `updatedOrder`.
+                  return {
+                    ...order,
+                    ...updatedOrder,
+                    shops: order.shops,
+                    order_items: order.order_items
+                  }
+                }
+                return order
+              }))
             } else if (payload.eventType === 'DELETE') {
-                 setOrders((prev) => prev.filter(order => order.id !== payload.old.id))
+              setOrders((prev) => prev.filter(order => order.id !== payload.old.id))
             }
           }
         )
         .subscribe((status) => {
-            console.log(`Realtime subscription status:`, status)
-            if (status === 'SUBSCRIBED') {
-                // Optional: show a small indicator or log
-            }
+          console.log(`Realtime subscription status:`, status)
+          if (status === 'SUBSCRIBED') {
+            // Optional: show a small indicator or log
+          }
         })
     }
 
@@ -184,20 +184,20 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
   }
 
   if (!orders || orders.length === 0) {
-     return (
-        <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10">
-            <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground">No orders yet</h3>
-        </div>
-     )
+    return (
+      <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10">
+        <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-foreground">No orders yet</h3>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-          <button onClick={() => window.location.reload()} className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
-              <RefreshCw className="w-3 h-3" /> Refresh
-          </button>
+        <button onClick={() => window.location.reload()} className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+          <RefreshCw className="w-3 h-3" /> Refresh
+        </button>
       </div>
       {orders.map((order) => (
         <Card key={order.id} className="bg-white/5 border-white/10 hover:bg-white/[0.07] transition-colors">
@@ -218,31 +218,31 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
               {order.status}
             </Badge>
           </CardHeader>
-          
+
           <CardContent className="p-4 space-y-4">
             <div className="space-y-2">
-                {order.order_items?.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between bg-black/20 p-3 rounded-lg">
-                         <div className="flex items-center gap-3">
-                            <div className="p-2 rounded bg-white/5">
-                                <FileText className="w-4 h-4 text-muted-foreground" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium line-clamp-1">{item.file_name}</p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span className="capitalize">{item.color_mode === 'bw' ? 'B&W' : 'Color'}</span>
-                                    <span>•</span>
-                                    <span>{item.copies} Cop{item.copies > 1 ? 'ies' : 'y'}</span>
-                                </div>
-                            </div>
-                         </div>
+              {order.order_items?.map((item) => (
+                <div key={item.id} className="flex items-center justify-between bg-black/20 p-3 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded bg-white/5">
+                      <FileText className="w-4 h-4 text-muted-foreground" />
                     </div>
-                ))}
+                    <div>
+                      <p className="text-sm font-medium line-clamp-1">{item.file_name}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="capitalize">{item.color_mode === 'bw' ? 'B&W' : 'Color'}</span>
+                        <span>•</span>
+                        <span>{item.copies} Cop{item.copies > 1 ? 'ies' : 'y'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="flex items-center justify-between pt-2">
-                 <p className="text-xs text-muted-foreground font-mono truncate max-w-[200px]">Order ID: {order.id}</p>
-                 <p className="text-lg font-bold">₹{order.total_amount}</p>
+              <p className="text-xs text-muted-foreground font-mono truncate max-w-[200px]">Order ID: {order.id}</p>
+              <p className="text-lg font-bold">₹{order.total_amount}</p>
             </div>
           </CardContent>
         </Card>
