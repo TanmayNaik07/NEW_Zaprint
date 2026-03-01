@@ -1,10 +1,9 @@
 import type React from "react"
 import { DashboardSidebar } from "@/components/dashboard/sidebar"
-import { DashboardTopBar } from "@/components/dashboard/top-bar"
-
 import { createClient } from "@/lib/supabase/server"
 
 import { OnboardingModal } from "@/components/dashboard/onboarding-modal"
+import { DashboardLoadingStop } from "@/components/dashboard/loading-stop"
 import { redirect } from "next/navigation"
 
 export default async function DashboardLayout({
@@ -31,14 +30,23 @@ export default async function DashboardLayout({
   const showOnboarding = !profile?.phone_number || !profile?.pincode
 
   return (
-    <div className="zaprint-theme min-h-screen bg-background flex">
+    <div className="zaprint-theme min-h-screen bg-[#f7f6f4] flex relative">
+      {/* Paper texture background overlay */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]"
+        style={{
+          backgroundImage: "url('/images/paper-texture.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          mixBlendMode: "multiply",
+        }}
+      />
       <DashboardSidebar />
-      <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col min-h-screen overflow-hidden relative z-[1]">
+        <DashboardLoadingStop />
         <OnboardingModal isOpen={showOnboarding} />
-        <div className="hidden md:block">
-          <DashboardTopBar />
-        </div>
-        <div className="flex-1 overflow-auto p-4 md:p-8 pt-20 md:pt-8">
+        <div className="flex-1 overflow-auto p-4 md:p-8">
           {children}
         </div>
       </main>

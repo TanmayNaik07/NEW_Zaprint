@@ -49,8 +49,11 @@ const pricingPlans = [
 
 export function MindfoldPricing() {
   return (
-    <section id="pricing" className="bg-[#f7f6f4] relative py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="pricing" className="bg-[#f7f6f4] relative py-24 overflow-hidden">
+      {/* Absolute SVG Doodle Overlay from Canva */}
+      <img src="/3-overlay.svg" alt="Pricing details" className="absolute top-0 left-0 w-full h-auto object-top pointer-events-none z-10 opacity-90" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
         {/* Section Header */}
         <div className="text-center mb-20">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#0a1128] tracking-tight uppercase">
@@ -68,8 +71,8 @@ export function MindfoldPricing() {
             <div
               key={plan.name}
               className={`relative p-8 lg:p-10 rounded-[2rem] transition-all duration-300 ${plan.popular
-                  ? "border-2 border-[#0a1128] bg-white shadow-2xl shadow-black/10 z-10 md:scale-105"
-                  : "border border-black/5 bg-white hover:border-black/20 hover:shadow-lg shadow-sm"
+                ? "border-2 border-[#0a1128] bg-white shadow-2xl shadow-black/10 z-10 md:scale-105"
+                : "border border-black/5 bg-white hover:border-black/20 hover:shadow-lg shadow-sm"
                 }`}
             >
               {/* Popular Badge */}
@@ -106,8 +109,8 @@ export function MindfoldPricing() {
               <Link href="/signup" className="block">
                 <button
                   className={`w-full py-3.5 rounded-full font-semibold transition-colors ${plan.popular
-                      ? "bg-[#0a1128] text-white hover:bg-black"
-                      : "bg-gray-100 text-[#0a1128] hover:bg-gray-200"
+                    ? "bg-[#0a1128] text-white hover:bg-black"
+                    : "bg-gray-100 text-[#0a1128] hover:bg-gray-200"
                     }`}
                 >
                   Get Started

@@ -28,11 +28,7 @@ export function LoadingLink({ href, children, className, onClick }: LoadingLinkP
     if (onClick) onClick(e)
 
     startLoading()
-
-    // Small delay to show the loader before navigating
-    setTimeout(() => {
-      router.push(href)
-    }, 100)
+    router.push(href)
   }
 
   return (

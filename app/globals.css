@@ -113,72 +113,71 @@
     --radius: 0.5rem;
   }
 
-  /* ===== New Zaprint Theme — Dark Only (applies to everything EXCEPT the landing page) ===== */
-  /* ===== New Zaprint Theme (Applied to Dashboard & Auth - Dark Mode Only) ===== */
+  /* ===== Zaprint Mindfold Theme (Applied to Dashboard & Auth - Light Cream) ===== */
   .zaprint-theme {
-    /* Dark Theme Values (Default & Only) */
-    --background: 0 0% 7%;
-    /* #121212 */
-    --foreground: 210 29% 91%;
-    /* #e2e8f0 */
-    --card: 0 0% 9%;
-    /* #171717 */
-    --card-foreground: 210 29% 91%;
-    /* #e2e8f0 */
-    --popover: 0 0% 14%;
-    /* #242424 */
-    --popover-foreground: 0 0% 66%;
-    /* #a9a9a9 */
-    --primary: 155 100% 19%;
-    /* #006239 */
-    --primary-foreground: 152 23% 89%;
-    /* #dde8e3 */
-    --secondary: 0 0% 14%;
-    /* #242424 */
-    --secondary-foreground: 0 0% 98%;
-    /* #fafafa */
-    --muted: 0 0% 12%;
-    /* #1f1f1f */
-    --muted-foreground: 0 0% 64%;
-    /* #a2a2a2 */
-    --accent: 0 0% 19%;
-    /* #313131 */
-    --accent-foreground: 0 0% 98%;
-    /* #fafafa */
-    --destructive: 7 60% 21%;
-    /* #541c15 */
-    --destructive-foreground: 17 9% 92%;
-    /* #ede9e8 */
-    --border: 0 0% 16%;
-    /* #292929 */
-    --input: 0 0% 14%;
-    /* #242424 */
-    --ring: 142 71% 58%;
-    /* #4ade80 */
+    /* Mindfold Light Theme */
+    --background: 40 14% 96%;
+    /* #f7f6f4 warm cream */
+    --foreground: 220 54% 10%;
+    /* #0a1128 deep navy */
+    --card: 40 20% 98%;
+    /* #faf9f7 */
+    --card-foreground: 220 54% 10%;
+    /* #0a1128 */
+    --popover: 0 0% 100%;
+    /* white */
+    --popover-foreground: 220 54% 10%;
+    /* #0a1128 */
+    --primary: 220 54% 10%;
+    /* #0a1128 deep navy */
+    --primary-foreground: 40 14% 96%;
+    /* #f7f6f4 cream */
+    --secondary: 40 10% 92%;
+    /* #ece9e4 */
+    --secondary-foreground: 220 54% 10%;
+    /* #0a1128 */
+    --muted: 40 10% 92%;
+    /* #ece9e4 */
+    --muted-foreground: 225 10% 48%;
+    /* #5b637a */
+    --accent: 40 10% 92%;
+    /* #ece9e4 */
+    --accent-foreground: 220 54% 10%;
+    /* #0a1128 */
+    --destructive: 0 72% 51%;
+    /* red */
+    --destructive-foreground: 0 0% 98%;
+    /* white */
+    --border: 40 10% 86%;
+    /* #dbd7d1 */
+    --input: 40 10% 90%;
+    /* #e6e3de */
+    --ring: 220 54% 10%;
+    /* #0a1128 */
     --radius: 0.5rem;
-    --chart-1: 142 71% 58%;
+    --chart-1: 220 54% 10%;
     --chart-2: 217 91% 68%;
     --chart-3: 257 91% 76%;
     --chart-4: 45 93% 56%;
     --chart-5: 173 66% 50%;
 
-    /* Sidebar - Dark */
-    --sidebar-background: 0 0% 7%;
-    /* #121212 */
-    --sidebar-foreground: 0 0% 54%;
-    /* #898989 */
-    --sidebar-primary: 155 100% 19%;
-    /* #006239 */
-    --sidebar-primary-foreground: 152 23% 89%;
-    /* #dde8e3 */
-    --sidebar-accent: 0 0% 19%;
-    /* #313131 */
-    --sidebar-accent-foreground: 0 0% 98%;
-    /* #fafafa */
-    --sidebar-border: 0 0% 16%;
-    /* #292929 */
-    --sidebar-ring: 142 71% 58%;
-    /* #4ade80 */
+    /* Sidebar - Mindfold Light */
+    --sidebar-background: 40 14% 96%;
+    /* #f7f6f4 */
+    --sidebar-foreground: 225 10% 48%;
+    /* #5b637a */
+    --sidebar-primary: 220 54% 10%;
+    /* #0a1128 */
+    --sidebar-primary-foreground: 40 14% 96%;
+    /* #f7f6f4 */
+    --sidebar-accent: 40 10% 92%;
+    /* #ece9e4 */
+    --sidebar-accent-foreground: 220 54% 10%;
+    /* #0a1128 */
+    --sidebar-border: 40 10% 86%;
+    /* #dbd7d1 */
+    --sidebar-ring: 220 54% 10%;
+    /* #0a1128 */
   }
 }
 
@@ -487,11 +486,11 @@
 }
 
 .auth-container.auth-dark {
-  background: linear-gradient(135deg, hsl(222, 47%, 6%) 0%, hsl(222, 50%, 10%) 50%, hsl(222, 47%, 6%) 100%);
+  background: linear-gradient(135deg, #f7f6f4 0%, #ede9e4 50%, #f7f6f4 100%);
 }
 
 .auth-container.auth-light {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+  background: linear-gradient(135deg, #f7f6f4 0%, #ede9e4 50%, #f7f6f4 100%);
 }
 
 .auth-particles-canvas {
@@ -556,11 +555,11 @@
 .auth-logo-text {
   font-size: 1.5rem;
   font-weight: 600;
-  color: hsl(var(--foreground));
+  color: #0a1128;
 }
 
 .auth-light .auth-logo-text {
-  color: #1f2937;
+  color: #0a1128;
 }
 
 .auth-card {
@@ -568,11 +567,11 @@
   z-index: 10;
   width: 100%;
   max-width: 420px;
-  border-radius: 1.5rem;
-  background: hsl(var(--background) / 0.4);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
-  border: 1px solid hsl(var(--border));
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
   animation: fadeInUp 0.6s ease-out;
 }
 
@@ -582,8 +581,8 @@
 
 .auth-light .auth-card {
   background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.08);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
 }
 
 @keyframes fadeInUp {
@@ -640,17 +639,17 @@
 .auth-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: hsl(var(--foreground));
+  color: #0a1128;
   margin-bottom: 0.5rem;
 }
 
 .auth-light .auth-header h1 {
-  color: #1f2937;
+  color: #0a1128;
 }
 
 .auth-header p {
   font-size: 0.9rem;
-  color: hsl(var(--muted-foreground));
+  color: #5b637a;
 }
 
 .auth-form {
@@ -668,9 +667,9 @@
   height: 52px;
   padding: 1.25rem 1rem 0.5rem;
   font-size: 1rem;
-  color: hsl(var(--foreground));
-  background: hsl(var(--background) / 0.3);
-  border: 1px solid hsl(var(--border));
+  color: #0a1128;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0.75rem;
   outline: none;
   transition: all 0.3s ease;
@@ -679,12 +678,12 @@
 .auth-light .auth-form-field input {
   background: rgba(255, 255, 255, 0.8);
   border-color: rgba(0, 0, 0, 0.1);
-  color: #1f2937;
+  color: #0a1128;
 }
 
 .auth-form-field input:focus {
-  border-color: hsl(var(--primary));
-  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.2);
+  border-color: #0a1128;
+  box-shadow: 0 0 0 3px rgba(10, 17, 40, 0.1);
 }
 
 .auth-form-field label {
@@ -693,7 +692,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 1rem;
-  color: hsl(var(--muted-foreground));
+  color: #5b637a;
   pointer-events: none;
   transition: all 0.2s ease;
 }
@@ -804,8 +803,8 @@
   margin-top: 0.5rem;
   font-size: 1rem;
   font-weight: 600;
-  color: hsl(var(--primary-foreground));
-  background: hsl(var(--primary));
+  color: #f7f6f4;
+  background: #0a1128;
   border: none;
   border-radius: 9999px;
   cursor: pointer;
@@ -813,12 +812,13 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 14px hsl(var(--primary) / 0.4);
+  box-shadow: 0 4px 14px rgba(10, 17, 40, 0.25);
 }
 
 .auth-submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px hsl(var(--primary) / 0.5);
+  box-shadow: 0 6px 20px rgba(10, 17, 40, 0.35);
+  background: #000;
 }
 
 .auth-submit-button:disabled {
@@ -872,9 +872,9 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 1px solid hsl(var(--border));
-  background: hsl(var(--background) / 0.3);
-  color: hsl(var(--foreground));
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.6);
+  color: #0a1128;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -883,15 +883,15 @@
 }
 
 .auth-social-button:hover {
-  background: hsl(var(--muted));
+  background: rgba(255, 255, 255, 0.9);
   transform: translateY(-2px);
-  border-color: hsl(var(--primary) / 0.5);
+  border-color: rgba(10, 17, 40, 0.25);
 }
 
 .auth-light .auth-social-button {
   background: rgba(255, 255, 255, 0.8);
   border-color: rgba(0, 0, 0, 0.1);
-  color: #1f2937;
+  color: #0a1128;
 }
 
 .auth-light .auth-social-button:hover {

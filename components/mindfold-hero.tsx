@@ -5,8 +5,11 @@ import Link from "next/link"
 
 export function MindfoldHero() {
   return (
-    <section className="bg-[#f7f6f4] pt-40 pb-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+    <section className="bg-transparent pt-40 pb-32 relative overflow-hidden">
+      {/* Absolute SVG Doodle Overlay from Canva */}
+      <img src="/1-overlay.svg" alt="Hero Details" className="absolute top-0 left-0 w-full h-auto object-top pointer-events-none z-10" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative z-20">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-transparent border border-black/80 text-black px-4 py-1.5 rounded-full text-[10px] tracking-widest font-semibold uppercase mb-10">
           <span className="w-1.5 h-1.5 bg-black rounded-full" />
@@ -29,33 +32,7 @@ export function MindfoldHero() {
         <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
           {/* Primary CTA with handdrawn arrow */}
           <div className="relative">
-            {/* Handdrawn arrow annotation - desktop only */}
-            <div className="hidden md:block absolute -left-[140px] -top-6 pointer-events-none opacity-90">
-              <svg
-                width="150"
-                height="120"
-                viewBox="0 0 150 120"
-                fill="none"
-                className="overflow-visible"
-              >
-                <path
-                  d="M20,95 C20,30 70,30 140,30"
-                  stroke="#0a1128"
-                  strokeWidth="3.5"
-                  strokeDasharray="8 8"
-                  fill="none"
-                  strokeLinecap="round"
-                />
-                {/* Arrowhead */}
-                <polygon points="132,22 144,30 132,38" fill="#0a1128" />
-              </svg>
-              <span
-                className="absolute top-[100px] -left-8 text-[28px] font-medium text-[#0a1128] whitespace-nowrap"
-                style={{ transform: "rotate(-12deg)" }}
-              >
-                Click here
-              </span>
-            </div>
+            {/* Removed the old handdrawn arrow, since the user's 1-overlay.svg provides the new Canva annotations */}
 
             <Link
               href="/signup"

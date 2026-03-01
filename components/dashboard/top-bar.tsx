@@ -28,43 +28,43 @@ export function DashboardTopBar() {
   }
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-background border-b border-border/40">
+    <header className="flex items-center justify-between px-6 py-4 bg-white/60 backdrop-blur-lg border-b border-black/5">
       <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold text-foreground">QuickPrint Dashboard</h1>
-        <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/25 border-0 gap-1.5 px-3">
+        <h1 className="text-xl font-semibold text-[#0a1128]">Zaprint Dashboard</h1>
+        <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-0 gap-1.5 px-3">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           Online
         </Badge>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
+        <Button variant="ghost" size="icon" className="text-[#5b637a] hover:text-[#0a1128] hover:bg-black/5 relative">
           <Bell className="w-5 h-5" />
-          <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-background" />
+          <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-white" />
         </Button>
 
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="icon" className="text-[#5b637a] hover:text-[#0a1128] hover:bg-black/5">
           <Settings className="w-5 h-5" />
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full ml-2">
-              <Avatar className="h-10 w-10 border border-border">
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full ml-2 hover:bg-black/5">
+              <Avatar className="h-10 w-10 border border-black/5">
                 <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                <AvatarFallback className="bg-primary/10 text-primary font-medium">S</AvatarFallback>
+                <AvatarFallback className="bg-[#0a1128]/10 text-[#0a1128] font-medium">S</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-64" align="end" forceMount>
+          <DropdownMenuContent className="w-64 bg-white border-black/10" align="end" forceMount>
             <div className="flex items-center gap-4 p-4">
-              <Avatar className="h-10 w-10 border border-border">
+              <Avatar className="h-10 w-10 border border-black/5">
                 <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                <AvatarFallback className="bg-primary/10 text-primary font-medium">S</AvatarFallback>
+                <AvatarFallback className="bg-[#0a1128]/10 text-[#0a1128] font-medium">S</AvatarFallback>
               </Avatar>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">User</p>
-                <p className="text-xs leading-none text-muted-foreground">soham@gmail.com</p>
+                <p className="text-sm font-medium leading-none text-[#0a1128]">User</p>
+                <p className="text-xs leading-none text-[#5b637a]">soham@gmail.com</p>
               </div>
             </div>
             <DropdownMenuSeparator />

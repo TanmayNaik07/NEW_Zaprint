@@ -6,98 +6,112 @@ import { FileText, Clock, CheckCircle, Loader2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
 interface Order {
-    id: string
-    created_at: string
-    status: string
-    total_amount: number
-    order_items: {
-        file_name: string
-        copies: number
-        pages_per_sheet: number
-    }[]
+  id: string
+  created_at: string
+  status: string
+  total_amount: number
+  order_items: {
+    file_name: string
+    copies: number
+    pages_per_sheet: number
+  }[]
 }
 
 const statusConfig: Record<string, any> = {
   pending: {
     label: "Pending",
     icon: Clock,
-    color: "text-zinc-500",
-    bgColor: "bg-zinc-500/10",
+    color: "text-[#6b5d45]",
+    bgColor: "bg-[#6b5d45]/10",
     iconClass: "",
   },
   processing: {
     label: "Processing",
     icon: Loader2,
-    color: "text-yellow-500",
-    bgColor: "bg-yellow-500/10",
+    color: "text-[#8B6914]",
+    bgColor: "bg-[#8B6914]/10",
     iconClass: "animate-spin",
   },
   printing: {
-      label: "Printing",
-      icon: Loader2,
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-      iconClass: "animate-spin",
+    label: "Printing",
+    icon: Loader2,
+    color: "text-[#5a4a2a]",
+    bgColor: "bg-[#5a4a2a]/10",
+    iconClass: "animate-spin",
   },
   ready: {
     label: "Ready",
     icon: CheckCircle,
-    color: "text-primary",
-    bgColor: "bg-primary/10",
+    color: "text-[#3a6b20]",
+    bgColor: "bg-[#3a6b20]/10",
     iconClass: "",
   },
   completed: {
     label: "Completed",
     icon: CheckCircle,
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
+    color: "text-[#3a6b20]",
+    bgColor: "bg-[#3a6b20]/10",
     iconClass: "",
   },
   cancelled: {
-      label: "Cancelled",
-      icon: CheckCircle, // XCircle
-      color: "text-red-500",
-      bgColor: "bg-red-500/10",
-      iconClass: ""
+    label: "Cancelled",
+    icon: CheckCircle,
+    color: "text-[#8B2500]",
+    bgColor: "bg-[#8B2500]/10",
+    iconClass: ""
   }
 }
 
 export function RecentActivity({ orders }: { orders: Order[] }) {
   if (!orders || orders.length === 0) {
-      return (
-          <div className="space-y-4">
-               <h2 className="text-foreground text-xl font-semibold">Recent Activity</h2>
-               <div className="p-8 text-center text-muted-foreground bg-white/5 rounded-xl border border-white/10">
-                   No recent activity.
-               </div>
-          </div>
-      )
+    return (
+      <div className="space-y-4">
+        <h2 className="font-rubik-dirt text-[#1a1408] text-xl md:text-2xl tracking-tight">Recent Activity</h2>
+        <div
+          className="p-8 text-center text-[#6b5d45] bg-gradient-to-br from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0] rounded-sm shadow-[4px_4px_12px_rgba(0,0,0,0.1)]"
+          style={{
+            backgroundImage: `url('/images/paper-texture.png')`,
+            backgroundSize: 'cover',
+            backgroundBlendMode: 'multiply',
+          }}
+        >
+          <p className="font-rubik-dirt text-lg">No recent activity.</p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-foreground text-xl font-semibold">Recent Activity</h2>
-        <a href="/dashboard/orders" className="text-primary text-sm font-medium hover:underline">
+        <h2 className="font-rubik-dirt text-[#1a1408] text-xl md:text-2xl tracking-tight">Recent Activity</h2>
+        <a href="/dashboard/orders" className="text-[#3a3120] text-sm font-medium hover:underline underline-offset-4 transition-all">
           View all
         </a>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+      <div
+        className="rounded-sm bg-gradient-to-br from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0] overflow-hidden shadow-[4px_4px_12px_rgba(0,0,0,0.1)]"
+        style={{
+          backgroundImage: `url('/images/paper-texture.png')`,
+          backgroundSize: 'cover',
+          backgroundBlendMode: 'multiply',
+        }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left text-muted-foreground text-xs font-medium uppercase tracking-wider px-6 py-4">
+              <tr className="border-b-2 border-dashed border-[#3a3120]/20">
+                <th className="text-left text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4">
                   Document
                 </th>
-                <th className="text-left text-muted-foreground text-xs font-medium uppercase tracking-wider px-6 py-4 hidden sm:table-cell">
+                <th className="text-left text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4 hidden sm:table-cell">
                   Details
                 </th>
-                <th className="text-left text-muted-foreground text-xs font-medium uppercase tracking-wider px-6 py-4">
+                <th className="text-left text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4">
                   Status
                 </th>
-                <th className="text-right text-muted-foreground text-xs font-medium uppercase tracking-wider px-6 py-4 hidden md:table-cell">
+                <th className="text-right text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4 hidden md:table-cell">
                   Time
                 </th>
               </tr>
@@ -112,20 +126,20 @@ export function RecentActivity({ orders }: { orders: Order[] }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors"
+                    className="border-b border-dashed border-[#3a3120]/10 last:border-0 hover:bg-[#3a3120]/[0.03] transition-colors"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                          <FileText className="w-5 h-5 text-muted-foreground" />
+                        <div className="w-10 h-10 rounded-lg bg-[#3a3120]/10 flex items-center justify-center shrink-0">
+                          <FileText className="w-5 h-5 text-[#6b5d45]" />
                         </div>
-                        <span className="text-foreground text-sm font-medium truncate max-w-[180px]">
+                        <span className="text-[#1a1408] text-sm font-medium truncate max-w-[180px]">
                           {item?.file_name || "Unknown File"}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 hidden sm:table-cell">
-                      <span className="text-muted-foreground text-sm">
+                      <span className="text-[#6b5d45] text-sm">
                         {item ? `${item.copies} copies` : "-"}
                       </span>
                     </td>
@@ -136,8 +150,8 @@ export function RecentActivity({ orders }: { orders: Order[] }) {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right hidden md:table-cell">
-                      <span className="text-muted-foreground text-sm">
-                          {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
+                      <span className="text-[#6b5d45] text-sm">
+                        {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
                       </span>
                     </td>
                   </motion.tr>

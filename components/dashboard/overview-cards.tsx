@@ -2,8 +2,6 @@
 
 import { Printer, CheckCircle, Clock } from "lucide-react"
 import { motion } from "framer-motion"
-import { Tilt } from "@/components/ui/tilt"
-import { Spotlight } from "@/components/ui/spotlight"
 
 export interface OverviewStats {
   activeJobs: number
@@ -18,58 +16,70 @@ export function OverviewCards({ stats: data }: { stats: OverviewStats }) {
       value: data.activeJobs.toString(),
       description: "Currently processing",
       icon: Printer,
-      color: "text-amber-500", // Adjusted to match dark theme better
-      bgColor: "bg-amber-500/10",
+      rotation: "-2deg",
+      bgGradient: "from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0]",
     },
     {
       title: "Completed Prints",
       value: data.completedMonth.toString(),
       description: "Total completed",
       icon: CheckCircle,
-      color: "text-emerald-500", // Adjusted to match dark theme better
-      bgColor: "bg-emerald-500/10",
+      rotation: "1deg",
+      bgGradient: "from-[#f0ddb8] via-[#ede0c8] to-[#f5e6c8]",
     },
     {
-      title: "Average Print Time",
+      title: "Avg Print Time",
       value: data.avgTime,
       description: "Per document",
       icon: Clock,
-      color: "text-blue-500", // Adjusted to match dark theme better
-      bgColor: "bg-blue-500/10",
+      rotation: "-1deg",
+      bgGradient: "from-[#f5e6c8] via-[#f0ddb8] to-[#ede0c8]",
     },
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
       {stats.map((stat, index) => (
         <motion.div
           key={stat.title}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: index * 0.1 }}
+          initial={{ opacity: 0, y: 30, rotate: 0 }}
+          animate={{ opacity: 1, y: 0, rotate: stat.rotation }}
+          transition={{ duration: 0.5, delay: index * 0.15, type: "spring", stiffness: 120 }}
+          className="group"
         >
-          <Tilt
-            rotationFactor={6}
-            isRevese
-            className="group relative rounded-2xl border border-white/5 bg-white/[0.02] transition-colors p-6 h-full"
+          {/* Sticky Note Card */}
+          <div
+            className={`relative bg-gradient-to-br ${stat.bgGradient} rounded-sm p-6 md:p-7 shadow-[4px_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 group-hover:shadow-[6px_6px_20px_rgba(0,0,0,0.2)] group-hover:scale-[1.03]`}
+            style={{
+              backgroundImage: `url('/images/paper-texture.png')`,
+              backgroundSize: 'cover',
+              backgroundBlendMode: 'multiply',
+            }}
           >
-            <Spotlight
-              className="z-10 from-primary/20 via-primary/10 to-transparent blur-2xl"
-              size={248}
-            />
-            <div className="relative z-20">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                </div>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-sm font-medium mb-1">{stat.title}</p>
-                <p className="text-foreground text-3xl font-semibold mb-1">{stat.value}</p>
-                <p className="text-muted-foreground text-xs">{stat.description}</p>
-              </div>
+            {/* Tape effect at top */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-[#d4c5a0]/60 rounded-sm shadow-sm" />
+
+            {/* Folded corner effect */}
+            <div className="absolute bottom-0 right-0 w-8 h-8">
+              <div className="absolute bottom-0 right-0 w-0 h-0 border-l-[32px] border-l-transparent border-b-[32px] border-b-[#c9b896] opacity-60" />
             </div>
-          </Tilt>
+
+            {/* Card content */}
+            <div className="relative z-10 mt-2">
+              <div className="flex items-center gap-3 mb-4">
+                <stat.icon className="w-6 h-6 text-[#3a3120] opacity-70" strokeWidth={2.5} />
+              </div>
+              <p className="font-rubik-dirt text-[#3a3120] text-sm tracking-wide uppercase mb-2 opacity-80">
+                {stat.title}
+              </p>
+              <p className="font-rubik-dirt text-[#1a1408] text-4xl md:text-5xl tracking-tight leading-none mb-3">
+                {stat.value}
+              </p>
+              <p className="text-[#6b5d45] text-xs font-medium tracking-wider uppercase">
+                {stat.description}
+              </p>
+            </div>
+          </div>
         </motion.div>
       ))}
     </div>

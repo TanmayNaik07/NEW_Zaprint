@@ -111,7 +111,7 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
         this.size = Math.random() * 3 + 1;
         this.speedX = (Math.random() - 0.5) * 0.5;
         this.speedY = (Math.random() - 0.5) * 0.5;
-        this.color = `rgba(6, 182, 212, ${Math.random() * 0.3})`;
+        this.color = `rgba(10, 17, 40, ${Math.random() * 0.15})`;
       }
 
       update() {
@@ -167,8 +167,8 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
 
       {/* Logo */}
       <Link href="/" className="auth-logo">
-        <div className="auth-logo-icon">
-          <Printer className="w-6 h-6 text-primary" />
+        <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center">
+          <Printer className="w-6 h-6 text-white" />
         </div>
         <span className="auth-logo-text">Zaprint</span>
       </Link>

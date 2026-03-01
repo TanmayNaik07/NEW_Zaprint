@@ -14,8 +14,11 @@ export function MindfoldFooter() {
   }
 
   return (
-    <footer className="bg-[#f7f6f4] text-[#0a1128] border-t border-black/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <footer className="bg-transparent text-[#0a1128] border-t border-black/5 relative overflow-hidden">
+      {/* Absolute SVG Doodle Overlay from Canva */}
+      <img src="/2-overlay.svg" alt="Footer details" className="absolute bottom-[-10%] md:bottom-[-15%] lg:bottom-[-20%] left-0 w-full h-auto object-bottom pointer-events-none z-10 opacity-90" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 relative z-20">
         {/* Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-8">
           {/* Column 1 - Brand */}
@@ -128,7 +131,7 @@ export function MindfoldFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-20 pt-8 border-t border-black/5 text-center font-medium text-sm text-[#5b637a]">
+        <div className="mt-12 pt-6 border-t border-black/5 text-center font-medium text-sm text-[#5b637a]">
           © {new Date().getFullYear()} Zaprint. All rights reserved.
         </div>
       </div>

@@ -102,7 +102,7 @@ export function DashboardSidebar() {
   return (
     <motion.div
       className={cn(
-        "sidebar fixed left-0 z-40 h-full shrink-0 border-r bg-background/50 backdrop-blur-xl border-border/40",
+        "sidebar fixed left-0 z-40 h-full shrink-0 border-r bg-white/80 backdrop-blur-xl border-black/5",
       )}
       initial={isCollapsed ? "closed" : "open"}
       animate={isCollapsed ? "closed" : "open"}
@@ -112,22 +112,22 @@ export function DashboardSidebar() {
       onMouseLeave={() => setIsCollapsed(true)}
     >
       <motion.div
-        className={`relative z-40 flex text-muted-foreground h-full shrink-0 flex-col bg-transparent transition-all`}
+        className={`relative z-40 flex text-[#5b637a] h-full shrink-0 flex-col bg-transparent transition-all`}
         variants={contentVariants}
       >
         <motion.ul variants={staggerVariants} className="flex h-full flex-col">
           <div className="flex grow flex-col items-center">
 
             {/* Top Logo / Brand Section */}
-            <div className="flex h-[60px] w-full shrink-0 items-center justify-center border-b border-border/40 p-2">
+            <div className="flex h-[60px] w-full shrink-0 items-center justify-center border-b border-black/5 p-2">
               <div className="flex w-full items-center justify-center">
                 <div className="flex items-center gap-2 px-2 w-full">
-                  <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
-                    <Printer className="w-5 h-5 text-primary" />
+                  <div className="w-9 h-9 rounded-lg bg-[#0a1128] flex items-center justify-center shrink-0">
+                    <Printer className="w-5 h-5 text-white" />
                   </div>
                   <motion.div variants={variants} className="overflow-hidden whitespace-nowrap">
                     {!isCollapsed && (
-                      <span className="text-foreground text-lg font-semibold ml-1">
+                      <span className="text-[#0a1128] text-lg font-semibold ml-1">
                         Zaprint
                       </span>
                     )}
@@ -148,13 +148,13 @@ export function DashboardSidebar() {
                           key={item.name}
                           href={item.href}
                           className={cn(
-                            "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-accent/50 hover:text-foreground",
+                            "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-black/5 hover:text-[#0a1128]",
                             isActive
-                              ? "bg-primary/15 text-primary hover:bg-primary/20"
-                              : "text-muted-foreground",
+                              ? "bg-[#0a1128]/10 text-[#0a1128] hover:bg-[#0a1128]/15"
+                              : "text-[#5b637a]",
                           )}
                         >
-                          <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-primary")} />
+                          <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-[#0a1128]")} />
                           <motion.li variants={variants} className="ml-3 overflow-hidden whitespace-nowrap">
                             {!isCollapsed && (
                               <p className="text-sm font-medium">{item.name}</p>
@@ -174,8 +174,8 @@ export function DashboardSidebar() {
                 <Link
                   href="/dashboard/settings"
                   className={cn(
-                    "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-accent/50 hover:text-foreground",
-                    pathname === "/dashboard/settings" ? "bg-primary/15 text-primary" : "text-muted-foreground"
+                    "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-black/5 hover:text-[#0a1128]",
+                    pathname === "/dashboard/settings" ? "bg-[#0a1128]/10 text-[#0a1128]" : "text-[#5b637a]"
                   )}
                 >
                   <Settings className="h-5 w-5 shrink-0" />
@@ -186,16 +186,16 @@ export function DashboardSidebar() {
                   </motion.li>
                 </Link>
 
-                <Separator className="bg-border/40" />
+                <Separator className="bg-black/5" />
 
                 {/* Profile Dropdown */}
                 <div className="pt-1">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger className="w-full outline-none">
-                      <div className="flex h-12 w-full flex-row items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-accent/50 hover:text-foreground">
-                        <Avatar className="h-8 w-8 border border-border/50">
+                      <div className="flex h-12 w-full flex-row items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-black/5 hover:text-[#0a1128]">
+                        <Avatar className="h-8 w-8 border border-black/5">
                           <AvatarImage src="/placeholder-user.jpg" />
-                          <AvatarFallback className="bg-primary/10 text-primary">TM</AvatarFallback>
+                          <AvatarFallback className="bg-[#0a1128]/10 text-[#0a1128]">TM</AvatarFallback>
                         </Avatar>
                         <motion.li
                           variants={variants}
@@ -215,7 +215,7 @@ export function DashboardSidebar() {
                     <DropdownMenuContent side="right" sideOffset={10} align="end" className="w-[200px]">
                       <div className="flex flex-row items-center gap-2 p-2">
                         <Avatar className="size-8">
-                          <AvatarFallback className="bg-primary/10 text-primary">TM</AvatarFallback>
+                          <AvatarFallback className="bg-[#0a1128]/10 text-[#0a1128]">TM</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col text-left overflow-hidden">
                           <span className="text-sm font-medium truncate">

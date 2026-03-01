@@ -1,12 +1,13 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist } from "next/font/google"
+import { Geist, Rubik_Dirt } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { NavigationLoadingProvider } from "@/components/providers/navigation-loading-provider"
 import { Toaster } from "sonner"
 import "./globals.css"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
+const rubikDirt = Rubik_Dirt({ weight: "400", subsets: ["latin"], variable: "--font-rubik-dirt" })
 
 export const metadata: Metadata = {
   title: "Zaprint - Print Smarter. Skip the Queue.",
@@ -39,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geist.variable} font-sans antialiased`}>
+      <body className={`${geist.variable} ${rubikDirt.variable} font-sans antialiased`}>
         <NavigationLoadingProvider>
           {children}
         </NavigationLoadingProvider>

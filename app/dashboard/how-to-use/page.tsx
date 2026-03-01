@@ -84,8 +84,8 @@ export default function HowToUsePage() {
     <div className="max-w-4xl mx-auto space-y-12">
       {/* Header */}
       <div>
-        <h1 className="text-foreground text-2xl md:text-3xl font-semibold mb-2">How to Use Zaprint</h1>
-        <p className="text-muted-foreground">A step-by-step guide to getting your prints done quickly and easily.</p>
+        <h1 className="text-[#0a1128] text-2xl md:text-3xl font-semibold mb-2">How to Use Zaprint</h1>
+        <p className="text-[#5b637a]">A step-by-step guide to getting your prints done quickly and easily.</p>
       </div>
 
       {/* Steps */}
@@ -96,15 +96,15 @@ export default function HowToUsePage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="p-6 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
+            className="p-6 rounded-2xl border border-black/5 bg-white/70 backdrop-blur-sm shadow-sm hover:bg-white/90 transition-colors"
           >
             <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <step.icon className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-xl bg-[#0a1128]/10 flex items-center justify-center shrink-0">
+                <step.icon className="w-6 h-6 text-[#0a1128]" />
               </div>
               <div>
-                <h3 className="text-foreground text-lg font-semibold mb-2">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                <h3 className="text-[#0a1128] text-lg font-semibold mb-2">{step.title}</h3>
+                <p className="text-[#5b637a] leading-relaxed">{step.description}</p>
               </div>
             </div>
           </motion.div>
@@ -114,8 +114,8 @@ export default function HowToUsePage() {
       {/* FAQ Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <HelpCircle className="w-5 h-5 text-primary" />
-          <h2 className="text-foreground text-xl font-semibold">Frequently Asked Questions</h2>
+          <HelpCircle className="w-5 h-5 text-[#0a1128]" />
+          <h2 className="text-[#0a1128] text-xl font-semibold">Frequently Asked Questions</h2>
         </div>
 
         <div className="space-y-3">
@@ -125,13 +125,13 @@ export default function HowToUsePage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
-              className="rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden"
+              className="rounded-xl border border-black/5 bg-white/70 backdrop-blur-sm overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors"
+                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-black/[0.02] transition-colors"
               >
-                <span className="text-foreground font-medium">{faq.question}</span>
+                <span className="text-[#0a1128] font-medium">{faq.question}</span>
                 <ChevronDown
                   className={cn(
                     "w-5 h-5 text-muted-foreground transition-transform",
@@ -145,7 +145,7 @@ export default function HowToUsePage() {
                   openFaq === index ? "max-h-48" : "max-h-0",
                 )}
               >
-                <p className="px-6 pb-4 text-muted-foreground leading-relaxed">{faq.answer}</p>
+                <p className="px-6 pb-4 text-[#5b637a] leading-relaxed">{faq.answer}</p>
               </div>
             </motion.div>
           ))}

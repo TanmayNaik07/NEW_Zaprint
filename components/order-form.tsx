@@ -20,13 +20,13 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   const router = useRouter()
   const supabase = createClient()
   const { sections, addSection, removeSection, updateSection, calculateSubtotal, calculateGrandTotal, reset } = usePrintStore()
-  
+
   const [loading, setLoading] = useState(false)
-  
+
   // Get pricing rates from shop services
   const bwService = shop.services.find(s => s.service_name.toLowerCase().includes('black') || s.service_name.toLowerCase().includes('b&w') || s.service_name.toLowerCase().includes('bw'))
   const colorService = shop.services.find(s => s.service_name.toLowerCase().includes('color'))
-  
+
   const bwRate = bwService?.price || 2
   const colorRate = colorService?.price || 5
 
@@ -145,7 +145,7 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
       toast.success("Order placed successfully!")
       reset()
       router.push('/dashboard/orders')
-      
+
     } catch (error: any) {
       console.error(error)
       toast.error(error.message || "Something went wrong")
@@ -168,53 +168,54 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="border-white/10 bg-white/5 relative">
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-                <CardTitle className="text-lg">Print #{index + 1}</CardTitle>
+            <Card className="border-[#1a1408]/10 bg-[#f9f8f4] shadow-[inset_0px_2px_8px_rgba(0,0,0,0.03)] relative rounded-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-dashed border-[#1a1408]/10">
+                <CardTitle className="text-lg font-rubik-dirt tracking-widest text-[#1a1408]">Print #{index + 1}</CardTitle>
                 {sections.length > 1 && (
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => removeSection(section.id)}
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="h-8 w-8 text-[#6b5d45] hover:text-red-700 hover:bg-red-100/50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6 pt-5">
                 {/* File Upload */}
                 <div className="space-y-2">
-                  <Label>Upload Document</Label>
+                  <Label className="text-[#1a1408] font-bold uppercase text-xs tracking-wider">Upload Document</Label>
                   {!section.file ? (
-                    <div className="relative border-2 border-dashed border-white/20 rounded-xl p-6 text-center hover:border-white/30 transition-colors">
+                    <div className="relative border-2 border-dashed border-[#1a1408]/20 bg-[#fdfbf7] rounded-sm p-8 text-center hover:border-[#1a1408]/50 hover:bg-[#1a1408]/5 transition-colors cursor-pointer group">
                       <input
                         type="file"
                         accept=".pdf,.png,.jpg,.jpeg,.webp"
                         onChange={(e) => handleFileSelect(section.id, e.target.files?.[0] || null)}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
-                      <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-sm text-foreground">Click to upload or drag & drop</p>
-                      <p className="text-xs text-muted-foreground mt-1">PDF, PNG, JPG, WEBP</p>
+                      <Upload className="w-8 h-8 mx-auto mb-3 text-[#6b5d45] group-hover:text-[#1a1408] transition-colors" />
+                      <p className="text-sm text-[#1a1408] font-medium">Click to upload or drag & drop</p>
+                      <p className="text-xs text-[#6b5d45] mt-1 font-semibold">PDF, PNG, JPG, WEBP</p>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
-                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
-                        <FileText className="w-5 h-5 text-primary" />
+                    <div className="flex items-center gap-3 p-4 rounded-sm bg-[#fdfbf7] border border-[#1a1408]/20 shadow-sm relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-[#15803d]" />
+                      <div className="w-10 h-10 rounded-sm bg-[#1a1408]/5 flex items-center justify-center shrink-0 border border-[#1a1408]/10">
+                        <FileText className="w-5 h-5 text-[#1a1408]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{section.fileName}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm font-bold text-[#1a1408] truncate">{section.fileName}</p>
+                        <p className="text-xs text-[#6b5d45] font-medium mt-0.5">
                           {formatFileSize(section.fileSize)} • {section.pageCount} page{section.pageCount !== 1 ? 's' : ''}
                         </p>
                       </div>
-                      <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-[#15803d] shrink-0" />
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleFileSelect(section.id, null)}
-                        className="h-8 w-8 shrink-0"
+                        className="h-8 w-8 shrink-0 text-[#6b5d45] hover:text-[#1a1408] hover:bg-[#1a1408]/10"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -224,21 +225,21 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
 
                 {/* Print Type */}
                 <div className="space-y-2">
-                  <Label>Print Type</Label>
+                  <Label className="text-[#1a1408] font-bold uppercase text-xs tracking-wider">Print Type</Label>
                   <RadioGroup
                     value={section.printType}
                     onValueChange={(value) => updateSection(section.id, { printType: value as "bw" | "color" })}
-                    className="flex gap-4"
+                    className="flex gap-6"
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="bw" id={`${section.id}-bw`} />
-                      <Label htmlFor={`${section.id}-bw`} className="cursor-pointer">
+                      <RadioGroupItem value="bw" id={`${section.id}-bw`} className="border-[#1a1408] focus:border-[#1a1408] data-[state=checked]:bg-[#1a1408] data-[state=checked]:text-[#fdfbf7]" />
+                      <Label htmlFor={`${section.id}-bw`} className="cursor-pointer text-sm font-semibold text-[#3a3120]">
                         Black & White (₹{bwRate}/page)
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="color" id={`${section.id}-color`} />
-                      <Label htmlFor={`${section.id}-color`} className="cursor-pointer">
+                      <RadioGroupItem value="color" id={`${section.id}-color`} className="border-[#2563eb] focus:border-[#2563eb] data-[state=checked]:bg-[#2563eb] data-[state=checked]:text-[#fdfbf7]" />
+                      <Label htmlFor={`${section.id}-color`} className="cursor-pointer text-sm font-semibold text-[#1e40af]">
                         Color (₹{colorRate}/page)
                       </Label>
                     </div>
@@ -246,27 +247,27 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
                 </div>
 
                 {/* Configuration Grid */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-6">
                   {/* Copies */}
                   <div className="space-y-2">
-                    <Label>Copies</Label>
+                    <Label className="text-[#1a1408] font-bold uppercase text-xs tracking-wider">Copies</Label>
                     <Input
                       type="number"
                       min={1}
                       max={100}
                       value={section.copies}
                       onChange={(e) => updateSection(section.id, { copies: Math.max(1, parseInt(e.target.value) || 1) })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-[#fdfbf7] border-[#1a1408]/20 text-[#1a1408] font-bold shadow-inner focus-visible:ring-[#1a1408]/30"
                     />
                   </div>
 
                   {/* Pages per Sheet */}
                   <div className="space-y-2">
-                    <Label>Pages/Sheet</Label>
+                    <Label className="text-[#1a1408] font-bold uppercase text-xs tracking-wider">Pages/Sheet</Label>
                     <select
                       value={section.pagesPerSheet}
                       onChange={(e) => updateSection(section.id, { pagesPerSheet: Number(e.target.value) as 1 | 2 | 4 })}
-                      className="w-full h-10 px-3 rounded-md bg-white/5 border border-white/10 text-foreground"
+                      className="w-full h-10 px-3 rounded-sm bg-[#fdfbf7] border border-[#1a1408]/20 text-[#1a1408] font-bold shadow-inner focus:outline-none focus:ring-2 focus:ring-[#1a1408]/30"
                     >
                       <option value={1}>1 Page</option>
                       <option value={2}>2 Pages</option>
@@ -276,23 +277,24 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
                 </div>
 
                 {/* Duplex Printing */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3 pt-2">
                   <Checkbox
                     id={`${section.id}-duplex`}
                     checked={section.isDuplex}
                     onCheckedChange={(checked) => updateSection(section.id, { isDuplex: !!checked })}
+                    className="border-[#1a1408]/40 data-[state=checked]:bg-[#1a1408] data-[state=checked]:text-[#fdfbf7]"
                   />
-                  <Label htmlFor={`${section.id}-duplex`} className="cursor-pointer">
+                  <Label htmlFor={`${section.id}-duplex`} className="cursor-pointer text-sm font-semibold text-[#1a1408]">
                     Front & Back Side Print (Duplex)
                   </Label>
                 </div>
 
                 {/* Subtotal */}
                 {section.file && (
-                  <div className="pt-2 border-t border-white/10 flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Subtotal</span>
-                    <div className="flex items-center gap-1 text-lg font-semibold text-primary">
-                      <IndianRupee className="w-4 h-4" />
+                  <div className="pt-4 border-t border-dashed border-[#1a1408]/20 flex justify-between items-center bg-[#fdfbf7] p-3 -mx-2 rounded-sm border">
+                    <span className="text-xs font-bold tracking-widest uppercase text-[#6b5d45]">Subtotal</span>
+                    <div className="flex items-center gap-1 text-xl font-black text-[#1a1408]">
+                      <IndianRupee className="w-5 h-5 text-[#6b5d45]" />
                       {calculateSubtotal(section.id, bwRate, colorRate).toFixed(2)}
                     </div>
                   </div>
@@ -306,25 +308,30 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
       {/* Add Another Print Button */}
       <button
         onClick={addSection}
-        className="w-full py-8 border-2 border-dashed border-white/20 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center gap-2 group"
+        className="w-full py-6 border-[3px] border-dashed border-[#1a1408]/20 rounded-sm hover:border-[#1a1408]/50 hover:bg-[#1a1408]/5 transition-all flex flex-col items-center justify-center gap-3 group shadow-[inset_0px_0px_10px_rgba(0,0,0,0.02)]"
       >
-        <div className="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
-          <Plus className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
+        <div className="w-12 h-12 rounded-full bg-[#1a1408]/10 group-hover:bg-[#1a1408] flex items-center justify-center transition-colors">
+          <Plus className="w-6 h-6 text-[#3a3120] group-hover:text-[#fdfbf7]" />
         </div>
-        <span className="text-sm text-muted-foreground group-hover:text-primary">Add Another Print</span>
+        <span className="text-sm font-bold uppercase tracking-widest text-[#3a3120] group-hover:text-[#1a1408]">Add Another Print Job</span>
       </button>
 
       {/* Grand Total (Fixed) */}
-      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border border-white/10 rounded-xl p-4 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
+      <div className="sticky bottom-4 mx-2 bg-[#fdfbf7] border border-[#1a1408]/20 rounded-sm p-5 shadow-[4px_4px_15px_rgba(0,0,0,0.15)] z-20"
+        style={{
+          backgroundImage: `url('/images/paper-texture.png')`,
+          backgroundSize: 'cover',
+          backgroundBlendMode: 'multiply',
+        }}>
+        <div className="flex items-end justify-between mb-5">
           <div>
-            <p className="text-sm text-muted-foreground">Grand Total</p>
-            <p className="text-xs text-muted-foreground">
-              {sections.filter(s => s.file).length} file(s) • {sections.reduce((sum, s) => sum + (s.file ? s.pageCount * s.copies : 0), 0)} total pages
+            <p className="text-xs font-black tracking-widest uppercase text-[#3a3120] opacity-80 mb-1">Grand Total</p>
+            <p className="text-sm font-semibold text-[#6b5d45]">
+              {sections.filter(s => s.file).length} File(s) <span className="opacity-50 mx-1">•</span> {sections.reduce((sum, s) => sum + (s.file ? s.pageCount * s.copies : 0), 0)} Pages Total
             </p>
           </div>
-          <div className="flex items-center gap-1 text-3xl font-bold text-primary">
-            <IndianRupee className="w-6 h-6" />
+          <div className="flex items-center gap-1 text-4xl font-rubik-dirt text-[#1a1408]">
+            <IndianRupee className="w-8 h-8 opacity-80 mb-1.5" />
             {grandTotal.toFixed(2)}
           </div>
         </div>
@@ -332,15 +339,15 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
           disabled={loading || sections.filter(s => s.file).length === 0}
           onClick={handleOrder}
           size="lg"
-          className="w-full text-lg font-semibold"
+          className="w-full text-sm font-black tracking-widest uppercase h-14 bg-gradient-to-br from-[#1a1408] to-[#3a3120] hover:from-[#3a3120] hover:to-[#5a5140] text-[#fdfbf7] rounded-sm shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] transition-all"
         >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Processing...
+              Processing Order...
             </>
           ) : (
-            "Place Order"
+            "Complete Order"
           )}
         </Button>
       </div>
