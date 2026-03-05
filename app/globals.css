@@ -189,6 +189,16 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  ::selection {
+    background-color: #0a1128;
+    color: #ffffff;
+  }
+
+  ::-moz-selection {
+    background-color: #0a1128;
+    color: #ffffff;
+  }
 }
 
 /* Flow gradient hero (components/ui/flow-gradient-hero-section.tsx) */

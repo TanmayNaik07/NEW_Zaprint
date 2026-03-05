@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { User, Lock, Bell, Moon, Save, Loader2, CheckCircle } from "lucide-react"
+import { User, Lock, Bell, Save, Loader2, CheckCircle } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function SettingsPage() {
@@ -20,7 +20,6 @@ export default function SettingsPage() {
     printReady: true,
     marketing: false,
   })
-  const [darkMode, setDarkMode] = useState(true)
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -169,26 +168,7 @@ export default function SettingsPage() {
         </div>
       </motion.div>
 
-      {/* Theme Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-        className="p-6 rounded-2xl border border-black/5 bg-white/70 backdrop-blur-sm shadow-sm"
-      >
-        <div className="flex items-center gap-2 mb-6">
-          <Moon className="w-5 h-5 text-[#0a1128]" />
-          <h2 className="text-[#0a1128] text-lg font-semibold">Theme Preference</h2>
-        </div>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[#0a1128] font-medium">Dark Mode</p>
-            <p className="text-[#5b637a] text-sm">Use dark theme (enabled by default)</p>
-          </div>
-          <Switch checked={darkMode} onCheckedChange={setDarkMode} className="data-[state=checked]:bg-primary" />
-        </div>
-      </motion.div>
 
       {/* Save Button */}
       <motion.div

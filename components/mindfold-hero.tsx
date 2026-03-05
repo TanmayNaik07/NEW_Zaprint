@@ -7,7 +7,7 @@ export function MindfoldHero() {
   return (
     <section className="bg-transparent pt-40 pb-32 relative overflow-hidden">
       {/* Absolute SVG Doodle Overlay from Canva */}
-      <img src="/1-overlay.svg" alt="Hero Details" className="absolute top-0 left-0 w-full h-auto object-top pointer-events-none z-10" />
+      <img src="/1-overlay.svg" alt="Hero Details" className="absolute top-0 left-0 w-full h-auto object-top pointer-events-none z-10 translate-x-[20px] md:translate-x-[40px] lg:translate-x-[60px]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative z-20">
         {/* Badge */}
