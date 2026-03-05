@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { type RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { FileText, Clock, Store, CheckCircle2, XCircle, Printer, RefreshCw } from "lucide-react"
@@ -34,7 +33,7 @@ export interface Order {
   shops?: Shop
   order_items?: OrderItem[]
   receipt_number?: string
-  order_number?: number // New field
+  order_number?: number
 }
 
 interface OrdersListProps {
@@ -76,7 +75,6 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
             console.log('Realtime change received:', payload)
 
             if (payload.eventType === 'INSERT') {
-              // Fetch the new order with relations
               const { data: newOrder, error } = await supabase
                 .from('orders')
                 .select(`
@@ -98,11 +96,6 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
                 playNotificationSound()
               }
             } else if (payload.eventType === 'UPDATE') {
-              // Determine if we need to fetch fresh data (e.g. if relations usage changed, but here usually just status)
-              // To be safe and keep UI in sync, we can just update the fields we have, 
-              // OR re-fetch if we suspect other things changed.
-              // For status updates, local update is fine, but let's be robust.
-
               const updatedOrder = payload.new as Order
 
               setOrders((prev) => prev.map((order) => {
@@ -115,9 +108,6 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
                     playNotificationSound()
                   }
 
-                  // Merge the new data. 
-                  // Note: Realtime payload doesn't include relations (shops, order_items).
-                  // So we preserve the existing relations from `order` and overwrite the scalar fields from `updatedOrder`.
                   return {
                     ...order,
                     ...updatedOrder,
@@ -134,9 +124,6 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
         )
         .subscribe((status) => {
           console.log(`Realtime subscription status:`, status)
-          if (status === 'SUBSCRIBED') {
-            // Optional: show a small indicator or log
-          }
         })
     }
 
@@ -154,16 +141,16 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20"
+        return "bg-[#f5e6c8] text-[#8B6914] border-[#d4b96a]"
       case "processing":
       case "printing":
-        return "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20"
+        return "bg-[#dce8f5] text-[#2563EB] border-[#93b4e0]"
       case "completed":
-        return "bg-green-500/10 text-green-500 hover:bg-green-500/20"
+        return "bg-[#d5f0db] text-[#166534] border-[#86d99a]"
       case "cancelled":
-        return "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+        return "bg-[#fde2e2] text-[#991B1B] border-[#f5a3a3]"
       default:
-        return "bg-white/5 text-muted-foreground"
+        return "bg-[#ece9e4] text-[#5b637a] border-[#c9c5be]"
     }
   }
 
@@ -185,51 +172,67 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10">
-        <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-foreground">No orders yet</h3>
+      <div className="ticket-stub" style={{ minHeight: '160px' }}>
+        <div className="ticket-scallop-left" />
+        <div className="ticket-scallop-right" />
+        <div className="ticket-stub-inner flex flex-col items-center justify-center py-10">
+          <FileText className="w-12 h-12 text-[#6b5d45]/40 mx-auto mb-4" />
+          <h3 className="font-rubik-dirt text-[#1a1408] text-lg">No orders yet</h3>
+          <p className="text-[#6b5d45] text-sm mt-1">Your print orders will appear here.</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-end">
-        <button onClick={() => window.location.reload()} className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={() => window.location.reload()} className="text-xs flex items-center gap-1 text-[#6b5d45] hover:text-[#1a1408] transition-colors font-medium tracking-wide uppercase">
           <RefreshCw className="w-3 h-3" /> Refresh
         </button>
       </div>
       {orders.map((order) => (
-        <Card key={order.id} className="bg-white/5 border-white/10 hover:bg-white/[0.07] transition-colors">
-          <CardHeader className="p-4 flex flex-row items-center justify-between space-y-0 pb-2 border-b border-white/5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Store className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-base">{order.shops?.shop_name || "Unknown Shop"}</h3>
-                <p className="text-xs text-muted-foreground">
-                  {format(new Date(order.created_at), "PPP p")}
-                </p>
-              </div>
-            </div>
-            <Badge variant="outline" className={`border-0 gap-1.5 capitalize ${getStatusColor(order.status)}`}>
-              {getStatusIcon(order.status)}
-              {order.status}
-            </Badge>
-          </CardHeader>
+        <div key={order.id} className="ticket-stub group transition-shadow duration-300 hover:shadow-[4px_4px_16px_rgba(0,0,0,0.12)]">
+          {/* Scalloped edge overlays */}
+          <div className="ticket-scallop-left" />
+          <div className="ticket-scallop-right" />
 
-          <CardContent className="p-4 space-y-4">
+          <div className="ticket-stub-inner">
+            {/* Header row: Shop name + Status */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#f5e6c8] border border-[#d4c5a0] flex items-center justify-center">
+                  <Store className="w-5 h-5 text-[#3a3120]" />
+                </div>
+                <div>
+                  <h3 className="font-rubik-dirt text-[#1a1408] text-base md:text-lg leading-tight">
+                    {order.shops?.shop_name || "Unknown Shop"}
+                  </h3>
+                  <p className="text-xs text-[#6b5d45] mt-0.5">
+                    {format(new Date(order.created_at), "PPP p")}
+                  </p>
+                </div>
+              </div>
+              <Badge variant="outline" className={`border gap-1.5 capitalize text-xs font-semibold px-3 py-1 ${getStatusColor(order.status)}`}>
+                {getStatusIcon(order.status)}
+                {order.status}
+              </Badge>
+            </div>
+
+            {/* Dashed divider */}
+            <div className="border-t-[2px] border-dashed border-[#1a1408]/30 my-3" />
+
+            {/* Order items */}
             <div className="space-y-2">
               {order.order_items?.map((item) => (
-                <div key={item.id} className="flex items-center justify-between bg-black/20 p-3 rounded-lg">
+                <div key={item.id} className="flex items-center justify-between bg-[#f7f6f4] border border-[#ece9e4] p-3 rounded-md">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded bg-white/5">
-                      <FileText className="w-4 h-4 text-muted-foreground" />
+                    <div className="p-2 rounded bg-white border border-[#dbd7d1]">
+                      <FileText className="w-4 h-4 text-[#3a3120]" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium line-clamp-1">{item.file_name}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <p className="text-sm font-medium text-[#1a1408] line-clamp-1">{item.file_name}</p>
+                      <div className="flex items-center gap-2 text-xs text-[#6b5d45]">
                         <span className="capitalize">{item.color_mode === 'bw' ? 'B&W' : 'Color'}</span>
                         <span>•</span>
                         <span>{item.copies} Cop{item.copies > 1 ? 'ies' : 'y'}</span>
@@ -240,12 +243,18 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
               ))}
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <p className="text-xs text-muted-foreground font-mono truncate max-w-[200px]">Order ID: {order.id}</p>
-              <p className="text-lg font-bold">₹{order.total_amount}</p>
+            {/* Dashed divider */}
+            <div className="border-t-[2px] border-dashed border-[#1a1408]/30 my-3" />
+
+            {/* Footer: Order ID + Total */}
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-[#6b5d45] font-mono truncate max-w-[200px]">
+                Order ID: {order.id.slice(0, 8)}...
+              </p>
+              <p className="font-rubik-dirt text-[#1a1408] text-xl md:text-2xl">₹{order.total_amount}</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ))}
     </div>
   )
