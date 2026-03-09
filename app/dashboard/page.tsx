@@ -66,19 +66,29 @@ export default function DashboardOverview() {
         <div className="mt-6 border-t-[3px] border-dashed border-[#1a1408]/70 w-full" />
       </div>
 
-      {/* Summary Cards - Sticky Note Style */}
+      {/* Summary Cards - Clean Paper + Tape Style */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="relative bg-gradient-to-br from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0] rounded-sm p-7 h-40 animate-pulse shadow-[4px_4px_12px_rgba(0,0,0,0.1)]"
+              className="relative rounded-[2px] p-7 h-[180px] animate-pulse overflow-visible"
               style={{
-                transform: `rotate(${i === 1 ? '-2deg' : i === 2 ? '1deg' : '-1deg'})`,
+                backgroundImage: `url('/images/new-paper.png')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                boxShadow: '2px 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
+                transform: `rotate(${i === 1 ? '-1.5deg' : i === 2 ? '0.8deg' : '-0.5deg'})`,
               }}
             >
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-[#d4c5a0]/60 rounded-sm" />
-              <div className="h-4 w-20 bg-[#3a3120]/10 rounded mb-4 mt-4" />
+              {/* Masking tape at top center */}
+              <img
+                src="/images/tape.svg"
+                alt=""
+                className="absolute top-0 left-1/2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+                style={{ transform: 'translateX(-50%) translateY(-40%)' }}
+              />
+              <div className="h-4 w-20 bg-[#3a3120]/10 rounded mb-4 mt-6" />
               <div className="h-10 w-24 bg-[#3a3120]/10 rounded mb-3" />
               <div className="h-3 w-28 bg-[#3a3120]/10 rounded" />
             </div>
@@ -93,7 +103,29 @@ export default function DashboardOverview() {
 
       {/* Recent Activity */}
       {isLoading ? (
-        <div className="rounded-sm bg-gradient-to-br from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0] p-6 animate-pulse shadow-[4px_4px_12px_rgba(0,0,0,0.1)]">
+        <div
+          className="rounded-[2px] p-6 animate-pulse relative overflow-visible"
+          style={{
+            backgroundImage: `url('/images/new-paper.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            boxShadow: '2px 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
+          }}
+        >
+          {/* Masking tape at top-left corner */}
+          <img
+            src="/images/tape.svg"
+            alt=""
+            className="absolute top-0 left-0 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+            style={{ transform: 'rotate(-35deg) translateY(-50%) translateX(-30%)' }}
+          />
+          {/* Masking tape at top-right corner */}
+          <img
+            src="/images/tape.svg"
+            alt=""
+            className="absolute top-0 right-2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+            style={{ transform: 'rotate(25deg) translateY(-40%)' }}
+          />
           <div className="h-6 w-40 bg-[#3a3120]/10 rounded mb-6" />
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex items-center gap-4 py-4 border-b border-[#3a3120]/10 last:border-0">

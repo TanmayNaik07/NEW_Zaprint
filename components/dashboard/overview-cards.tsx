@@ -16,24 +16,21 @@ export function OverviewCards({ stats: data }: { stats: OverviewStats }) {
       value: data.activeJobs.toString(),
       description: "Currently processing",
       icon: Printer,
-      rotation: "-2deg",
-      bgGradient: "from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0]",
+      rotation: "-1.5deg",
     },
     {
       title: "Completed Prints",
       value: data.completedMonth.toString(),
       description: "Total completed",
       icon: CheckCircle,
-      rotation: "1deg",
-      bgGradient: "from-[#f0ddb8] via-[#ede0c8] to-[#f5e6c8]",
+      rotation: "0.8deg",
     },
     {
       title: "Avg Print Time",
       value: data.avgTime,
       description: "Per document",
       icon: Clock,
-      rotation: "-1deg",
-      bgGradient: "from-[#f5e6c8] via-[#f0ddb8] to-[#ede0c8]",
+      rotation: "-0.5deg",
     },
   ]
 
@@ -47,35 +44,37 @@ export function OverviewCards({ stats: data }: { stats: OverviewStats }) {
           transition={{ duration: 0.5, delay: index * 0.15, type: "spring", stiffness: 120 }}
           className="group"
         >
-          {/* Sticky Note Card */}
+          {/* Clean Paper Card with Tape */}
           <div
-            className={`relative bg-gradient-to-br ${stat.bgGradient} rounded-sm p-6 md:p-7 shadow-[4px_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 group-hover:shadow-[6px_6px_20px_rgba(0,0,0,0.2)] group-hover:scale-[1.03]`}
+            className="relative rounded-[2px] p-6 md:p-7 transition-all duration-300 group-hover:scale-[1.03] overflow-visible"
             style={{
-              backgroundImage: `url('/images/paper-texture.png')`,
+              backgroundImage: `url('/images/new-paper.png')`,
               backgroundSize: 'cover',
-              backgroundBlendMode: 'multiply',
+              backgroundPosition: 'center',
+              boxShadow: '2px 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
+              minHeight: '180px',
             }}
           >
-            {/* Tape effect at top */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-[#d4c5a0]/60 rounded-sm shadow-sm" />
-
-            {/* Folded corner effect */}
-            <div className="absolute bottom-0 right-0 w-8 h-8">
-              <div className="absolute bottom-0 right-0 w-0 h-0 border-l-[32px] border-l-transparent border-b-[32px] border-b-[#c9b896] opacity-60" />
-            </div>
+            {/* Masking tape at top center */}
+            <img
+              src="/images/tape.svg"
+              alt=""
+              className="absolute top-0 left-1/2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+              style={{ transform: 'translateX(-50%) translateY(-40%)' }}
+            />
 
             {/* Card content */}
-            <div className="relative z-10 mt-2">
+            <div className="relative z-10 mt-3">
               <div className="flex items-center gap-3 mb-4">
-                <stat.icon className="w-6 h-6 text-[#3a3120] opacity-70" strokeWidth={2.5} />
+                <stat.icon className="w-6 h-6 text-[#3a3120] opacity-60" strokeWidth={2} />
               </div>
-              <p className="font-rubik-dirt text-[#3a3120] text-sm tracking-wide uppercase mb-2 opacity-80">
+              <p className="font-rubik-dirt text-[#3a3120] text-sm tracking-wide uppercase mb-2 opacity-70">
                 {stat.title}
               </p>
               <p className="font-rubik-dirt text-[#1a1408] text-4xl md:text-5xl tracking-tight leading-none mb-3">
                 {stat.value}
               </p>
-              <p className="text-[#6b5d45] text-xs font-medium tracking-wider uppercase">
+              <p className="text-[#6b5d45] text-xs font-medium tracking-wider uppercase opacity-80">
                 {stat.description}
               </p>
             </div>

@@ -68,14 +68,29 @@ export function RecentActivity({ orders }: { orders: Order[] }) {
       <div className="space-y-4">
         <h2 className="font-rubik-dirt text-[#1a1408] text-xl md:text-2xl tracking-tight">Recent Activity</h2>
         <div
-          className="p-8 text-center text-[#6b5d45] bg-gradient-to-br from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0] rounded-sm shadow-[4px_4px_12px_rgba(0,0,0,0.1)]"
+          className="relative p-8 text-center text-[#6b5d45] rounded-[2px] overflow-visible"
           style={{
-            backgroundImage: `url('/images/paper-texture.png')`,
+            backgroundImage: `url('/images/new-paper.png')`,
             backgroundSize: 'cover',
-            backgroundBlendMode: 'multiply',
+            backgroundPosition: 'center',
+            boxShadow: '2px 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
           }}
         >
-          <p className="font-rubik-dirt text-lg">No recent activity.</p>
+          {/* Masking tape at top-left corner */}
+          <img
+            src="/images/tape.svg"
+            alt=""
+            className="absolute top-0 left-0 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+            style={{ transform: 'rotate(-35deg) translateY(-50%) translateX(-30%)' }}
+          />
+          {/* Masking tape at top-right corner */}
+          <img
+            src="/images/tape.svg"
+            alt=""
+            className="absolute top-0 right-2 w-14 h-14 object-contain opacity-90 drop-shadow-sm rotate-[25deg] pointer-events-none z-20"
+            style={{ transform: 'rotate(25deg) translateY(-40%)' }}
+          />
+          <p className="font-rubik-dirt text-lg relative z-10">No recent activity.</p>
         </div>
       </div>
     )
@@ -91,17 +106,33 @@ export function RecentActivity({ orders }: { orders: Order[] }) {
       </div>
 
       <div
-        className="rounded-sm bg-gradient-to-br from-[#f5e6c8] via-[#ede0c8] to-[#e8d5b0] overflow-hidden shadow-[4px_4px_12px_rgba(0,0,0,0.1)]"
+        className="rounded-[2px] overflow-visible relative"
         style={{
-          backgroundImage: `url('/images/paper-texture.png')`,
+          backgroundImage: `url('/images/new-paper.png')`,
           backgroundSize: 'cover',
-          backgroundBlendMode: 'multiply',
+          backgroundPosition: 'center',
+          boxShadow: '2px 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
         }}
       >
+        {/* Masking tape at top-left corner */}
+        <img
+          src="/images/tape.svg"
+          alt=""
+          className="absolute top-0 left-0 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+          style={{ transform: 'rotate(-35deg) translateY(-50%) translateX(-30%)' }}
+        />
+        {/* Masking tape at top-right corner - matching the design PNG */}
+        <img
+          src="/images/tape.svg"
+          alt=""
+          className="absolute top-0 right-2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+          style={{ transform: 'rotate(25deg) translateY(-40%)' }}
+        />
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b-2 border-dashed border-[#3a3120]/20">
+              <tr className="border-b-2 border-dashed border-[#3a3120]/15">
                 <th className="text-left text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4">
                   Document
                 </th>
