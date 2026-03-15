@@ -32,19 +32,43 @@ export default function AdminShopsPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    async function fetchShops() {
-      const { data, error } = await supabase
-        .from("shops")
-        .select("*, services:shop_services(service_name, price)")
-        .order("created_at", { ascending: false })
-
-      if (!error && data) {
-        setShops(data as any)
-      }
-      setIsLoading(false)
-    }
     fetchShops()
+
+    // Realtime subscription
+    const channel = supabase
+      .channel('admin-shops-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'shops' },
+        (payload) => {
+          console.log('Shop change received:', payload)
+          if (payload.eventType === 'UPDATE') {
+            setShops(prev => prev.map(s => s.id === payload.new.id ? { ...s, ...payload.new } : s))
+          } else if (payload.eventType === 'INSERT') {
+            setShops(prev => [payload.new as Shop, ...prev])
+          } else if (payload.eventType === 'DELETE') {
+            setShops(prev => prev.filter(s => s.id !== payload.old.id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
+
+  async function fetchShops() {
+    const { data, error } = await supabase
+      .from("shops")
+      .select("*, services:shop_services(service_name, price)")
+      .order("created_at", { ascending: false })
+
+    if (!error && data) {
+      setShops(data as any)
+    }
+    setIsLoading(false)
+  }
 
   const filtered = shops.filter((s) => {
     if (!search) return true

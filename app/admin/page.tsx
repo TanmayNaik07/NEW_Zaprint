@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { motion, AnimatePresence } from "framer-motion"
+import { toast } from "sonner"
 import {
   ShoppingCart,
   Store,
@@ -57,24 +60,58 @@ export default function AdminOverview() {
   const [shopPerformance, setShopPerformance] = useState<ShopPerformance[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  const supabase = createClient()
+
   useEffect(() => {
-    async function fetchStats() {
-      try {
-        const res = await fetch("/api/admin/stats")
-        if (!res.ok) throw new Error("Failed to fetch stats")
-        const data = await res.json()
-        setStats(data.stats)
-        setChartData(data.chartData)
-        setRecentOrders(data.recentOrders)
-        setShopPerformance(data.shopPerformance)
-      } catch (err) {
-        console.error("Error fetching admin stats:", err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
     fetchStats()
+
+    // Realtime subscription for orders
+    const ordersChannel = supabase
+      .channel('overview-orders-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders' },
+        async (payload) => {
+          console.log('Overview: Order change received:', payload)
+          // For simplicity, we can just re-fetch everything to keep charts in sync
+          // but for a truly "fast" feel, we'd update specific stats local state.
+          // Let's re-fetch to ensure data integrity for complex charts.
+          fetchStats()
+        }
+      )
+      .subscribe()
+
+    // Realtime subscription for feedback
+    const feedbackChannel = supabase
+      .channel('overview-feedback-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'feedback' },
+        () => fetchStats()
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(ordersChannel)
+      supabase.removeChannel(feedbackChannel)
+    }
   }, [])
+
+  async function fetchStats() {
+    try {
+      const res = await fetch("/api/admin/stats")
+      if (!res.ok) throw new Error("Failed to fetch stats")
+      const data = await res.json()
+      setStats(data.stats)
+      setChartData(data.chartData)
+      setRecentOrders(data.recentOrders)
+      setShopPerformance(data.shopPerformance)
+    } catch (err) {
+      console.error("Error fetching admin stats:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const statCards = stats
     ? [

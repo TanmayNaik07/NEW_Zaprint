@@ -77,7 +77,7 @@ export default async function TermsPage() {
               </div>
             </section>
           ))}
-          
+
           {/* Contact section is usually custom or last */}
           <section>
             <h2 className="text-xl font-bold text-[#0a1128] mb-3">Contact</h2>
@@ -85,7 +85,7 @@ export default async function TermsPage() {
               For questions about these Terms of Service, contact us at:
             </p>
             <p className="text-[#0a1128] font-semibold mt-2">
-              Email: legal@zaprint.in
+              Email: zaprint.official@gmail.com
             </p>
           </section>
         </article>

@@ -83,7 +83,7 @@ export default async function PrivacyPage() {
               If you have questions about this Privacy Policy or your data, contact us at:
             </p>
             <p className="text-[#0a1128] font-semibold mt-2">
-              Email: privacy@zaprint.in
+              Email: zaprint.official@gmail.com
             </p>
           </section>
         </article>

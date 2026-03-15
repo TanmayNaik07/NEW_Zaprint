@@ -13,6 +13,8 @@ import {
   Filter,
 } from "lucide-react"
 import { toast } from "sonner"
+import { createClient } from "@/lib/supabase/client"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface Feedback {
   id: string
@@ -33,8 +35,34 @@ export default function AdminFeedbackPage() {
   const [filter, setFilter] = useState<"all" | "approved" | "pending" | "featured">("all")
   const [search, setSearch] = useState("")
 
+  const supabase = createClient()
+
   useEffect(() => {
     fetchFeedback()
+
+    // Realtime subscription
+    const channel = supabase
+      .channel('admin-feedback-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'feedback' },
+        (payload) => {
+          console.log('Feedback change received:', payload)
+          if (payload.eventType === 'INSERT') {
+            setFeedback(prev => [payload.new as Feedback, ...prev])
+            toast.info(`New feedback received from ${payload.new.user_name}`)
+          } else if (payload.eventType === 'UPDATE') {
+            setFeedback(prev => prev.map(f => f.id === payload.new.id ? { ...f, ...payload.new } : f))
+          } else if (payload.eventType === 'DELETE') {
+            setFeedback(prev => prev.filter(f => f.id === payload.old.id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   async function fetchFeedback() {
@@ -223,13 +251,18 @@ export default function AdminFeedbackPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {filtered.map((fb) => (
-            <div
-              key={fb.id}
-              className={`rounded-[2.5rem] border p-8 transition-all hover:translate-y-[-2px] hover:shadow-2xl shadow-xl shadow-black/[0.02] bg-white/80 backdrop-blur-sm relative overflow-hidden group ${
-                fb.is_featured ? "border-amber-500/20" : "border-black/5"
-              }`}
-            >
+          <AnimatePresence mode="popLayout">
+            {filtered.map((fb) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                key={fb.id}
+                className={`rounded-[2.5rem] border p-8 transition-all hover:translate-y-[-2px] hover:shadow-2xl shadow-xl shadow-black/[0.02] bg-white/80 backdrop-blur-sm relative overflow-hidden group ${
+                  fb.is_featured ? "border-amber-500/20" : "border-black/5"
+                }`}
+              >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
                 <div className="flex-1">
                   {/* User Info */}
@@ -326,9 +359,10 @@ export default function AdminFeedbackPage() {
               
               {/* Feature highlight bar */}
               {fb.is_featured && <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500" />}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </AnimatePresence>
+      </div>
       )}
     </div>
   )

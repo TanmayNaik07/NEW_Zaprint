@@ -10,8 +10,14 @@ import {
   CheckCircle2,
   XCircle,
   Printer,
-  Loader2
+  Loader2,
+  ChevronRight,
+  MoreVertical,
+  Check,
+  Ban
 } from "lucide-react"
+import { toast } from "sonner"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface Order {
   id: string
@@ -34,22 +40,77 @@ export default function AdminOrdersPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    async function fetchOrders() {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*, order_items(file_name, copies, color_mode), shops:shop_id(shop_name)")
-        .order("created_at", { ascending: false })
-        .limit(100)
-
-      if (error) {
-        console.error("Error fetching admin orders:", error.message || JSON.stringify(error))
-      } else if (data) {
-        setOrders(data as any)
-      }
-      setIsLoading(false)
-    }
     fetchOrders()
+
+    // Realtime subscription
+    const channel = supabase
+      .channel('admin-orders-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders' },
+        async (payload) => {
+          console.log('Order change received:', payload)
+          if (payload.eventType === 'INSERT') {
+            // Fetch the full order details for the new order
+            const { data } = await supabase
+              .from("orders")
+              .select("*, order_items(file_name, copies, color_mode), shops:shop_id(shop_name)")
+              .eq('id', payload.new.id)
+              .single()
+            
+            if (data) {
+              setOrders(prev => [data as any, ...prev].slice(0, 200)) // Keep limit
+              toast.info(`New order received: #${data.id.slice(0, 8)}`, {
+                description: data.order_items?.[0]?.file_name
+              })
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            setOrders(prev => prev.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o))
+          } else if (payload.eventType === 'DELETE') {
+            setOrders(prev => prev.filter(o => o.id !== payload.old.id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
+
+  async function fetchOrders() {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*, order_items(file_name, copies, color_mode), shops:shop_id(shop_name)")
+      .order("created_at", { ascending: false })
+      .limit(100)
+
+    if (error) {
+      console.error("Error fetching admin orders:", error.message || JSON.stringify(error))
+    } else if (data) {
+      setOrders(data as any)
+    }
+    setIsLoading(false)
+  }
+
+  async function updateOrderStatus(id: string, newStatus: string) {
+    const oldOrders = [...orders]
+    // Optimistic update
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o))
+    
+    try {
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', id)
+
+      if (error) throw error
+      toast.success(`Order status updated to ${newStatus}`)
+    } catch (err) {
+      setOrders(oldOrders)
+      toast.error("Failed to update status")
+    }
+  }
 
   const statusIcon = (status: string) => {
     switch (status) {
@@ -179,76 +240,106 @@ export default function AdminOrdersPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {filtered.map((order) => (
-            <div
-              key={order.id}
-              className="group grid grid-cols-1 md:grid-cols-12 gap-4 items-center px-8 py-6 rounded-[2.5rem] border border-black/5 bg-white/80 backdrop-blur-sm hover:translate-y-[-2px] hover:shadow-2xl transition-all shadow-xl shadow-black/[0.02] relative overflow-hidden"
-            >
-              {/* Order Item / File */}
-              <div className="md:col-span-4 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-[#0a1128]/5 flex items-center justify-center shrink-0">
-                  <FileText className="h-7 w-7 text-[#0a1128]" />
+          <AnimatePresence mode="popLayout">
+            {filtered.map((order) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                key={order.id}
+                className="group grid grid-cols-1 md:grid-cols-12 gap-4 items-center px-8 py-6 rounded-[2.5rem] border border-black/5 bg-white/80 backdrop-blur-sm hover:translate-y-[-2px] hover:shadow-2xl transition-all shadow-xl shadow-black/[0.02] relative overflow-hidden"
+              >
+                {/* Order Item / File */}
+                <div className="md:col-span-4 flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-[#0a1128]/5 flex items-center justify-center shrink-0">
+                    <FileText className="h-7 w-7 text-[#0a1128]" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[#0a1128] font-black uppercase tracking-tight text-lg truncate leading-none">
+                      {order.order_items?.[0]?.file_name || "Unknown File"}
+                    </p>
+                    <p className="text-[#5b637a] text-[10px] font-bold mt-1 uppercase tracking-widest">
+                      ID: {order.id.slice(0, 8)}
+                      {(order.order_items?.length || 0) > 1 && ` · +${(order.order_items?.length || 0) - 1} more`}
+                    </p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[#0a1128] font-black uppercase tracking-tight text-lg truncate leading-none">
-                    {order.order_items?.[0]?.file_name || "Unknown File"}
+
+                {/* Shop Info */}
+                <div className="md:col-span-3 flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-amber-500/5">
+                    <Store className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <p className="text-[#0a1128] font-black uppercase tracking-tight text-sm truncate">
+                    {order.shops?.shop_name || "Zaprint Partner"}
                   </p>
-                  <p className="text-[#5b637a] text-[10px] font-bold mt-1 uppercase tracking-widest">
-                    ID: {order.id.slice(0, 8)}
-                    {(order.order_items?.length || 0) > 1 && ` · +${(order.order_items?.length || 0) - 1} more`}
+                </div>
+
+                {/* Status Badge */}
+                <div className="md:col-span-2 flex flex-col items-start md:items-center">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border transition-colors ${statusColor(
+                      order.status
+                    )}`}
+                  >
+                    {statusIcon(order.status)}
+                    {order.status}
+                  </span>
+                </div>
+
+                {/* Amount */}
+                <div className="md:col-span-1 text-left md:text-right">
+                  <p className="text-[#0a1128] font-black text-lg tracking-tighter">
+                    ₹{Number(order.total_amount).toLocaleString("en-IN")}
                   </p>
                 </div>
-              </div>
 
-              {/* Shop Info */}
-              <div className="md:col-span-3 flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-amber-500/5">
-                  <Store className="h-4 w-4 text-amber-600" />
+                {/* Actions Popover (Hover/Modern 스타일) */}
+                <div className="md:col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {order.status === 'pending' && (
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'processing')}
+                      className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                      title="Mark as Processing"
+                    >
+                      <Loader2 className="h-4 w-4" />
+                    </button>
+                  )}
+                  {order.status === 'processing' && (
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'printing')}
+                      className="p-2.5 rounded-xl bg-violet-500/10 text-violet-600 hover:bg-violet-500 hover:text-white transition-all shadow-sm"
+                      title="Mark as Printing"
+                    >
+                      <Printer className="h-4 w-4" />
+                    </button>
+                  )}
+                  {order.status === 'printing' && (
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'completed')}
+                      className="p-2.5 rounded-xl bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white transition-all shadow-sm"
+                      title="Mark as Completed"
+                    >
+                      <Check className="h-4 w-4" />
+                    </button>
+                  )}
+                  {order.status !== 'completed' && order.status !== 'cancelled' && (
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'cancelled')}
+                      className="p-2.5 rounded-xl bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                      title="Cancel Order"
+                    >
+                      <Ban className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
-                <p className="text-[#0a1128] font-black uppercase tracking-tight text-sm truncate">
-                  {order.shops?.shop_name || "Zaprint Partner"}
-                </p>
-              </div>
 
-              {/* Status & Amount */}
-              <div className="md:col-span-2 flex flex-col items-start md:items-center">
-                <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${statusColor(
-                    order.status
-                  )}`}
-                >
-                  {statusIcon(order.status)}
-                  {order.status}
-                </span>
-              </div>
-
-              <div className="md:col-span-1 text-left md:text-right">
-                <p className="text-[#0a1128] font-black text-lg tracking-tighter">
-                  ₹{Number(order.total_amount).toLocaleString("en-IN")}
-                </p>
-              </div>
-
-              {/* Date */}
-              <div className="md:col-span-2 text-left md:text-right">
-                <p className="text-[#5b637a] text-[10px] uppercase font-black tracking-widest leading-tight">
-                  {new Date(order.created_at).toLocaleDateString("en-IN", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric"
-                  })}
-                </p>
-                <p className="text-[#5b637a]/40 text-[10px] uppercase font-black tracking-widest mt-0.5">
-                  {new Date(order.created_at).toLocaleTimeString("en-IN", {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  })}
-                </p>
-              </div>
-
-              {/* Hover highlight bar */}
-              <div className="absolute top-0 left-0 w-1 h-full bg-[#0a1128]/5 group-hover:bg-[#0a1128] transition-colors" />
-            </div>
-          ))}
+                {/* Hover highlight bar */}
+                <div className="absolute top-0 left-0 w-1 h-full bg-[#0a1128]/5 group-hover:bg-[#0a1128] transition-colors" />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>
