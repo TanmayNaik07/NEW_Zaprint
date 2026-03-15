@@ -3,16 +3,16 @@ import Link from "next/link"
 import { Printer, ArrowRight, Users, MapPin, Shield, Zap, Clock, Heart } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "About ZaPrint — India's Smart Printing Platform",
+  title: "About Zaprint — India's Smart Printing Platform",
   description:
-    "Learn about ZaPrint, the platform that connects you with nearby print shops. Upload documents, pay online, and pick up prints hassle-free. Our mission is to make printing effortless.",
+    "Learn about Zaprint, the platform that connects you with nearby print shops. Upload documents, pay online, and pick up prints hassle-free. Our mission is to make printing effortless.",
   alternates: {
     canonical: "https://zaprint.in/about",
   },
   openGraph: {
-    title: "About ZaPrint — India's Smart Printing Platform",
+    title: "About Zaprint — India's Smart Printing Platform",
     description:
-      "Learn about ZaPrint, the platform revolutionizing document printing in India.",
+      "Learn about Zaprint, the platform revolutionizing document printing in India.",
     url: "https://zaprint.in/about",
   },
 }
@@ -29,7 +29,7 @@ const values = [
     icon: Zap,
     title: "Speed First",
     description:
-      "We believe your time is precious. That's why ZaPrint is built around speed — from upload to pickup in minutes, not hours.",
+      "We believe your time is precious. That's why Zaprint is built around speed — from upload to pickup in minutes, not hours.",
   },
   {
     icon: Shield,
@@ -72,7 +72,7 @@ export default function AboutPage() {
           <div className="bg-[#0a1128] text-white p-2 rounded-xl">
             <Printer className="w-5 h-5" />
           </div>
-          <span className="text-base font-bold text-[#0a1128]">ZaPrint</span>
+          <span className="text-base font-bold text-[#0a1128]">Zaprint</span>
         </Link>
       </nav>
 
@@ -89,7 +89,7 @@ export default function AboutPage() {
             <span className="text-[#0a1128]/40">EFFORTLESS</span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-[#5b637a] font-medium max-w-2xl mx-auto leading-relaxed">
-            ZaPrint was born out of a simple frustration — waiting in long queues at print shops
+            Zaprint was born out of a simple frustration — waiting in long queues at print shops
             while deadlines loomed. We built a platform that lets you upload, pay, and pick up
             prints without ever standing in line.
           </p>
@@ -122,7 +122,7 @@ export default function AboutPage() {
               trips are still the norm.
             </p>
             <p className="text-lg text-[#5b637a] font-medium leading-relaxed mb-4">
-              ZaPrint changes that. We connect users with nearby print shops through a simple digital
+              Zaprint changes that. We connect users with nearby print shops through a simple digital
               workflow: upload your document, choose your print settings, pay online, and get a
               real-time notification when your prints are ready for pickup.
             </p>

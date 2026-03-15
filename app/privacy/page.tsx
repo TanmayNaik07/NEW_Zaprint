@@ -3,15 +3,15 @@ import Link from "next/link"
 import { Printer } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — ZaPrint",
+  title: "Privacy Policy — Zaprint",
   description:
-    "Read ZaPrint's privacy policy. Learn how we collect, use, and protect your personal information and documents when you use our online printing service.",
+    "Read Zaprint's privacy policy. Learn how we collect, use, and protect your personal information and documents when you use our online printing service.",
   alternates: {
     canonical: "https://zaprint.in/privacy",
   },
   openGraph: {
-    title: "Privacy Policy — ZaPrint",
-    description: "Learn how ZaPrint handles your data and protects your privacy.",
+    title: "Privacy Policy — Zaprint",
+    description: "Learn how Zaprint handles your data and protects your privacy.",
     url: "https://zaprint.in/privacy",
   },
 }
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
           <div className="bg-[#0a1128] text-white p-2 rounded-xl">
             <Printer className="w-5 h-5" />
           </div>
-          <span className="text-base font-bold text-[#0a1128]">ZaPrint</span>
+          <span className="text-base font-bold text-[#0a1128]">Zaprint</span>
         </Link>
       </nav>
 
@@ -55,10 +55,10 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-[#0a1128] mb-3">1. Introduction</h2>
             <p className="text-[#5b637a] font-medium leading-relaxed">
-              ZaPrint (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting
+              Zaprint (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting
               your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard
               your information when you use our website and services at zaprint.in (the &quot;Platform&quot;).
-              By using ZaPrint, you agree to the terms of this policy.
+              By using Zaprint, you agree to the terms of this policy.
             </p>
           </section>
 
@@ -149,7 +149,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-[#0a1128] mb-3">9. Children&apos;s Privacy</h2>
             <p className="text-[#5b637a] font-medium leading-relaxed">
-              ZaPrint is not intended for children under 13. We do not knowingly collect data from
+              Zaprint is not intended for children under 13. We do not knowingly collect data from
               children. If you believe we have collected information from a child, please contact us
               immediately.
             </p>
@@ -159,7 +159,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-[#0a1128] mb-3">10. Changes to This Policy</h2>
             <p className="text-[#5b637a] font-medium leading-relaxed">
               We may update this Privacy Policy from time to time. We will notify you of significant
-              changes via email or a prominent notice on the Platform. Your continued use of ZaPrint
+              changes via email or a prominent notice on the Platform. Your continued use of Zaprint
               after changes constitutes acceptance of the updated policy.
             </p>
           </section>

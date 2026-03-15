@@ -8,7 +8,7 @@ import { DashboardLoadingStop } from "@/components/dashboard/loading-stop"
 import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
-  title: "Dashboard — ZaPrint",
+  title: "Dashboard — Zaprint",
   robots: {
     index: false,
     follow: false,

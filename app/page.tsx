@@ -11,7 +11,7 @@ import Script from "next/script"
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "ZaPrint",
+  name: "Zaprint",
   url: "https://zaprint.in",
   logo: "https://zaprint.in/icon.svg",
   description:
@@ -26,7 +26,7 @@ const organizationSchema = {
 const softwareAppSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "ZaPrint",
+  name: "Zaprint",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   offers: {
@@ -44,7 +44,7 @@ const faqSchema = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "How does ZaPrint work?",
+      name: "How does Zaprint work?",
       acceptedAnswer: {
         "@type": "Answer",
         text: "Upload your document, choose print settings (color, paper size, copies), pay online, and pick up your prints when they are ready. No waiting in queues.",
@@ -52,15 +52,15 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "What file formats does ZaPrint support?",
+      name: "What file formats does Zaprint support?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "ZaPrint supports PDF, DOCX, and PPT/PPTX files. We recommend PDF for the best formatting accuracy.",
+        text: "Zaprint supports PDF, DOCX, and PPT/PPTX files. We recommend PDF for the best formatting accuracy.",
       },
     },
     {
       "@type": "Question",
-      name: "How much does printing cost on ZaPrint?",
+      name: "How much does printing cost on Zaprint?",
       acceptedAnswer: {
         "@type": "Answer",
         text: "Black and white printing starts at ₹2 per page, and color printing starts at ₹5 per page. Bulk plans offer additional discounts.",
@@ -68,15 +68,15 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "Can I find printing shops near me on ZaPrint?",
+      name: "Can I find printing shops near me on Zaprint?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes! ZaPrint connects you with partner print shops in your area. Simply enter your location or pincode to find the nearest shops.",
+        text: "Yes! Zaprint connects you with partner print shops in your area. Simply enter your location or pincode to find the nearest shops.",
       },
     },
     {
       "@type": "Question",
-      name: "Is my document data secure on ZaPrint?",
+      name: "Is my document data secure on Zaprint?",
       acceptedAnswer: {
         "@type": "Answer",
         text: "Absolutely. All documents are encrypted during upload and transmission. Files are securely deleted after printing is complete.",

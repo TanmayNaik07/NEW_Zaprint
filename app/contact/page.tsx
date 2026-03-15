@@ -3,16 +3,16 @@ import Link from "next/link"
 import { Printer, Mail, MessageSquare, MapPin, Clock, ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "Contact ZaPrint — Get Help With Printing",
+  title: "Contact Zaprint — Get Help With Printing",
   description:
-    "Get in touch with the ZaPrint team. Whether you have questions about our printing service, need support with an order, or want to partner with us, we're here to help.",
+    "Get in touch with the Zaprint team. Whether you have questions about our printing service, need support with an order, or want to partner with us, we're here to help.",
   alternates: {
     canonical: "https://zaprint.in/contact",
   },
   openGraph: {
-    title: "Contact ZaPrint — Get Help With Printing",
+    title: "Contact Zaprint — Get Help With Printing",
     description:
-      "Have questions about ZaPrint? Contact our team for support, partnership inquiries, or feedback.",
+      "Have questions about Zaprint? Contact our team for support, partnership inquiries, or feedback.",
     url: "https://zaprint.in/contact",
   },
 }
@@ -55,7 +55,7 @@ const faqs = [
       "Please email us at support@zaprint.in with your order number and a description of the issue. We'll resolve it as quickly as possible.",
   },
   {
-    question: "I want to partner my print shop with ZaPrint",
+    question: "I want to partner my print shop with Zaprint",
     answer:
       'We\'d love to have you! Email us at partners@zaprint.in with your shop name, location, and services offered. Our team will get back to you within 48 hours.',
   },
@@ -87,7 +87,7 @@ export default function ContactPage() {
           <div className="bg-[#0a1128] text-white p-2 rounded-xl">
             <Printer className="w-5 h-5" />
           </div>
-          <span className="text-base font-bold text-[#0a1128]">ZaPrint</span>
+          <span className="text-base font-bold text-[#0a1128]">Zaprint</span>
         </Link>
       </nav>
 
@@ -163,7 +163,7 @@ export default function ContactPage() {
             OWN A <span className="text-[#0a1128]/40">PRINT SHOP?</span>
           </h2>
           <p className="text-lg text-[#5b637a] font-medium mb-8 max-w-xl mx-auto">
-            Partner with ZaPrint to receive digital orders, grow your customer base, and modernize your shop with our free desktop application.
+            Partner with Zaprint to receive digital orders, grow your customer base, and modernize your shop with our free desktop application.
           </p>
           <a
             href="mailto:partners@zaprint.in"

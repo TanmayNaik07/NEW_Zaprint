@@ -6,24 +6,24 @@ import { ChevronDown } from "lucide-react"
 
 const faqData = [
   {
-    question: "What is ZaPrint and how does it work?",
+    question: "What is Zaprint and how does it work?",
     answer:
-      "ZaPrint is a smart online printing platform that connects you with nearby print shops. Simply upload your document (PDF, DOCX, or PPT), choose your print settings like color, paper size, and number of copies, pay securely online, and pick up your prints when they're ready. No more waiting in queues!",
+      "Zaprint is a smart online printing platform that connects you with nearby print shops. Simply upload your document (PDF, DOCX, or PPT), choose your print settings like color, paper size, and number of copies, pay securely online, and pick up your prints when they're ready. No more waiting in queues!",
   },
   {
-    question: "What file formats does ZaPrint support?",
+    question: "What file formats does Zaprint support?",
     answer:
-      "ZaPrint currently supports PDF, DOCX, and PPT/PPTX files up to 50MB. For the best formatting accuracy, we recommend uploading PDF files. More formats are coming soon.",
+      "Zaprint currently supports PDF, DOCX, and PPT/PPTX files up to 50MB. For the best formatting accuracy, we recommend uploading PDF files. More formats are coming soon.",
   },
   {
-    question: "How much does printing cost on ZaPrint?",
+    question: "How much does printing cost on Zaprint?",
     answer:
       "Black & white printing starts at just ₹2 per page, and color printing starts at ₹5 per page. We offer Pay As You Go pricing with no monthly commitment, as well as discounted monthly plans for frequent printers. Volume discounts are available for bulk orders.",
   },
   {
     question: "How do I find print shops near me?",
     answer:
-      "After signing up and entering your pincode, ZaPrint automatically shows you partner print shops in your area. You can browse shops, view their services, ratings, and operating hours, then choose the one that best fits your needs.",
+      "After signing up and entering your pincode, Zaprint automatically shows you partner print shops in your area. You can browse shops, view their services, ratings, and operating hours, then choose the one that best fits your needs.",
   },
   {
     question: "How long does it take for my prints to be ready?",
@@ -31,7 +31,7 @@ const faqData = [
       "Most print jobs are ready within 5–15 minutes depending on the number of pages, print settings, and the current queue at your chosen shop. You'll receive a real-time estimation after placing your order and get notified instantly when your prints are ready for pickup.",
   },
   {
-    question: "Is my document data secure on ZaPrint?",
+    question: "Is my document data secure on Zaprint?",
     answer:
       "Absolutely. All documents are encrypted during upload and transmission using industry-standard encryption. Your files are securely processed and automatically deleted after printing is complete. We never share your documents with anyone other than your chosen print shop.",
   },
@@ -99,7 +99,7 @@ export function FAQSection() {
             Frequently Asked Questions
           </h2>
           <p className="self-stretch text-center text-muted-foreground text-sm font-medium leading-[18.20px] break-words">
-            Everything you need to know about ZaPrint and how it makes printing effortless
+            Everything you need to know about Zaprint and how it makes printing effortless
           </p>
         </div>
       </div>
