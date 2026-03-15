@@ -15,6 +15,7 @@ import type { ShopWithDetails } from "@/lib/types/shop"
 import { usePrintStore } from "@/lib/print-store"
 import { getPDFPageCount, isPDF } from "@/lib/utils/pdf"
 import { motion, AnimatePresence } from "framer-motion"
+import { track } from "@vercel/analytics"
 
 export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   const router = useRouter()
@@ -64,6 +65,11 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
     }
 
     setLoading(true)
+    track("order_initiated", {
+      shop_id: shop.id,
+      shop_name: shop.shop_name,
+      file_count: validSections.length,
+    })
     try {
       // 1. Get User
       const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -143,6 +149,11 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
       }
 
       toast.success("Order placed successfully!")
+      track("order_completed", {
+        order_id: order.id,
+        shop_name: shop.shop_name,
+        total_amount: totalAmount,
+      })
       reset()
       router.push('/dashboard/orders')
 

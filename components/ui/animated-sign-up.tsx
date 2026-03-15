@@ -105,9 +105,10 @@ const AnimatedSignUp: React.FC<AnimatedSignUpProps> = ({ className }) => {
           console.error("Manual profile creation failed", profileError);
         }
 
+        const isAdmin = data.user?.email?.toLowerCase() === "zaprint.official@gmail.com";
         toast.success("Account created successfully!");
         startLoading();
-        router.push("/dashboard");
+        router.push(isAdmin ? "/admin" : "/dashboard");
         router.refresh();
       }
     } catch (err: any) {
@@ -352,22 +353,6 @@ const AnimatedSignUp: React.FC<AnimatedSignUpProps> = ({ className }) => {
                   <a href="#">Privacy Policy</a>
                 </p>
               </form>
-
-              <div className="auth-separator">
-                <span>or continue with</span>
-              </div>
-
-              <div className="auth-social-login">
-                <button className="auth-social-button" type="button" aria-label="Sign up with Github">
-                  <Github size={18} />
-                </button>
-                <button className="auth-social-button" type="button" aria-label="Sign up with Twitter">
-                  <Twitter size={18} />
-                </button>
-                <button className="auth-social-button" type="button" aria-label="Sign up with LinkedIn">
-                  <Linkedin size={18} />
-                </button>
-              </div>
 
               <p className="auth-switch-prompt">
                 Already have an account? <Link href="/login">Sign in</Link>

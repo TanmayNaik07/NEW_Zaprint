@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { track } from "@vercel/analytics"
 
 export function MindfoldHero() {
   return (
@@ -36,6 +37,7 @@ export function MindfoldHero() {
 
             <Link
               href="/signup"
+              onClick={() => track("cta_get_started", { location: "hero" })}
               className="inline-flex items-center gap-2 bg-[#0a1128] text-white px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-black transition-colors"
             >
               Get Started Free
@@ -48,6 +50,7 @@ export function MindfoldHero() {
             href="#how-it-works"
             onClick={(e) => {
               e.preventDefault()
+              track("cta_watch_demo", { location: "hero" })
               document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })
             }}
             className="inline-flex items-center gap-2 bg-white text-[#0a1128] border border-black/10 px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-gray-50 hover:border-black/20 transition-all shadow-sm"
