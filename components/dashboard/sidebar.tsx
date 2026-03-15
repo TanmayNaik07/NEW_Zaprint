@@ -69,7 +69,7 @@ const transitionProps = {
   ease: "easeOut",
   duration: 0.2,
   // Remove stagger here to make the container smooth
-}
+} as const
 
 const staggerVariants = {
   open: {
