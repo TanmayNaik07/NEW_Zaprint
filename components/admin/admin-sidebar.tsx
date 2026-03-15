@@ -54,7 +54,7 @@ const transitionProps = {
   type: "tween",
   ease: "easeOut",
   duration: 0.2,
-}
+} as const
 
 const staggerVariants = {
   open: {
