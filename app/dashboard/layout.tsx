@@ -1,10 +1,19 @@
 import type React from "react"
+import type { Metadata } from "next"
 import { DashboardSidebar } from "@/components/dashboard/sidebar"
 import { createClient } from "@/lib/supabase/server"
 
 import { OnboardingModal } from "@/components/dashboard/onboarding-modal"
 import { DashboardLoadingStop } from "@/components/dashboard/loading-stop"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Dashboard — ZaPrint",
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default async function DashboardLayout({
   children,

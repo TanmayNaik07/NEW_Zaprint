@@ -6,6 +6,92 @@ import { MindfoldHowItWorks } from "@/components/mindfold-how-it-works"
 import { MindfoldReviews } from "@/components/mindfold-reviews"
 import { MindfoldPricing } from "@/components/mindfold-pricing"
 import { MindfoldFooter } from "@/components/mindfold-footer"
+import Script from "next/script"
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "ZaPrint",
+  url: "https://zaprint.in",
+  logo: "https://zaprint.in/icon.svg",
+  description:
+    "India's smart document printing platform. Upload, pay, and pick up prints from nearby shops.",
+  sameAs: [
+    "https://twitter.com/zaprint",
+    "https://instagram.com/zaprint",
+    "https://linkedin.com/company/zaprint",
+  ],
+}
+
+const softwareAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "ZaPrint",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "INR",
+  },
+  description:
+    "Upload documents, choose print settings, pay online & pick up your prints when ready. Fast, affordable printing service.",
+}
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "How does ZaPrint work?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Upload your document, choose print settings (color, paper size, copies), pay online, and pick up your prints when they are ready. No waiting in queues.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What file formats does ZaPrint support?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "ZaPrint supports PDF, DOCX, and PPT/PPTX files. We recommend PDF for the best formatting accuracy.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How much does printing cost on ZaPrint?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Black and white printing starts at ₹2 per page, and color printing starts at ₹5 per page. Bulk plans offer additional discounts.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I find printing shops near me on ZaPrint?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes! ZaPrint connects you with partner print shops in your area. Simply enter your location or pincode to find the nearest shops.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is my document data secure on ZaPrint?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Absolutely. All documents are encrypted during upload and transmission. Files are securely deleted after printing is complete.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How long does it take for my prints to be ready?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Most print jobs are ready within 5-15 minutes depending on the number of pages and current queue. You receive real-time notifications when your prints are ready for pickup.",
+      },
+    },
+  ],
+}
 
 export default function LandingPage() {
   return (
@@ -45,6 +131,23 @@ export default function LandingPage() {
 
       {/* Footer */}
       <MindfoldFooter />
+
+      {/* JSON-LD Structured Data for SEO */}
+      <Script
+        id="schema-organization"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <Script
+        id="schema-software-application"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }}
+      />
+      <Script
+        id="schema-faq"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
     </div>
   )
 }
