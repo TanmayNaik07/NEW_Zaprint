@@ -55,7 +55,7 @@ export async function GET() {
     // Recent orders (last 10)
     supabase
       .from("orders")
-      .select("*, order_items(file_name, copies), shops(name)")
+      .select("*, order_items(file_name, copies), shops:shop_id(shop_name)")
       .order("created_at", { ascending: false })
       .limit(10),
     // Total feedback
@@ -97,7 +97,7 @@ export async function GET() {
   // Group orders by shop for shop performance
   const shopOrders: Record<string, { name: string; orders: number; revenue: number }> = {}
   recentOrdersRes.data?.forEach((order: any) => {
-    const shopName = order.shops?.name || "Unknown Shop"
+    const shopName = order.shops?.shop_name || "Unknown Shop"
     const shopId = order.shop_id
     if (!shopOrders[shopId]) {
       shopOrders[shopId] = { name: shopName, orders: 0, revenue: 0 }

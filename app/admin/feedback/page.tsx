@@ -141,18 +141,22 @@ export default function AdminFeedbackPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-white">
-            Feedback Management
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+        <div className="flex flex-col gap-2">
+          <div className="inline-flex items-center gap-2 bg-[#0a1128]/5 border border-[#0a1128]/10 text-[#0a1128] px-3 py-1 rounded-full text-[10px] tracking-widest font-bold uppercase w-fit mb-2">
+            <span className="w-1.5 h-1.5 bg-[#0a1128] rounded-full animate-pulse" />
+            Social Proof
+          </div>
+          <h1 className="text-4xl font-black text-[#0a1128] tracking-tight uppercase leading-none">
+            FEEDBACK <span className="text-[#0a1128]/40">MANAGEMENT</span>
           </h1>
-          <p className="text-white/40 mt-2">Loading...</p>
+          <p className="text-[#5b637a] font-medium text-lg">Loading feedback...</p>
         </div>
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-[120px] rounded-2xl bg-white/5 animate-pulse border border-white/5"
+              className="h-[150px] rounded-[2.5rem] bg-white/50 animate-pulse border border-black/5 shadow-sm"
             />
           ))}
         </div>
@@ -161,46 +165,50 @@ export default function AdminFeedbackPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white">
-            Feedback Management
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+        <div className="flex flex-col gap-2">
+          <div className="inline-flex items-center gap-2 bg-[#0a1128]/5 border border-[#0a1128]/10 text-[#0a1128] px-3 py-1 rounded-full text-[10px] tracking-widest font-bold uppercase w-fit mb-2">
+            <span className="w-1.5 h-1.5 bg-[#0a1128] rounded-full" />
+            Social Proof
+          </div>
+          <h1 className="text-4xl font-black text-[#0a1128] tracking-tight uppercase leading-none">
+            FEEDBACK <span className="text-[#0a1128]/40">MANAGEMENT</span>
           </h1>
-          <p className="text-white/40 mt-2">
-            {feedback.length} total · {featuredCount} featured on landing page
+          <p className="text-[#5b637a] font-medium text-lg">
+            {feedback.length} total submissions · <span className="text-amber-600">{featuredCount} featured</span>
           </p>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* Filters & Search */}
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+        <div className="relative flex-1 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#0a1128]/30 group-focus-within:text-[#0a1128] transition-colors" />
           <input
             type="text"
-            placeholder="Search feedback..."
+            placeholder="Search feedback by user or message..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-white/20 transition text-sm"
+            className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-black/5 text-[#0a1128] font-bold placeholder:text-[#0a1128]/20 focus:outline-none focus:border-[#0a1128]/20 focus:bg-white transition-all shadow-sm"
           />
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap p-1 bg-white/50 backdrop-blur-sm rounded-2xl border border-black/5">
           {(["all", "pending", "approved", "featured"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                 filter === f
-                  ? "bg-white/15 text-white border border-white/20"
-                  : "bg-white/5 text-white/50 border border-white/5 hover:bg-white/10"
+                  ? "bg-[#0a1128] text-white shadow-lg"
+                  : "text-[#0a1128]/40 hover:text-[#0a1128] hover:bg-black/5"
               }`}
             >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
+              {f}
             </button>
           ))}
         </div>
@@ -208,141 +216,116 @@ export default function AdminFeedbackPage() {
 
       {/* Feedback List */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-          <MessageSquareText className="h-12 w-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/40 text-lg">No feedback found</p>
-          <p className="text-white/20 text-sm mt-1">
-            {filter !== "all"
-              ? "Try changing the filter"
-              : "No users have submitted feedback yet"}
-          </p>
+        <div className="rounded-[3rem] border-2 border-dashed border-black/5 bg-black/5 p-20 text-center">
+          <MessageSquareText className="h-16 w-16 text-[#0a1128]/10 mx-auto mb-4" />
+          <p className="text-[#0a1128] font-black uppercase tracking-tight text-xl">No feedback found</p>
+          <p className="text-[#5b637a] font-medium mt-1">Try changing your filters or searching for something else</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {filtered.map((fb) => (
             <div
               key={fb.id}
-              className={`rounded-2xl border p-6 transition-all ${
-                fb.is_featured
-                  ? "border-amber-500/30 bg-amber-500/5"
-                  : fb.is_approved
-                    ? "border-green-500/20 bg-white/5"
-                    : "border-white/10 bg-white/[0.02]"
+              className={`rounded-[2.5rem] border p-8 transition-all hover:translate-y-[-2px] hover:shadow-2xl shadow-xl shadow-black/[0.02] bg-white/80 backdrop-blur-sm relative overflow-hidden group ${
+                fb.is_featured ? "border-amber-500/20" : "border-black/5"
               }`}
             >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
                 <div className="flex-1">
                   {/* User Info */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-14 h-14 rounded-2xl bg-[#0a1128] flex items-center justify-center text-white font-black text-xl shadow-lg shadow-[#0a1128]/20">
                       {fb.user_name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-white font-medium">{fb.user_name}</p>
-                      <p className="text-white/40 text-xs">
-                        {fb.user_role && `${fb.user_role} · `}
-                        {new Date(fb.created_at).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                      <p className="text-[#0a1128] font-black uppercase tracking-tight text-xl leading-none">
+                        {fb.user_name}
+                      </p>
+                      <p className="text-[#5b637a] text-[10px] font-bold mt-1 uppercase tracking-widest">
+                        {fb.user_role || "Customer"} · {new Date(fb.created_at).toLocaleDateString("en-IN", { month: 'short', year: 'numeric' })}
                       </p>
                     </div>
                   </div>
 
                   {/* Rating */}
-                  <div className="flex gap-1 mb-3">
+                  <div className="flex gap-1.5 mb-6">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        className={`h-4 w-4 ${
+                        className={`h-5 w-5 ${
                           star <= fb.rating
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-white/20"
+                            ? "text-amber-500 fill-amber-500"
+                            : "text-[#0a1128]/10"
                         }`}
                       />
                     ))}
                   </div>
 
                   {/* Message */}
-                  <p className="text-white/70 text-sm leading-relaxed">
-                    &ldquo;{fb.message}&rdquo;
-                  </p>
+                  <div className="relative">
+                    <p className="text-[#0a1128] text-lg font-bold leading-relaxed pr-8 italic opacity-90">
+                      &ldquo;{fb.message}&rdquo;
+                    </p>
+                  </div>
 
                   {/* Status Badges */}
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2 mt-8">
                     {fb.is_approved && (
-                      <span className="text-xs px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
+                      <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                         Approved
                       </span>
                     )}
                     {fb.is_featured && (
-                      <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
                         ★ Featured
                       </span>
                     )}
                     {!fb.is_approved && (
-                      <span className="text-xs px-2.5 py-1 rounded-full bg-white/5 text-white/30 border border-white/10">
+                      <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-black/5 text-[#0a1128]/30 border border-black/5">
                         Pending Review
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex sm:flex-col gap-2">
+                {/* Actions */}
+                <div className="flex sm:flex-col gap-3 shrink-0">
                   <button
                     onClick={() => toggleApproval(fb.id, fb.is_approved)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition ${
+                    className={`flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
                       fb.is_approved
-                        ? "bg-green-500/10 text-green-400 hover:bg-green-500/20"
-                        : "bg-white/5 text-white/50 hover:bg-white/10"
+                        ? "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20"
+                        : "bg-[#0a1128]/5 text-[#0a1128] hover:bg-[#0a1128]/10"
                     }`}
-                    title={fb.is_approved ? "Unapprove" : "Approve"}
                   >
-                    {fb.is_approved ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      <Check className="h-4 w-4" />
-                    )}
-                    <span className="hidden sm:inline">
-                      {fb.is_approved ? "Approved" : "Approve"}
-                    </span>
+                    <Check className="h-4 w-4" />
+                    {fb.is_approved ? "Approved" : "Approve"}
                   </button>
 
                   <button
                     onClick={() => toggleFeatured(fb.id, fb.is_featured)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition ${
+                    className={`flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
                       fb.is_featured
-                        ? "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-                        : "bg-white/5 text-white/50 hover:bg-white/10"
+                        ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20"
+                        : "bg-[#0a1128]/5 text-[#0a1128] hover:bg-[#0a1128]/10"
                     }`}
-                    title={
-                      fb.is_featured
-                        ? "Remove from landing page"
-                        : "Feature on landing page"
-                    }
                   >
-                    {fb.is_featured ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                    <span className="hidden sm:inline">
-                      {fb.is_featured ? "Unfeature" : "Feature"}
-                    </span>
+                    {fb.is_featured ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {fb.is_featured ? "Unfeature" : "Feature"}
                   </button>
 
                   <button
                     onClick={() => deleteFeedback(fb.id)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-red-500/5 text-red-400/60 hover:bg-red-500/10 hover:text-red-400 transition"
-                    title="Delete feedback"
+                    className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-red-500/5 text-red-500 hover:bg-red-500/10 transition-all"
                   >
                     <Trash2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Delete</span>
+                    Delete
                   </button>
                 </div>
               </div>
+              
+              {/* Feature highlight bar */}
+              {fb.is_featured && <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500" />}
             </div>
           ))}
         </div>

@@ -17,14 +17,16 @@ export const metadata: Metadata = {
   },
 }
 
-const stats = [
+import { getSettingByKey } from "@/lib/supabase/settings"
+
+const defaultStats = [
   { label: "Documents Printed", value: "10,000+", icon: Printer },
   { label: "Partner Print Shops", value: "50+", icon: MapPin },
   { label: "Cities Covered", value: "10+", icon: Users },
   { label: "Avg. Print Time", value: "~5 min", icon: Clock },
 ]
 
-const values = [
+const defaultValues = [
   {
     icon: Zap,
     title: "Speed First",
@@ -51,7 +53,22 @@ const values = [
   },
 ]
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const aboutData = await getSettingByKey("about", {})
+  
+  const missionText = aboutData.mission || "We're on a mission to digitize India's printing ecosystem. Every day, millions of students, professionals, and businesses need documents printed — yet the experience has barely changed in decades. Long waits, miscommunication about settings, and wasted trips are still the norm."
+  const storyText = aboutData.story || "Zaprint was born out of a simple frustration — waiting in long queues at print shops while deadlines loomed. We built a platform that lets you upload, pay, and pick up prints without ever standing in line."
+  
+  const stats = aboutData.stats?.length > 0 ? aboutData.stats.map((s: any) => ({
+    ...s,
+    icon: defaultStats.find(ds => ds.label === s.label)?.icon || Printer
+  })) : defaultStats
+
+  const values = aboutData.values?.length > 0 ? aboutData.values.map((v: any) => ({
+    ...v,
+    icon: defaultValues.find(dv => dv.title === v.title)?.icon || Zap
+  })) : defaultValues
+
   return (
     <div className="min-h-screen bg-[#f7f6f4] relative overflow-hidden">
       {/* Paper texture background */}
@@ -89,15 +106,13 @@ export default function AboutPage() {
             <span className="text-[#0a1128]/40">EFFORTLESS</span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-[#5b637a] font-medium max-w-2xl mx-auto leading-relaxed">
-            Zaprint was born out of a simple frustration — waiting in long queues at print shops
-            while deadlines loomed. We built a platform that lets you upload, pay, and pick up
-            prints without ever standing in line.
+            {storyText}
           </p>
         </section>
 
         {/* Stats */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
-          {stats.map((stat) => (
+          {stats.map((stat: any) => (
             <div
               key={stat.label}
               className="bg-white p-6 rounded-[2rem] border border-black/5 shadow-sm text-center"
@@ -115,22 +130,13 @@ export default function AboutPage() {
             <h2 className="text-3xl sm:text-4xl font-black text-[#0a1128] tracking-tight uppercase mb-6">
               OUR <span className="text-[#0a1128]/40">MISSION</span>
             </h2>
-            <p className="text-lg text-[#5b637a] font-medium leading-relaxed mb-4">
-              We&apos;re on a mission to digitize India&apos;s printing ecosystem. Every day, millions
-              of students, professionals, and businesses need documents printed — yet the experience
-              has barely changed in decades. Long waits, miscommunication about settings, and wasted
-              trips are still the norm.
-            </p>
-            <p className="text-lg text-[#5b637a] font-medium leading-relaxed mb-4">
-              Zaprint changes that. We connect users with nearby print shops through a simple digital
-              workflow: upload your document, choose your print settings, pay online, and get a
-              real-time notification when your prints are ready for pickup.
-            </p>
-            <p className="text-lg text-[#5b637a] font-medium leading-relaxed">
-              For print shop owners, we provide a desktop application that receives orders, manages
-              queues, and handles payments — bringing them into the digital age and helping them serve
-              more customers with less friction.
-            </p>
+            <div className="space-y-4">
+              {missionText.split('\n\n').map((para: string, i: number) => (
+                <p key={i} className="text-lg text-[#5b637a] font-medium leading-relaxed">
+                  {para}
+                </p>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -140,7 +146,7 @@ export default function AboutPage() {
             WHAT WE <span className="text-[#0a1128]/40">STAND FOR</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {values.map((value) => (
+            {values.map((value: any) => (
               <div
                 key={value.title}
                 className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm hover:shadow-md transition-shadow"

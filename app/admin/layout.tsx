@@ -33,14 +33,16 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#060d1f] flex relative">
-      {/* Subtle grid pattern overlay */}
+    <div className="min-h-screen bg-[#f7f6f4] flex relative overflow-hidden zaprint-theme">
+      {/* Paper texture background */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]"
+        className="fixed inset-0 z-0 pointer-events-none opacity-[0.25]"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
+          backgroundImage: "url('/images/paper-texture.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          mixBlendMode: "multiply",
         }}
       />
       <AdminSidebar />

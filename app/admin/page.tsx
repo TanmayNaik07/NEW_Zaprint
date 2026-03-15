@@ -164,110 +164,122 @@ export default function AdminOverview() {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-            Admin Dashboard
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+        <div className="flex flex-col gap-2">
+          <div className="inline-flex items-center gap-2 bg-[#0a1128]/5 border border-[#0a1128]/10 text-[#0a1128] px-3 py-1 rounded-full text-[10px] tracking-widest font-bold uppercase w-fit mb-2">
+            <span className="w-1.5 h-1.5 bg-[#0a1128] rounded-full animate-pulse" />
+            Analytics
+          </div>
+          <h1 className="text-4xl font-black text-[#0a1128] tracking-tight uppercase leading-none">
+            DASHBOARD <span className="text-[#0a1128]/40">OVERVIEW</span>
           </h1>
-          <p className="text-white/40 mt-2">Loading analytics...</p>
+          <p className="text-[#5b637a] font-medium text-lg">Loading analytics data...</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
-              className="h-[120px] rounded-2xl bg-white/5 animate-pulse border border-white/5"
+              className="h-[140px] rounded-[2rem] bg-white/50 animate-pulse border border-black/5 shadow-sm"
             />
           ))}
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-[350px] rounded-2xl bg-white/5 animate-pulse border border-white/5" />
-          <div className="h-[350px] rounded-2xl bg-white/5 animate-pulse border border-white/5" />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-          Admin Dashboard
+      <div className="flex flex-col gap-2">
+        <div className="inline-flex items-center gap-2 bg-[#0a1128]/5 border border-[#0a1128]/10 text-[#0a1128] px-3 py-1 rounded-full text-[10px] tracking-widest font-bold uppercase w-fit mb-2">
+          <span className="w-1.5 h-1.5 bg-[#0a1128] rounded-full" />
+          Analytics
+        </div>
+        <h1 className="text-4xl font-black text-[#0a1128] tracking-tight uppercase leading-none">
+          DASHBOARD <span className="text-[#0a1128]/40">OVERVIEW</span>
         </h1>
-        <p className="text-white/40 mt-2">
-          Platform overview and analytics for Zaprint
+        <p className="text-[#5b637a] font-medium text-lg">
+          Platform performance and system health for Zaprint.
         </p>
       </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((card) => (
-          <div
-            key={card.label}
-            className={`relative rounded-2xl border ${card.borderColor} bg-gradient-to-br ${card.color} p-5 backdrop-blur-sm overflow-hidden group hover:scale-[1.02] transition-transform`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-white/50 text-sm font-medium tracking-wide uppercase">
-                {card.label}
-              </span>
-              <card.icon className={`h-5 w-5 ${card.iconColor}`} />
-            </div>
-            <p className="text-2xl font-bold text-white tracking-tight">
-              {card.value}
-            </p>
-            {/* Glow effect */}
+        {statCards.map((card) => {
+          const Icon = card.icon
+          return (
             <div
-              className={`absolute -bottom-8 -right-8 w-24 h-24 rounded-full ${card.iconColor} opacity-5 blur-2xl group-hover:opacity-10 transition-opacity`}
-            />
-          </div>
-        ))}
+              key={card.label}
+              className="relative rounded-[2rem] border border-black/5 bg-white/80 backdrop-blur-sm p-6 shadow-xl shadow-black/[0.02] group transition-all hover:translate-y-[-2px] hover:shadow-2xl overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className={`p-2.5 rounded-xl bg-[#0a1128]/5 text-[#0a1128]`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                <span className="text-[10px] uppercase tracking-widest font-black text-[#0a1128]/30">
+                  {card.label}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-3xl font-black text-[#0a1128] tracking-tighter">
+                  {card.value}
+                </p>
+              </div>
+              {/* Subtle accent bar */}
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-[#0a1128]/5 group-hover:bg-[#0a1128] transition-colors" />
+            </div>
+          )
+        })}
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Orders Trend Chart */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <TrendingUp className="h-5 w-5 text-blue-400" />
-            <h2 className="text-lg font-semibold text-white">
-              Orders (Last 30 Days)
-            </h2>
+        <div className="rounded-[2.5rem] border border-black/5 bg-white/80 backdrop-blur-sm p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-blue-500/10">
+                <TrendingUp className="h-5 w-5 text-blue-600" />
+              </div>
+              <h2 className="text-xl font-black text-[#0a1128] uppercase tracking-tight">
+                Order <span className="text-[#0a1128]/40">Trend</span>
+              </h2>
+            </div>
           </div>
           {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={chartData}>
                 <defs>
-                  <linearGradient
-                    id="orderGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                  <linearGradient id="orderGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                 <XAxis
                   dataKey="date"
-                  stroke="rgba(255,255,255,0.3)"
-                  tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                  stroke="#5b637a"
+                  tick={{ fontSize: 11, fontWeight: 600 }}
                   tickFormatter={(val) => {
                     const d = new Date(val)
-                    return `${d.getDate()}/${d.getMonth() + 1}`
+                    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
                   }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <YAxis
-                  stroke="rgba(255,255,255,0.3)"
-                  tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                  stroke="#5b637a"
+                  tick={{ fontSize: 11, fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "#0f172a",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "12px",
-                    color: "#fff",
+                    background: "#fff",
+                    border: "1px solid rgba(0,0,0,0.05)",
+                    borderRadius: "16px",
+                    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
+                    fontWeight: 600
                   }}
                 />
                 <Area
@@ -275,100 +287,97 @@ export default function AdminOverview() {
                   dataKey="orders"
                   stroke="#3b82f6"
                   fill="url(#orderGradient)"
-                  strokeWidth={2}
+                  strokeWidth={3}
                 />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[280px] text-white/30">
-              No order data yet
+            <div className="flex flex-col items-center justify-center h-[300px] text-[#5b637a]/40 bg-black/5 rounded-[2rem] border border-dashed border-black/10">
+              <ShoppingCart className="w-8 h-8 mb-2 opacity-20" />
+              <p className="font-bold text-sm tracking-tight">No data available for this period</p>
             </div>
           )}
         </div>
 
         {/* Revenue Chart */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <IndianRupee className="h-5 w-5 text-emerald-400" />
-            <h2 className="text-lg font-semibold text-white">
-              Revenue (Last 30 Days)
-            </h2>
+        <div className="rounded-[2.5rem] border border-black/5 bg-white/80 backdrop-blur-sm p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-emerald-500/10">
+                <IndianRupee className="h-5 w-5 text-emerald-600" />
+              </div>
+              <h2 className="text-xl font-black text-[#0a1128] uppercase tracking-tight">
+                Revenue <span className="text-[#0a1128]/40">Analytics</span>
+              </h2>
+            </div>
           </div>
           {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
-                <defs>
-                  <linearGradient
-                    id="revenueGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.2} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                 <XAxis
                   dataKey="date"
-                  stroke="rgba(255,255,255,0.3)"
-                  tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                  stroke="#5b637a"
+                  tick={{ fontSize: 11, fontWeight: 600 }}
                   tickFormatter={(val) => {
                     const d = new Date(val)
-                    return `${d.getDate()}/${d.getMonth() + 1}`
+                    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
                   }}
+                  axisLine={false}
+                  tickLine={false}
                 />
                 <YAxis
-                  stroke="rgba(255,255,255,0.3)"
-                  tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }}
+                  stroke="#5b637a"
+                  tick={{ fontSize: 11, fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
                   tickFormatter={(val) => `₹${val}`}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "#0f172a",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "12px",
-                    color: "#fff",
+                    background: "#fff",
+                    border: "1px solid rgba(0,0,0,0.05)",
+                    borderRadius: "16px",
+                    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
+                    fontWeight: 600
                   }}
-                  formatter={(value: number) => [
-                    `₹${value.toLocaleString("en-IN")}`,
-                    "Revenue",
-                  ]}
+                  cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                 />
                 <Bar
                   dataKey="revenue"
-                  fill="url(#revenueGradient)"
-                  radius={[6, 6, 0, 0]}
+                  fill="#0a1128"
+                  radius={[8, 8, 8, 8]}
+                  barSize={20}
                 />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[280px] text-white/30">
-              No revenue data yet
+            <div className="flex flex-col items-center justify-center h-[300px] text-[#5b637a]/40 bg-black/5 rounded-[2rem] border border-dashed border-black/10">
+              <IndianRupee className="w-8 h-8 mb-2 opacity-20" />
+              <p className="font-bold text-sm tracking-tight">No data available for this period</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Bottom Row: Order Status Pie + Shop Performance + Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Bottom Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Order Status Distribution */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6">
-          <h2 className="text-lg font-semibold text-white mb-6">
-            Order Status
+        <div className="rounded-[2.5rem] border border-black/5 bg-white/80 backdrop-blur-sm p-8 shadow-xl">
+          <h2 className="text-xl font-black text-[#0a1128] uppercase tracking-tight mb-8">
+            Order <span className="text-[#0a1128]/40">Status</span>
           </h2>
           {pieData.length > 0 ? (
-            <div className="flex flex-col items-center">
-              <ResponsiveContainer width="100%" height={200}>
+            <div className="space-y-4">
+              <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={4}
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={8}
                     dataKey="value"
                   >
                     {pieData.map((entry, index) => (
@@ -377,116 +386,116 @@ export default function AdminOverview() {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      background: "#0f172a",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "12px",
-                      color: "#fff",
+                      background: "#fff",
+                      border: "none",
+                      borderRadius: "16px",
+                      boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
+                      fontWeight: 600
                     }}
                   />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="flex flex-wrap justify-center gap-4 mt-2">
+              <div className="grid grid-cols-2 gap-3 mt-4">
                 {pieData.map((d) => (
-                  <div key={d.name} className="flex items-center gap-2">
+                  <div key={d.name} className="flex items-center gap-3 p-3 rounded-2xl bg-black/5">
                     <div
-                      className="w-3 h-3 rounded-full"
+                      className="w-2 h-2 rounded-full shrink-0"
                       style={{ backgroundColor: d.color }}
                     />
-                    <span className="text-white/50 text-xs">{d.name}</span>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase font-black text-[#0a1128]/40">{d.name}</span>
+                      <span className="text-sm font-black text-[#0a1128]">{d.value}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[200px] text-white/30">
+            <div className="flex items-center justify-center h-[300px] font-bold text-[#5b637a]/40 bg-black/5 rounded-[2rem] border border-dashed border-black/10">
               No orders yet
             </div>
           )}
         </div>
 
         {/* Shop Performance */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6">
-          <h2 className="text-lg font-semibold text-white mb-6">
-            Shop Performance
+        <div className="rounded-[2.5rem] border border-black/5 bg-white/80 backdrop-blur-sm p-8 shadow-xl">
+          <h2 className="text-xl font-black text-[#0a1128] uppercase tracking-tight mb-8">
+            Shop <span className="text-[#0a1128]/40">Performance</span>
           </h2>
           {shopPerformance.length > 0 ? (
             <div className="space-y-4">
               {shopPerformance.slice(0, 5).map((shop, i) => (
-                <div key={i} className="flex items-center justify-between">
+                <div key={i} className="flex items-center justify-between p-4 rounded-2xl border border-black/5 bg-white/50 hover:bg-white transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                      <Store className="h-4 w-4 text-amber-400" />
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                      <Store className="h-5 w-5 text-amber-600" />
                     </div>
                     <div>
-                      <p className="text-white text-sm font-medium truncate max-w-[120px]">
+                      <p className="text-[#0a1128] text-sm font-black uppercase tracking-tight truncate max-w-[120px]">
                         {shop.name}
                       </p>
-                      <p className="text-white/40 text-xs">
+                      <p className="text-[#5b637a] text-xs font-medium">
                         {shop.orders} orders
                       </p>
                     </div>
                   </div>
-                  <p className="text-emerald-400 text-sm font-semibold">
+                  <p className="text-emerald-600 text-sm font-black">
                     ₹{shop.revenue.toLocaleString("en-IN")}
                   </p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[200px] text-white/30">
+            <div className="flex items-center justify-center h-[300px] font-bold text-[#5b637a]/40 bg-black/5 rounded-[2rem] border border-dashed border-black/10">
               No shop data yet
             </div>
           )}
         </div>
 
         {/* Recent Orders */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6">
-          <h2 className="text-lg font-semibold text-white mb-6">
-            Recent Orders
-          </h2>
+        <div className="rounded-[2.5rem] border border-black/5 bg-white/80 backdrop-blur-sm p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-xl font-black text-[#0a1128] uppercase tracking-tight">
+              Recent <span className="text-[#0a1128]/40">Activity</span>
+            </h2>
+          </div>
           {recentOrders.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recentOrders.slice(0, 5).map((order: any) => (
                 <div
                   key={order.id}
-                  className="flex items-center justify-between py-2 border-b border-white/5 last:border-0"
+                  className="group flex items-center justify-between p-4 rounded-2xl border border-black/5 bg-white/50 hover:bg-white hover:border-[#0a1128]/10 transition-all"
                 >
-                  <div>
-                    <p className="text-white text-sm font-medium">
-                      {order.order_items?.[0]?.file_name || "Order"}
-                    </p>
-                    <p className="text-white/40 text-xs">
-                      {new Date(order.created_at).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                      {" · "}
-                      {order.shops?.name || "Shop"}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl ${
+                      order.status === 'completed' ? 'bg-green-500/10' : 'bg-blue-500/10'
+                    }`}>
+                      <ShoppingCart className={`h-4 w-4 ${
+                        order.status === 'completed' ? 'text-green-600' : 'text-blue-600'
+                      }`} />
+                    </div>
+                    <div>
+                      <p className="text-[#0a1128] text-sm font-black uppercase tracking-tight truncate max-w-[150px]">
+                        {order.order_items?.[0]?.file_name || "Order"}
+                      </p>
+                      <p className="text-[#5b637a] text-[10px] font-bold">
+                        {order.shops?.shop_name || "Shop"}
+                      </p>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white text-sm font-medium">
+                    <p className="text-[#0a1128] text-sm font-black">
                       ₹{Number(order.total_amount).toLocaleString("en-IN")}
                     </p>
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        order.status === "completed"
-                          ? "bg-green-500/10 text-green-400"
-                          : order.status === "pending"
-                            ? "bg-orange-500/10 text-orange-400"
-                            : order.status === "cancelled"
-                              ? "bg-red-500/10 text-red-400"
-                              : "bg-blue-500/10 text-blue-400"
-                      }`}
-                    >
+                    <p className="text-[#5b637a]/50 text-[10px] font-bold uppercase tracking-widest">
                       {order.status}
-                    </span>
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[200px] text-white/30">
+            <div className="flex items-center justify-center h-[300px] font-bold text-[#5b637a]/40 bg-black/5 rounded-[2rem] border border-dashed border-black/10">
               No orders yet
             </div>
           )}

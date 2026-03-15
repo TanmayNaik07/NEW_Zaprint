@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   },
 }
 
-const contactMethods = [
+import { getSettingByKey } from "@/lib/supabase/settings"
+
+const defaultContactMethods = [
   {
     icon: Mail,
     title: "Email Us",
@@ -44,7 +46,7 @@ const contactMethods = [
   },
 ]
 
-const faqs = [
+const defaultFaqs = [
   {
     question: "How long do you take to respond?",
     answer: "We typically respond to emails within 24 hours on business days.",
@@ -66,7 +68,32 @@ const faqs = [
   },
 ]
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const contactData = await getSettingByKey("contact", {})
+  
+  // Merge or override with dynamic data
+  const supportEmail = contactData.support_email || "support@zaprint.in"
+  const partnerEmail = contactData.partner_email || "partners@zaprint.in"
+  
+  const contactMethods = [
+    {
+      ...defaultContactMethods[0],
+      detail: supportEmail,
+      action: `mailto:${supportEmail}`,
+    },
+    ...defaultContactMethods.slice(1),
+    ...(contactData.additional_emails || []).map((email: string) => ({
+      icon: Mail,
+      title: "Additional Contact",
+      description: "Alternative contact email",
+      detail: email,
+      action: `mailto:${email}`,
+      actionLabel: "Send Email",
+    }))
+  ]
+
+  const faqs = contactData.faqs?.length > 0 ? contactData.faqs : defaultFaqs
+
   return (
     <div className="min-h-screen bg-[#f7f6f4] relative overflow-hidden">
       {/* Paper texture background */}
@@ -111,9 +138,9 @@ export default function ContactPage() {
 
         {/* Contact Methods */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-          {contactMethods.map((method) => (
+          {contactMethods.map((method, idx) => (
             <div
-              key={method.title}
+              key={method.title + idx}
               className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm text-center hover:shadow-md transition-shadow"
             >
               <div className="w-14 h-14 bg-[#0a1128]/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
@@ -145,7 +172,7 @@ export default function ContactPage() {
             QUICK <span className="text-[#0a1128]/40">ANSWERS</span>
           </h2>
           <div className="space-y-4 max-w-3xl mx-auto">
-            {faqs.map((faq) => (
+            {faqs.map((faq: any) => (
               <div
                 key={faq.question}
                 className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm"
@@ -166,7 +193,7 @@ export default function ContactPage() {
             Partner with Zaprint to receive digital orders, grow your customer base, and modernize your shop with our free desktop application.
           </p>
           <a
-            href="mailto:partners@zaprint.in"
+            href={`mailto:${partnerEmail}`}
             className="inline-flex items-center gap-2 bg-[#0a1128] text-white px-8 py-3.5 rounded-full text-sm font-semibold hover:bg-black transition-colors"
           >
             Become a Partner

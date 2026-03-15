@@ -10,6 +10,7 @@ import {
   LogOut,
   Shield,
   ChevronsUpDown,
+  Globe,
 } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
@@ -80,12 +81,13 @@ export function AdminSidebar() {
     { name: "Orders", href: "/admin/orders", icon: FileText },
     { name: "Shops", href: "/admin/shops", icon: Store },
     { name: "Feedback", href: "/admin/feedback", icon: MessageSquareText },
+    { name: "Site Content", href: "/admin/content", icon: Globe },
   ]
 
   return (
     <motion.div
       className={cn(
-        "sidebar fixed left-0 z-40 h-full shrink-0 border-r bg-[#0a1128]/95 backdrop-blur-xl border-white/10"
+        "sidebar fixed left-0 z-40 h-full shrink-0 border-r bg-white/80 backdrop-blur-xl border-black/5 shadow-2xl shadow-black/[0.02] zaprint-theme"
       )}
       initial={isCollapsed ? "closed" : "open"}
       animate={isCollapsed ? "closed" : "open"}
@@ -94,25 +96,35 @@ export function AdminSidebar() {
       onMouseEnter={() => setIsCollapsed(false)}
       onMouseLeave={() => setIsCollapsed(true)}
     >
+      {/* Paper texture overlay exactly like user dashboard */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none opacity-[0.25]"
+        style={{
+          backgroundImage: "url('/images/paper-texture.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          mixBlendMode: "multiply",
+        }}
+      />
       <motion.div
-        className="relative z-40 flex text-white/60 h-full shrink-0 flex-col bg-transparent transition-all"
+        className="relative z-40 flex text-[#5b637a] h-full shrink-0 flex-col bg-transparent transition-all"
         variants={contentVariants}
       >
         <motion.ul variants={staggerVariants} className="flex h-full flex-col">
           <div className="flex grow flex-col items-center">
             {/* Top Logo / Brand Section */}
-            <div className="flex h-[60px] w-full shrink-0 items-center justify-center border-b border-white/10 p-2">
+            <div className="flex h-[60px] w-full shrink-0 items-center justify-center border-b border-black/5 p-2">
               <div className="flex w-full items-center justify-center">
                 <div className="flex items-center gap-2 px-2 w-full">
-                  <div className="w-9 h-9 rounded-lg bg-red-500/20 border border-red-500/30 flex items-center justify-center shrink-0">
-                    <Shield className="w-5 h-5 text-red-400" />
+                  <div className="w-9 h-9 rounded-lg bg-[#0a1128]/5 border border-[#0a1128]/10 flex items-center justify-center shrink-0">
+                    <Shield className="w-5 h-5 text-[#0a1128]" />
                   </div>
                   <motion.div
                     variants={variants}
                     className="overflow-hidden whitespace-nowrap"
                   >
                     {!isCollapsed && (
-                      <span className="text-white text-lg font-semibold ml-1">
+                      <span className="text-[#0a1128] text-lg font-bold ml-1 uppercase tracking-tight">
                         Admin
                       </span>
                     )}
@@ -120,7 +132,7 @@ export function AdminSidebar() {
                 </div>
               </div>
             </div>
-
+ 
             {/* Navigation Links */}
             <div className="flex h-full w-full flex-col">
               <div className="flex grow flex-col gap-4 pt-4">
@@ -136,16 +148,16 @@ export function AdminSidebar() {
                           key={item.name}
                           href={item.href}
                           className={cn(
-                            "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-white/10 hover:text-white",
+                            "flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-[#0a1128]/5 hover:text-[#0a1128]",
                             isActive
-                              ? "bg-white/15 text-white"
-                              : "text-white/60"
+                              ? "bg-[#0a1128] text-white"
+                              : "text-[#5b637a] font-medium"
                           )}
                         >
                           <item.icon
                             className={cn(
                               "h-5 w-5 shrink-0",
-                              isActive && "text-white"
+                              isActive ? "text-white" : "text-[#0a1128]"
                             )}
                           />
                           <motion.li
@@ -153,7 +165,7 @@ export function AdminSidebar() {
                             className="ml-3 overflow-hidden whitespace-nowrap"
                           >
                             {!isCollapsed && (
-                              <p className="text-sm font-medium">
+                              <p className="text-sm">
                                 {item.name}
                               </p>
                             )}
@@ -164,15 +176,15 @@ export function AdminSidebar() {
                   </div>
                 </ScrollArea>
               </div>
-
+ 
               {/* Bottom Section */}
               <div className="flex flex-col p-2 space-y-1 mb-2">
                 {/* Back to User Dashboard */}
                 <Link
                   href="/dashboard"
-                  className="flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-white/10 hover:text-white text-white/60"
+                  className="flex h-10 w-full flex-row items-center rounded-xl px-2 py-2 transition-all hover:bg-[#0a1128]/5 hover:text-[#0a1128] text-[#5b637a]"
                 >
-                  <LayoutDashboard className="h-5 w-5 shrink-0" />
+                  <LayoutDashboard className="h-5 w-5 shrink-0 text-[#0a1128]" />
                   <motion.li
                     variants={variants}
                     className="ml-3 overflow-hidden whitespace-nowrap"
@@ -182,16 +194,16 @@ export function AdminSidebar() {
                     )}
                   </motion.li>
                 </Link>
-
-                <Separator className="bg-white/10" />
-
+ 
+                <Separator className="bg-black/5" />
+ 
                 {/* Profile Dropdown */}
                 <div className="pt-1">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger className="w-full outline-none">
-                      <div className="flex h-12 w-full flex-row items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-white/10 hover:text-white">
-                        <Avatar className="h-8 w-8 border border-white/10">
-                          <AvatarFallback className="bg-red-500/20 text-red-300 text-sm font-bold">
+                      <div className="flex h-12 w-full flex-row items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-[#0a1128]/5">
+                        <Avatar className="h-8 w-8 border border-black/10">
+                          <AvatarFallback className="bg-[#0a1128]/10 text-[#0a1128] text-sm font-bold">
                             ZA
                           </AvatarFallback>
                         </Avatar>
@@ -202,11 +214,11 @@ export function AdminSidebar() {
                           {!isCollapsed && (
                             <>
                               <div className="flex flex-col text-left">
-                                <p className="text-sm font-medium text-white">
+                                <p className="text-sm font-bold text-[#0a1128]">
                                   Admin
                                 </p>
                               </div>
-                              <ChevronsUpDown className="ml-auto h-4 w-4 text-white/30" />
+                              <ChevronsUpDown className="ml-auto h-4 w-4 text-[#5b637a]/30" />
                             </>
                           )}
                         </motion.li>
@@ -216,33 +228,33 @@ export function AdminSidebar() {
                       side="right"
                       sideOffset={10}
                       align="end"
-                      className="w-[200px]"
+                      className="w-[200px] border-black/5 shadow-xl rounded-2xl"
                     >
                       <div className="flex flex-row items-center gap-2 p-2">
                         <Avatar className="size-8">
-                          <AvatarFallback className="bg-red-500/10 text-red-600">
+                          <AvatarFallback className="bg-[#0a1128]/10 text-[#0a1128]">
                             ZA
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col text-left overflow-hidden">
-                          <span className="text-sm font-medium truncate">
+                          <span className="text-sm font-bold text-[#0a1128] truncate">
                             Zaprint Admin
                           </span>
-                          <span className="line-clamp-1 text-xs text-muted-foreground truncate">
+                          <span className="line-clamp-1 text-xs text-[#5b637a] truncate font-medium">
                             zaprint.official@gmail.com
                           </span>
                         </div>
                       </div>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/dashboard">
-                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                      <DropdownMenuSeparator className="bg-black/5" />
+                      <DropdownMenuItem asChild className="cursor-pointer focus:bg-[#0a1128]/5 rounded-xl mx-1">
+                        <Link href="/dashboard" className="flex items-center w-full">
+                          <LayoutDashboard className="h-4 w-4 mr-2 text-[#0a1128]" />
                           User Dashboard
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
+                        className="flex items-center gap-2 text-destructive focus:text-destructive focus:bg-destructive/5 cursor-pointer rounded-xl mx-1"
                       >
                         <LogOut className="h-4 w-4" /> Sign out
                       </DropdownMenuItem>
