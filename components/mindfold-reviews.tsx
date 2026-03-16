@@ -91,7 +91,7 @@ export function MindfoldReviews() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-20">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#0a1128] tracking-tight uppercase">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#0a1128] tracking-tight uppercase">
             Loved by <span className="text-[#0a1128]/40">THOUSANDS</span>
           </h2>
           <p className="mt-6 text-lg sm:text-xl text-[#5b637a] font-medium max-w-2xl mx-auto leading-relaxed">

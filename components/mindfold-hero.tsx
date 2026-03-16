@@ -18,7 +18,7 @@ export function MindfoldHero() {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-7xl sm:text-8xl md:text-[8rem] font-black tracking-tight text-[#0a1128] max-w-6xl mx-auto leading-none uppercase">
+        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[8rem] font-black tracking-tight text-[#0a1128] max-w-6xl mx-auto leading-none uppercase">
           PRINT SMARTER
           <br />
           <span className="text-[#0a1128]/40">SKIP THE QUEUE</span>

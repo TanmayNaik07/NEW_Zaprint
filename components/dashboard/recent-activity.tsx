@@ -118,36 +118,36 @@ export function RecentActivity({ orders }: { orders: Order[] }) {
         <img
           src="/images/tape.svg"
           alt=""
-          className="absolute top-0 left-0 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
-          style={{ transform: 'rotate(-35deg) translateY(-50%) translateX(-30%)' }}
+          className="absolute top-0 left-0 w-8 h-8 md:w-14 md:h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+          style={{ transform: 'rotate(-35deg) translateY(-40%) translateX(-20%)' }}
         />
         {/* Masking tape at top-right corner - matching the design PNG */}
         <img
           src="/images/tape.svg"
           alt=""
-          className="absolute top-0 right-2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
-          style={{ transform: 'rotate(25deg) translateY(-40%)' }}
+          className="absolute top-0 right-2 w-8 h-8 md:w-14 md:h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+          style={{ transform: 'rotate(25deg) translateY(-30%)' }}
         />
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto -mx-1 sm:mx-0">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b-2 border-dashed border-[#3a3120]/15">
-                <th className="text-left text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4">
+              <tr className="bg-[#0a1128] text-white">
+                <th className="text-left text-[10px] md:text-xs font-rubik-dirt uppercase tracking-widest px-4 md:px-6 py-3 min-w-[140px]">
                   Document
                 </th>
-                <th className="text-left text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4 hidden sm:table-cell">
+                <th className="text-left text-[10px] md:text-xs font-rubik-dirt uppercase tracking-widest px-4 md:px-6 py-3 hidden sm:table-cell">
                   Details
                 </th>
-                <th className="text-left text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4">
+                <th className="text-left text-[10px] md:text-xs font-rubik-dirt uppercase tracking-widest px-4 md:px-6 py-3 min-w-[100px]">
                   Status
                 </th>
-                <th className="text-right text-[#6b5d45] text-xs font-rubik-dirt uppercase tracking-wider px-6 py-4 hidden md:table-cell">
+                <th className="text-right text-[10px] md:text-xs font-rubik-dirt uppercase tracking-widest px-4 md:px-6 py-3 hidden md:table-cell">
                   Time
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-dashed divide-[#3a3120]/10">
               {orders.map((order, index) => {
                 const status = statusConfig[order.status] || statusConfig['pending']
                 const item = order.order_items[0] // Just show first item
@@ -157,31 +157,31 @@ export function RecentActivity({ orders }: { orders: Order[] }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="border-b border-dashed border-[#3a3120]/10 last:border-0 hover:bg-[#3a3120]/[0.03] transition-colors"
+                    className="hover:bg-black/[0.02] transition-colors"
                   >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-[#3a3120]/10 flex items-center justify-center shrink-0">
-                          <FileText className="w-5 h-5 text-[#6b5d45]" />
+                    <td className="px-4 md:px-6 py-4">
+                      <div className="flex items-center gap-2 md:gap-3">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-[#3a3120]/10 flex items-center justify-center shrink-0">
+                          <FileText className="w-4 h-4 md:w-5 md:h-5 text-[#6b5d45]" />
                         </div>
-                        <span className="text-[#1a1408] text-sm font-medium truncate max-w-[180px]">
+                        <span className="text-[#1a1408] text-sm font-medium truncate max-w-[120px] md:max-w-[200px]">
                           {item?.file_name || "Unknown File"}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 hidden sm:table-cell">
-                      <span className="text-[#6b5d45] text-sm">
+                    <td className="px-4 md:px-6 py-4 hidden sm:table-cell">
+                      <span className="text-[#6b5d45] text-xs md:text-sm">
                         {item ? `${item.copies} copies` : "-"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 md:px-6 py-4">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${status.bgColor}`}>
-                        <status.icon className={`w-3.5 h-3.5 ${status.color} ${status.iconClass}`} />
-                        <span className={`text-xs font-medium ${status.color}`}>{status.label}</span>
+                        <status.icon className={`w-3 h-3 md:w-3.5 md:h-3.5 ${status.color} ${status.iconClass}`} />
+                        <span className={`text-[10px] md:text-xs font-bold uppercase tracking-wide ${status.color}`}>{status.label}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right hidden md:table-cell">
-                      <span className="text-[#6b5d45] text-sm">
+                    <td className="px-4 md:px-6 py-4 text-right hidden md:table-cell">
+                      <span className="text-[#6b5d45] text-xs md:text-sm">
                         {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
                       </span>
                     </td>

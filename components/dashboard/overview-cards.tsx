@@ -55,11 +55,10 @@ export function OverviewCards({ stats: data }: { stats: OverviewStats }) {
               minHeight: '180px',
             }}
           >
-            {/* Masking tape at top center */}
             <img
               src="/images/tape.svg"
               alt=""
-              className="absolute top-0 left-1/2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+              className="absolute top-0 left-1/2 w-10 h-10 md:w-14 md:h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
               style={{ transform: 'translateX(-50%) translateY(-40%)' }}
             />
 

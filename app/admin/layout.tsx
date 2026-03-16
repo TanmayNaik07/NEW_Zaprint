@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { isAdminEmail } from "@/lib/admin"
 import { redirect } from "next/navigation"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
+import { AdminTopBar } from "@/components/admin/admin-top-bar"
 
 export const metadata: Metadata = {
   title: "Admin Dashboard — Zaprint",
@@ -46,7 +47,8 @@ export default async function AdminLayout({
         }}
       />
       <AdminSidebar />
-      <main className="flex-1 flex flex-col min-h-screen overflow-hidden relative z-[1]">
+      <main className="flex-1 flex flex-col min-h-screen overflow-hidden relative z-[1] md:pl-16">
+        <AdminTopBar />
         <div className="flex-1 overflow-auto p-4 md:p-8">{children}</div>
       </main>
     </div>
