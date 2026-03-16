@@ -82,8 +82,8 @@ export function DashboardMobileNav() {
           <SheetHeader className="p-6 border-b border-black/5 bg-white/50 backdrop-blur-md">
             <SheetTitle className="text-left">
               <Link href="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-                <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0">
-                  <Printer className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0 p-2 shadow-sm">
+                  <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-xl font-bold text-[#0a1128]">Zaprint</span>
               </Link>

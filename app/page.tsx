@@ -8,12 +8,61 @@ import { MindfoldPricing } from "@/components/mindfold-pricing"
 import { MindfoldFooter } from "@/components/mindfold-footer"
 import Script from "next/script"
 
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Zaprint",
+  url: "https://zaprint.in",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://zaprint.in/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+
+const siteNavigationSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": [
+    {
+      "@type": "SiteNavigationElement",
+      "position": 1,
+      "name": "About Us",
+      "url": "https://zaprint.in/about"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 2,
+      "name": "Terms of Service",
+      "url": "https://zaprint.in/terms"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 3,
+      "name": "Sign In / Login",
+      "url": "https://zaprint.in/login"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 4,
+      "name": "Sign Up",
+      "url": "https://zaprint.in/signup"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 5,
+      "name": "Privacy Policy",
+      "url": "https://zaprint.in/privacy"
+    }
+  ]
+}
+
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Zaprint",
   url: "https://zaprint.in",
-  logo: "https://zaprint.in/icon.svg",
+  logo: "https://zaprint.in/Zaprint_Logo.png",
   description:
     "India's smart document printing platform. Upload, pay, and pick up prints from nearby shops.",
   sameAs: [
@@ -137,6 +186,16 @@ export default function LandingPage() {
         id="schema-organization"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <Script
+        id="schema-website"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <Script
+        id="schema-site-navigation"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationSchema) }}
       />
       <Script
         id="schema-software-application"

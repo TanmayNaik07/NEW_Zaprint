@@ -18,24 +18,34 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://zaprint.in"),
   title: {
-    default: "Zaprint — Print Documents Online | Skip the Queue",
+    default: "Zaprint | Online Printing & Remote Print Management",
     template: "%s | Zaprint",
   },
   description:
-    "Upload documents, choose print settings, pay online & pick up your prints when ready. Fast, affordable printing service near you. No more waiting in queues.",
+    "Zaprint is your ultimate platform for online printing and remote print management. Upload documents, choose your nearest print shop, manage prints, and skip the queue.",
   keywords: [
+    "Zaprint",
+    "online printing",
+    "remote printing",
+    "manage prints",
+    "print shops",
     "online printing service",
     "print documents online",
     "send print request online",
     "print documents near me",
     "printer shops near me",
-    "thesis printing",
+    "thesis printing online",
     "bulk printing services",
     "college printing services",
     "document printing",
     "print pickup service",
+    "bw printing online",
     "color printing service",
     "affordable printing near me",
+    "skip the queue printing",
+    "print pdf online",
+    "cheap online printing",
+    "cloud printing india"
   ],
   authors: [{ name: "Zaprint" }],
   creator: "Zaprint",
@@ -56,9 +66,9 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: "https://zaprint.in",
     siteName: "Zaprint",
-    title: "Zaprint — Print Documents Online | Skip the Queue",
+    title: "Zaprint | Online Printing & Remote Print Management",
     description:
-      "Upload documents, choose print settings, pay online & pick up your prints when ready. Fast, affordable printing near you.",
+      "Zaprint is your ultimate platform for online printing and remote print management. Upload documents, choose your nearest print shop, manage prints, and skip the queue.",
     images: [
       {
         url: "/og-image.png",
@@ -70,28 +80,16 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zaprint — Print Documents Online | Skip the Queue",
+    title: "Zaprint | Online Printing & Remote Print Management",
     description:
-      "Upload documents, choose print settings, pay online & pick up your prints when ready.",
+      "Zaprint is your ultimate platform for online printing and remote print management. Upload documents, choose your nearest print shop, manage prints, and skip the queue.",
     images: ["/og-image.png"],
     creator: "@zaprint",
   },
   icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
+    icon: "/zaprint-favicon.png",
+    shortcut: "/zaprint-favicon.png",
+    apple: "/zaprint-favicon.png",
   },
   alternates: {
     canonical: "https://zaprint.in",

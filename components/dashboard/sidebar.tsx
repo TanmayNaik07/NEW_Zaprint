@@ -115,8 +115,8 @@ export function DashboardSidebar() {
       {/* Top Logo / Brand Section */}
       <div className="flex h-16 w-full shrink-0 items-center border-b border-black/5 px-4 overflow-hidden">
         <div className="flex items-center gap-3 w-full">
-          <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0 shadow-lg shadow-[#0a1128]/20">
-            <Printer className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0 shadow-lg shadow-[#0a1128]/20 p-2">
+            <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
           </div>
           <motion.span
             variants={textVariants}

@@ -205,8 +205,8 @@ const AnimatedSignUp: React.FC<AnimatedSignUpProps> = ({ className }) => {
 
       {/* Logo */}
       <Link href="/" className="auth-logo">
-        <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center">
-          <Printer className="w-6 h-6 text-white" />
+        <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0 p-2 shadow-md">
+          <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
         </div>
         <span className="auth-logo-text">Zaprint</span>
       </Link>

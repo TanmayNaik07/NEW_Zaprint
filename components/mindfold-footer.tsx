@@ -24,8 +24,8 @@ export function MindfoldFooter() {
           {/* Column 1 - Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-6">
-              <div className="bg-[#0a1128] text-white p-2 rounded-xl">
-                <Printer className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0 p-1.5 shadow-sm">
+                <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className="text-base font-bold text-[#0a1128] leading-tight">Zaprint</span>
