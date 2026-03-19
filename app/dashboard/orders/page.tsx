@@ -26,6 +26,8 @@ export default function OrdersPage() {
         .from("orders")
         .select(`
           id, created_at, status, total_amount, user_id, receipt_number, order_number,
+          payment_status, print_amount, platform_fee, platform_fee_percentage,
+          razorpay_order_id, razorpay_payment_id,
           shops:shop_id (
             shop_name,
             image_url,

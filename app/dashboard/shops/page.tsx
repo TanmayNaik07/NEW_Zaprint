@@ -25,6 +25,7 @@ export default function ShopsPage() {
           .from("shops")
           .select(`*, services:shop_services(*), resources:shop_resources(*), printers:shop_printers(*)`)
           .eq('is_onboarded', true)
+          .eq('is_payment_onboarded', true)
           .order("created_at", { ascending: false }),
       ])
 

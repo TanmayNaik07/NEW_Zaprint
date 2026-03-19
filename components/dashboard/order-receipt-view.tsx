@@ -17,8 +17,11 @@ export function OrderReceiptView({ order }: OrderReceiptViewProps) {
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
             case "pending": return "bg-yellow-500/10 text-yellow-500"
+            case "paid": return "bg-amber-500/10 text-amber-600"
             case "processing":
             case "printing": return "bg-blue-500/10 text-blue-500"
+            case "in_queue": return "bg-purple-500/10 text-purple-500"
+            case "ready": return "bg-emerald-500/10 text-emerald-500"
             case "completed": return "bg-green-500/10 text-green-500"
             case "cancelled": return "bg-red-500/10 text-red-500"
             default: return "bg-white/5 text-muted-foreground"
@@ -74,9 +77,35 @@ export function OrderReceiptView({ order }: OrderReceiptViewProps) {
                 <Separator className="bg-zinc-200" />
 
                 {/* Total */}
-                <div className="flex justify-between items-center">
-                    <p className="font-bold text-lg">Total Amount</p>
-                    <p className="font-bold text-2xl">₹{order.total_amount}</p>
+                <div className="space-y-2">
+                    {order.print_amount && order.platform_fee ? (
+                        <>
+                            <div className="flex justify-between items-center text-sm">
+                                <p className="text-zinc-500">Print Cost</p>
+                                <p className="font-medium">₹{Number(order.print_amount).toFixed(2)}</p>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <p className="text-zinc-500">Service Fee ({order.platform_fee_percentage}%)</p>
+                                <p className="font-medium">₹{Number(order.platform_fee).toFixed(2)}</p>
+                            </div>
+                            <Separator className="bg-zinc-200" />
+                        </>
+                    ) : null}
+                    <div className="flex justify-between items-center">
+                        <p className="font-bold text-lg">Total Amount</p>
+                        <p className="font-bold text-2xl">₹{Number(order.total_amount).toFixed(2)}</p>
+                    </div>
+                    {order.payment_status && (
+                        <div className="flex justify-center">
+                            <Badge variant="outline" className={`capitalize border-0 ${
+                                order.payment_status === 'paid' ? 'bg-green-500/10 text-green-600' :
+                                order.payment_status === 'failed' ? 'bg-red-500/10 text-red-600' :
+                                'bg-yellow-500/10 text-yellow-600'
+                            }`}>
+                                Payment: {order.payment_status}
+                            </Badge>
+                        </div>
+                    )}
                 </div>
 
                 {/* Verification Code */}

@@ -5,8 +5,9 @@ import { type RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { FileText, Clock, Store, CheckCircle2, XCircle, Printer, RefreshCw, Banknote, ListOrdered, CheckCircle } from "lucide-react"
+import { FileText, Clock, Store, CheckCircle2, XCircle, Printer, RefreshCw, Banknote, ListOrdered, CheckCircle, CreditCard, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
+import Link from "next/link"
 
 export interface OrderItem {
   id: string
@@ -28,7 +29,11 @@ export interface Order {
   id: string
   created_at: string
   status: string
+  payment_status?: string
   total_amount: number
+  print_amount?: number
+  platform_fee?: number
+  platform_fee_percentage?: number
   user_id: string
   shops?: Shop
   order_items?: OrderItem[]
@@ -136,7 +141,7 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-[#f5e6c8] text-[#8B6914] border-[#d4b96a]"
+        return "bg-[#fff7ed] text-[#c2410c] border-[#fed7aa]"
       case "paid":
         return "bg-[#fef3c7] text-[#d97706] border-[#fde68a]"
       case "in_queue":
@@ -159,7 +164,7 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return <Clock className="w-3.5 h-3.5" />
+        return <AlertCircle className="w-3.5 h-3.5" />
       case "paid":
         return <Banknote className="w-3.5 h-3.5" />
       case "in_queue":
@@ -222,10 +227,19 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
                   </p>
                 </div>
               </div>
-              <Badge variant="outline" className={`border gap-1.5 capitalize text-xs font-semibold px-3 py-1 ${getStatusColor(order.status)}`}>
-                {getStatusIcon(order.status)}
-                {order.status}
-              </Badge>
+              <div className="flex flex-col items-end gap-1.5">
+                <Badge variant="outline" className={`border gap-1.5 capitalize text-xs font-semibold px-3 py-1 ${getStatusColor(order.status)}`}>
+                  {getStatusIcon(order.status)}
+                  {order.status === 'pending' ? 'Awaiting Payment' : order.status.replace('_', ' ')}
+                </Badge>
+                {order.status === 'pending' && order.payment_status !== 'paid' && (
+                  <Link href={`/dashboard/orders/${order.id}`}>
+                    <span className="text-[10px] font-bold text-[#c2410c] underline cursor-pointer hover:text-[#9a3412]">
+                      Complete Payment →
+                    </span>
+                  </Link>
+                )}
+              </div>
             </div>
 
             {/* Dashed divider */}
@@ -260,7 +274,14 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
               <p className="text-xs text-[#6b5d45] font-mono truncate max-w-[200px]">
                 Order ID: {order.id.slice(0, 8)}...
               </p>
-              <p className="font-rubik-dirt text-[#1a1408] text-xl md:text-2xl">₹{order.total_amount}</p>
+              <div className="text-right">
+                {order.platform_fee && order.platform_fee > 0 && (
+                  <p className="text-[10px] text-[#6b5d45] font-medium">
+                    Print: ₹{(order.print_amount || 0).toFixed(2)} + Fee: ₹{order.platform_fee.toFixed(2)}
+                  </p>
+                )}
+                <p className="font-rubik-dirt text-[#1a1408] text-xl md:text-2xl">₹{order.total_amount}</p>
+              </div>
             </div>
           </div>
         </div>

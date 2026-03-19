@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Loader2, IndianRupee, Plus, Trash2, Upload, FileText, X, CheckCircle } from "lucide-react"
+import { Loader2, IndianRupee, Plus, Trash2, Upload, FileText, X, CheckCircle, ShieldCheck, Info } from "lucide-react"
 import { toast } from "sonner"
 import type { ShopWithDetails } from "@/lib/types/shop"
 import { isShopCurrentlyOpen } from "@/lib/types/shop"
@@ -17,6 +17,22 @@ import { usePrintStore } from "@/lib/print-store"
 import { getPDFPageCount, isPDF } from "@/lib/utils/pdf"
 import { motion, AnimatePresence } from "framer-motion"
 import { track } from "@vercel/analytics"
+import { calculatePlatformFee, type PlatformFeeResult } from "@/lib/platform-fee"
+
+// Load Razorpay Script
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true)
+      return
+    }
+    const script = document.createElement("script")
+    script.src = "https://checkout.razorpay.com/v1/checkout.js"
+    script.onload = () => resolve(true)
+    script.onerror = () => resolve(false)
+    document.body.appendChild(script)
+  })
+}
 
 export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   const router = useRouter()
@@ -24,7 +40,9 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   const { sections, addSection, removeSection, updateSection, calculateSubtotal, calculateGrandTotal, reset } = usePrintStore()
 
   const [loading, setLoading] = useState(false)
+  const [paymentLoading, setPaymentLoading] = useState(false)
   const [isShopOpen, setIsShopOpen] = useState(false)
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null)
 
   // Initialize isShopOpen
   useEffect(() => {
@@ -91,7 +109,12 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   }
 
-  const handleOrder = async () => {
+  // Calculate print total and platform fee
+  const printTotal = calculateGrandTotal(bwRate, colorRate)
+  const feeResult: PlatformFeeResult = calculatePlatformFee(printTotal)
+
+  // Step 1: Create order + upload files
+  const handleCreateOrder = async () => {
     if (!isShopOpen) {
       toast.error("Shop is closed. You cannot send files.")
       return
@@ -134,24 +157,25 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         }
       }
 
-      // 3. Calculate total
-      const totalAmount = calculateGrandTotal(bwRate, colorRate)
-
-      // 4. Create Order
+      // 3. Create Order with pending payment status
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
           user_id: user.id,
           shop_id: shop.id,
           status: 'pending',
-          total_amount: totalAmount
+          payment_status: 'pending',
+          print_amount: printTotal,
+          platform_fee: feeResult.platformFeeAmount,
+          platform_fee_percentage: feeResult.platformFeePercentage,
+          total_amount: feeResult.totalAmount,
         })
         .select()
         .single()
 
       if (orderError) throw new Error(`Order creation failed: ${orderError.message}`)
 
-      // 5. Upload files and create order items
+      // 4. Upload files and create order items
       for (const section of validSections) {
         if (!section.file) continue
 
@@ -188,14 +212,11 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         if (itemError) throw new Error(`Item creation failed for ${section.fileName}: ${itemError.message}`)
       }
 
-      toast.success("Order placed successfully!")
-      track("order_completed", {
-        order_id: order.id,
-        shop_name: shop.shop_name,
-        total_amount: totalAmount,
-      })
-      reset()
-      router.push('/dashboard/orders')
+      setCreatedOrderId(order.id)
+      toast.success("Files uploaded! Proceeding to payment...")
+
+      // Automatically trigger payment
+      await handlePayment(order.id, user.email || '')
 
     } catch (error: any) {
       console.error(error)
@@ -205,7 +226,103 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
     }
   }
 
-  const grandTotal = calculateGrandTotal(bwRate, colorRate)
+  // Step 2: Open Razorpay payment
+  const handlePayment = async (orderId: string, userEmail: string) => {
+    setPaymentLoading(true)
+
+    try {
+      // Load Razorpay SDK
+      const loaded = await loadRazorpayScript()
+      if (!loaded) {
+        toast.error("Failed to load payment gateway. Please check your internet connection.")
+        setPaymentLoading(false)
+        return
+      }
+
+      // Create Razorpay order via our API
+      const response = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create payment order')
+      }
+
+      // Open Razorpay checkout
+      const options: RazorpayOptions = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: "Zaprint",
+        description: `Print Order at ${shop.shop_name}`,
+        order_id: data.orderId,
+        handler: async (paymentResponse) => {
+          // Verify payment on server
+          try {
+            const verifyRes = await fetch('/api/razorpay/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                order_id: orderId,
+              }),
+            })
+
+            const verifyData = await verifyRes.json()
+
+            if (verifyData.success) {
+              toast.success("Payment successful! Your order is being processed.")
+              track("order_paid", {
+                order_id: orderId,
+                shop_name: shop.shop_name,
+                total_amount: feeResult.totalAmount,
+              })
+              reset()
+              router.push('/dashboard/orders')
+            } else {
+              toast.error("Payment verification failed. Please contact support.")
+            }
+          } catch {
+            toast.error("Payment verification failed. Please contact support.")
+          }
+          setPaymentLoading(false)
+        },
+        prefill: {
+          email: userEmail,
+        },
+        theme: {
+          color: "#1a1408",
+        },
+        modal: {
+          ondismiss: () => {
+            toast.info("Payment was cancelled. You can retry from your orders page.")
+            setPaymentLoading(false)
+            // Redirect to orders so they can retry payment
+            router.push('/dashboard/orders')
+          },
+          confirm_close: true,
+        },
+      }
+
+      const rzp = new window.Razorpay!(options)
+      rzp.on('payment.failed', (response: any) => {
+        toast.error("Payment failed. Please try again.")
+        setPaymentLoading(false)
+      })
+      rzp.open()
+
+    } catch (error: any) {
+      console.error('Payment error:', error)
+      toast.error(error.message || "Payment initiation failed")
+      setPaymentLoading(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -368,43 +485,91 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
         <span className="text-sm font-bold uppercase tracking-widest text-[#3a3120] group-hover:text-[#1a1408]">Add Another Print Job</span>
       </button>
 
-      {/* Grand Total (Fixed) */}
+      {/* Grand Total with Platform Fee (Fixed) */}
       <div className="sticky bottom-4 mx-2 bg-[#fdfbf7] border border-[#1a1408]/20 rounded-sm p-5 shadow-[4px_4px_15px_rgba(0,0,0,0.15)] z-20"
         style={{
           backgroundImage: `url('/images/paper-texture.png')`,
           backgroundSize: 'cover',
           backgroundBlendMode: 'multiply',
         }}>
-        <div className="flex items-end justify-between mb-5">
-          <div>
-            <p className="text-xs font-black tracking-widest uppercase text-[#3a3120] opacity-80 mb-1">Grand Total</p>
-            <p className="text-sm font-semibold text-[#6b5d45]">
-              {sections.filter(s => s.file).length} File(s) <span className="opacity-50 mx-1">•</span> {sections.reduce((sum, s) => sum + (s.file ? s.pageCount * s.copies : 0), 0)} Pages Total
-            </p>
+
+        {/* Summary Lines */}
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold tracking-widest uppercase text-[#6b5d45]">
+              {sections.filter(s => s.file).length} File(s) • {sections.reduce((sum, s) => sum + (s.file ? s.pageCount * s.copies : 0), 0)} Pages
+            </span>
           </div>
-          <div className="flex items-center gap-1 text-4xl font-rubik-dirt text-[#1a1408]">
-            <IndianRupee className="w-8 h-8 opacity-80 mb-1.5" />
-            {grandTotal.toFixed(2)}
+
+          {/* Print Cost */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-[#3a3120]">Print Cost</span>
+            <div className="flex items-center gap-1 text-sm font-bold text-[#1a1408]">
+              <IndianRupee className="w-3.5 h-3.5 text-[#6b5d45]" />
+              {printTotal.toFixed(2)}
+            </div>
+          </div>
+
+          {/* Platform Fee */}
+          {printTotal > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-[#3a3120] flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-[#6b5d45]" />
+                Service Fee ({feeResult.platformFeePercentage}%)
+              </span>
+              <div className="flex items-center gap-1 text-sm font-bold text-[#6b5d45]">
+                <IndianRupee className="w-3.5 h-3.5" />
+                {feeResult.platformFeeAmount.toFixed(2)}
+              </div>
+            </div>
+          )}
+
+          {/* Divider */}
+          <div className="border-t-[2px] border-dashed border-[#1a1408]/30" />
+
+          {/* Grand Total */}
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-xs font-black tracking-widest uppercase text-[#3a3120] opacity-80">Total Amount</p>
+            </div>
+            <div className="flex items-center gap-1 text-3xl font-rubik-dirt text-[#1a1408]">
+              <IndianRupee className="w-7 h-7 opacity-80 mb-1" />
+              {feeResult.totalAmount.toFixed(2)}
+            </div>
           </div>
         </div>
+
+        {/* Secure Payment Badge */}
+        {printTotal > 0 && (
+          <div className="flex items-center gap-2 mb-3 p-2 bg-[#15803d]/5 border border-[#15803d]/20 rounded-sm">
+            <ShieldCheck className="w-4 h-4 text-[#15803d] shrink-0" />
+            <p className="text-[11px] font-semibold text-[#15803d]">
+              Secure payment powered by Razorpay • 100% Safe & Encrypted
+            </p>
+          </div>
+        )}
+
         {!isShopOpen && (
           <div className="text-sm font-bold text-red-600 mb-3 text-center bg-red-50 p-2 rounded border border-red-200">
             Shop is closed. You cannot send files.
           </div>
         )}
+
         <Button
-          disabled={loading || !isShopOpen || sections.filter(s => s.file).length === 0}
-          onClick={handleOrder}
+          disabled={loading || paymentLoading || !isShopOpen || sections.filter(s => s.file).length === 0}
+          onClick={handleCreateOrder}
           size="lg"
           className="w-full text-sm font-black tracking-widest uppercase h-14 bg-gradient-to-br from-[#1a1408] to-[#3a3120] hover:from-[#3a3120] hover:to-[#5a5140] text-[#fdfbf7] rounded-sm shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] transition-all"
         >
-          {loading ? (
+          {loading || paymentLoading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Processing Order...
+              {loading ? "Uploading Files..." : "Opening Payment..."}
             </>
           ) : (
-            "Complete Order"
+            <>
+              Pay ₹{feeResult.totalAmount.toFixed(2)} & Place Order
+            </>
           )}
         </Button>
       </div>

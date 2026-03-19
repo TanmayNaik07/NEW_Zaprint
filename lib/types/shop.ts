@@ -13,6 +13,8 @@ export interface Shop {
   non_working_days: string[] // e.g., ["Sunday", "Saturday"]
   status: 'open' | 'closed' | 'error'
   is_onboarded: boolean
+  is_payment_onboarded: boolean
+  razorpay_account_id: string | null
   created_at: string
   updated_at: string
 }
