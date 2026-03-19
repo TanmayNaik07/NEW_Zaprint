@@ -16,10 +16,10 @@ interface OrderPageProps {
 export default async function OrderDetailsPage({ params }: OrderPageProps) {
   const supabase = await createClient()
   const { id } = params
-  
+
   // Get user session
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect("/login")
   }
@@ -57,7 +57,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
 
   // Security check: ensure order belongs to user
   if (order.user_id !== user.id) {
-     return notFound()
+    return notFound()
   }
 
   // Normalize shop data
@@ -70,40 +70,40 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-20">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-            <Link href="/dashboard/orders">
-                <Button variant="ghost" size="icon" className="rounded-full">
-                    <ArrowLeft className="w-5 h-5" />
-                </Button>
-            </Link>
-            <h1 className="text-xl font-bold">Order Details</h1>
-        </div>
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Link href="/dashboard/orders">
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        </Link>
+        <h1 className="text-xl font-bold">Order Details</h1>
+      </div>
 
-        {/* Payment Required Banner */}
-        {needsPayment && (
-          <div className="bg-[#fff7ed] border-2 border-[#fed7aa] rounded-sm p-5 space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#c2410c]/10 flex items-center justify-center">
-                <span className="text-lg">💳</span>
-              </div>
-              <div>
-                <h3 className="font-bold text-[#c2410c] text-sm">Payment Required</h3>
-                <p className="text-xs text-[#9a3412]">Complete payment to start processing your order</p>
-              </div>
+      {/* Payment Required Banner */}
+      {needsPayment && (
+        <div className="bg-[#fff7ed] border-2 border-[#fed7aa] rounded-sm p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#c2410c]/10 flex items-center justify-center">
+              <span className="text-lg">💳</span>
             </div>
-            <RetryPaymentButton
-              orderId={order.id}
-              shopName={normalizedOrder.shops?.shop_name || 'Print Shop'}
-              totalAmount={order.total_amount}
-            />
+            <div>
+              <h3 className="font-bold text-[#c2410c] text-sm">Payment Required</h3>
+              <p className="text-xs text-[#9a3412]">Complete payment to start processing your order</p>
+            </div>
           </div>
-        )}
-
-        <div className="grid gap-6">
-            <OrderReceiptView order={normalizedOrder} />
+          <RetryPaymentButton
+            orderId={order.id}
+            shopName={normalizedOrder.shops?.shop_name || 'Print Shop'}
+            totalAmount={order.total_amount}
+          />
         </div>
-        
+      )}
+
+      <div className="grid gap-6">
+        <OrderReceiptView order={normalizedOrder} />
+      </div>
+
     </div>
   )
 }

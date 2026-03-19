@@ -12,9 +12,9 @@ import { isShopCurrentlyOpen, formatOperatingHours } from "@/lib/types/shop"
 export const dynamic = 'force-dynamic'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function ShopPrintPage({ params }: PageProps) {
