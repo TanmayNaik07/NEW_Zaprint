@@ -5,7 +5,7 @@ import { type RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { FileText, Clock, Store, CheckCircle2, XCircle, Printer, RefreshCw } from "lucide-react"
+import { FileText, Clock, Store, CheckCircle2, XCircle, Printer, RefreshCw, Banknote, ListOrdered, CheckCircle } from "lucide-react"
 import { toast } from "sonner"
 
 export interface OrderItem {
@@ -137,13 +137,20 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
     switch (status.toLowerCase()) {
       case "pending":
         return "bg-[#f5e6c8] text-[#8B6914] border-[#d4b96a]"
+      case "paid":
+        return "bg-[#fef3c7] text-[#d97706] border-[#fde68a]"
+      case "in_queue":
+        return "bg-[#ede9fe] text-[#7c3aed] border-[#ddd6fe]"
       case "processing":
+        return "bg-[#dbeafe] text-[#2563eb] border-[#bfdbfe]"
       case "printing":
-        return "bg-[#dce8f5] text-[#2563EB] border-[#93b4e0]"
+        return "bg-[#cffafe] text-[#0891b2] border-[#a5f3fc]"
+      case "ready":
+        return "bg-[#d1fae5] text-[#059669] border-[#a7f3d0]"
       case "completed":
-        return "bg-[#d5f0db] text-[#166534] border-[#86d99a]"
+        return "bg-[#dcfce7] text-[#16a34a] border-[#bbf7d0]"
       case "cancelled":
-        return "bg-[#fde2e2] text-[#991B1B] border-[#f5a3a3]"
+        return "bg-[#fee2e2] text-[#dc2626] border-[#fecaca]"
       default:
         return "bg-[#ece9e4] text-[#5b637a] border-[#c9c5be]"
     }
@@ -153,9 +160,16 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
     switch (status.toLowerCase()) {
       case "pending":
         return <Clock className="w-3.5 h-3.5" />
+      case "paid":
+        return <Banknote className="w-3.5 h-3.5" />
+      case "in_queue":
+        return <ListOrdered className="w-3.5 h-3.5" />
       case "processing":
+        return <RefreshCw className="w-3.5 h-3.5 animate-spin" />
       case "printing":
-        return <Printer className="w-3.5 h-3.5" />
+        return <Printer className="w-3.5 h-3.5 animate-bounce" />
+      case "ready":
+        return <CheckCircle className="w-3.5 h-3.5" />
       case "completed":
         return <CheckCircle2 className="w-3.5 h-3.5" />
       case "cancelled":

@@ -19,6 +19,11 @@ export async function GET() {
     completedOrdersRes,
     pendingOrdersRes,
     cancelledOrdersRes,
+    paidOrdersRes,
+    inQueueOrdersRes,
+    processingOrdersRes,
+    printingOrdersRes,
+    readyOrdersRes,
     shopsRes,
     profilesRes,
     revenueRes,
@@ -43,6 +48,31 @@ export async function GET() {
       .from("orders")
       .select("*", { count: "exact", head: true })
       .eq("status", "cancelled"),
+    // Paid orders
+    supabase
+      .from("orders")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "paid"),
+    // In Queue orders
+    supabase
+      .from("orders")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "in_queue"),
+    // Processing orders
+    supabase
+      .from("orders")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "processing"),
+    // Printing orders
+    supabase
+      .from("orders")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "printing"),
+    // Ready orders
+    supabase
+      .from("orders")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "ready"),
     // Total shops
     supabase.from("shops").select("*", { count: "exact", head: true }),
     // Total users
@@ -114,6 +144,11 @@ export async function GET() {
       completedOrders: completedOrdersRes.count || 0,
       pendingOrders: pendingOrdersRes.count || 0,
       cancelledOrders: cancelledOrdersRes.count || 0,
+      paidOrders: paidOrdersRes.count || 0,
+      inQueueOrders: inQueueOrdersRes.count || 0,
+      processingOrders: processingOrdersRes.count || 0,
+      printingOrders: printingOrdersRes.count || 0,
+      readyOrders: readyOrdersRes.count || 0,
       totalShops: shopsRes.count || 0,
       totalUsers: profilesRes.count || 0,
       totalRevenue,

@@ -14,6 +14,11 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
+  Banknote,
+  ListOrdered,
+  Printer,
+  RefreshCw,
+  CheckCircle,
 } from "lucide-react"
 import {
   AreaChart,
@@ -35,10 +40,29 @@ interface StatsData {
   completedOrders: number
   pendingOrders: number
   cancelledOrders: number
+  paidOrders: number
+  inQueueOrders: number
+  processingOrders: number
+  printingOrders: number
+  readyOrders: number
   totalShops: number
   totalUsers: number
   totalRevenue: number
   totalFeedback: number
+}
+
+const getStatusBadge = (status: string) => {
+  switch(status?.toLowerCase()) {
+    case 'completed': return { bg: 'bg-green-500/10', text: 'text-green-600', Icon: CheckCircle2 }
+    case 'ready': return { bg: 'bg-emerald-500/10', text: 'text-emerald-600', Icon: CheckCircle }
+    case 'printing': return { bg: 'bg-cyan-500/10', text: 'text-cyan-600', Icon: Printer }
+    case 'processing': return { bg: 'bg-blue-500/10', text: 'text-blue-600', Icon: RefreshCw }
+    case 'in_queue': return { bg: 'bg-violet-500/10', text: 'text-violet-600', Icon: ListOrdered }
+    case 'paid': return { bg: 'bg-amber-500/10', text: 'text-amber-600', Icon: Banknote }
+    case 'pending': return { bg: 'bg-orange-500/10', text: 'text-orange-600', Icon: Clock }
+    case 'cancelled': return { bg: 'bg-red-500/10', text: 'text-red-600', Icon: XCircle }
+    default: return { bg: 'bg-[#5b637a]/10', text: 'text-[#5b637a]', Icon: ShoppingCart }
+  }
 }
 
 interface ChartDataPoint {
@@ -214,18 +238,14 @@ export default function AdminOverview() {
 
   const pieData = stats
     ? [
-        { name: "Completed", value: stats.completedOrders, color: "#22c55e" },
-        { name: "Pending", value: stats.pendingOrders, color: "#f97316" },
-        { name: "Cancelled", value: stats.cancelledOrders, color: "#ef4444" },
-        {
-          name: "Processing",
-          value:
-            stats.totalOrders -
-            stats.completedOrders -
-            stats.pendingOrders -
-            stats.cancelledOrders,
-          color: "#3b82f6",
-        },
+        { name: "Pending", value: stats.pendingOrders, color: "#f97316" }, // orange
+        { name: "Paid", value: stats.paidOrders, color: "#f59e0b" }, // amber
+        { name: "In Queue", value: stats.inQueueOrders, color: "#8b5cf6" }, // violet
+        { name: "Processing", value: stats.processingOrders, color: "#3b82f6" }, // blue
+        { name: "Printing", value: stats.printingOrders, color: "#06b6d4" }, // cyan
+        { name: "Ready", value: stats.readyOrders, color: "#10b981" }, // emerald
+        { name: "Completed", value: stats.completedOrders, color: "#22c55e" }, // green
+        { name: "Cancelled", value: stats.cancelledOrders, color: "#ef4444" }, // red
       ].filter((d) => d.value > 0)
     : []
 
@@ -528,38 +548,38 @@ export default function AdminOverview() {
           </div>
           {recentOrders.length > 0 ? (
             <div className="space-y-4">
-              {recentOrders.slice(0, 5).map((order: any) => (
-                <div
-                  key={order.id}
-                  className="group flex items-center justify-between p-4 rounded-2xl border border-black/5 bg-white/50 hover:bg-white hover:border-[#0a1128]/10 transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-xl ${
-                      order.status === 'completed' ? 'bg-green-500/10' : 'bg-blue-500/10'
-                    }`}>
-                      <ShoppingCart className={`h-4 w-4 ${
-                        order.status === 'completed' ? 'text-green-600' : 'text-blue-600'
-                      }`} />
+              {recentOrders.slice(0, 5).map((order: any) => {
+                const badge = getStatusBadge(order.status)
+                const Icon = badge.Icon
+                return (
+                  <div
+                    key={order.id}
+                    className="group flex items-center justify-between p-4 rounded-2xl border border-black/5 bg-white/50 hover:bg-white hover:border-[#0a1128]/10 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-xl ${badge.bg}`}>
+                        <Icon className={`h-4 w-4 ${badge.text}`} />
+                      </div>
+                      <div>
+                        <p className="text-[#0a1128] text-sm font-black uppercase tracking-tight truncate max-w-[150px]">
+                          {order.order_items?.[0]?.file_name || "Order"}
+                        </p>
+                        <p className="text-[#5b637a] text-[10px] font-bold">
+                          {order.shops?.shop_name || "Shop"}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[#0a1128] text-sm font-black uppercase tracking-tight truncate max-w-[150px]">
-                        {order.order_items?.[0]?.file_name || "Order"}
+                    <div className="text-right">
+                      <p className="text-[#0a1128] text-sm font-black">
+                        ₹{Number(order.total_amount).toLocaleString("en-IN")}
                       </p>
-                      <p className="text-[#5b637a] text-[10px] font-bold">
-                        {order.shops?.shop_name || "Shop"}
+                      <p className={`text-[10px] font-bold uppercase tracking-widest ${badge.text}`}>
+                        {order.status}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-[#0a1128] text-sm font-black">
-                      ₹{Number(order.total_amount).toLocaleString("en-IN")}
-                    </p>
-                    <p className="text-[#5b637a]/50 text-[10px] font-bold uppercase tracking-widest">
-                      {order.status}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <div className="flex items-center justify-center h-[300px] font-bold text-[#5b637a]/40 bg-black/5 rounded-[2rem] border border-dashed border-black/10">
