@@ -87,7 +87,7 @@ export function ShopsList({ initialShops, userCity, userPincode }: ShopsListProp
       supabase.removeChannel(shopsChannel)
       supabase.removeChannel(printersChannel)
     }
-  }, [supabase])
+  }, [])
 
 
   // Filter shops based on search query

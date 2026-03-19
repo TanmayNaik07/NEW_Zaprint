@@ -135,8 +135,7 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
       console.log("Cleaning up realtime setup")
       supabase.removeChannel(channel)
     }
-  }, [userId, supabase])
-
+  }, [userId])
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {

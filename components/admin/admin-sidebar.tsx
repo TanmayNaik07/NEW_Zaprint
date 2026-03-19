@@ -8,10 +8,9 @@ import {
   FileText,
   MessageSquareText,
   LogOut,
-  Shield,
-  ChevronsUpDown,
   Globe,
   UserCircle,
+  IndianRupee,
 } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
@@ -87,6 +86,7 @@ export function AdminSidebar() {
     { name: "Overview", href: "/admin", icon: LayoutDashboard },
     { name: "Orders", href: "/admin/orders", icon: FileText },
     { name: "Shops", href: "/admin/shops", icon: Store },
+    { name: "Fees", href: "/admin/fees", icon: IndianRupee },
     { name: "Feedback", href: "/admin/feedback", icon: MessageSquareText },
     { name: "Site Content", href: "/admin/content", icon: Globe },
   ]

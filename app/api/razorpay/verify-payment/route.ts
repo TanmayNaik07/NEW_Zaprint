@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Signature is valid - update order status to paid
-    const { error: updateError } = await supabase
+    const { data: updatedOrder, error: updateError } = await supabase
       .from('orders')
       .update({
         razorpay_payment_id,
@@ -61,10 +61,32 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', order_id)
       .eq('user_id', user.id)
+      .select('shop_id, total_amount, print_amount, platform_fee, platform_fee_percentage')
+      .single()
 
     if (updateError) {
       console.error('Error updating order after payment:', updateError)
       return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 })
+    }
+
+    // Record platform fee in ledger so shop owes us
+    if (updatedOrder && updatedOrder.platform_fee > 0) {
+      const { error: ledgerError } = await supabase
+        .from('platform_fee_ledger')
+        .insert({
+          shop_id: updatedOrder.shop_id,
+          order_id: order_id,
+          fee_amount: updatedOrder.platform_fee,
+          fee_percentage: updatedOrder.platform_fee_percentage,
+          order_total: updatedOrder.total_amount,
+          print_amount: updatedOrder.print_amount,
+          status: 'unpaid',
+        })
+
+      if (ledgerError) {
+        // Log but don't fail the payment — fee can be reconciled later
+        console.error('Error recording platform fee in ledger:', ledgerError)
+      }
     }
 
     return NextResponse.json({ 

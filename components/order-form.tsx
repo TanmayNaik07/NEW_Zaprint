@@ -74,8 +74,7 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
     return () => {
       supabase.removeChannel(shopChannel)
     }
-  }, [shop.id, shop, supabase])
-
+  }, [shop.id, shop])
 
   // Get pricing rates from shop services
   const bwService = shop.services.find(s => s.service_name.toLowerCase().includes('black') || s.service_name.toLowerCase().includes('b&w') || s.service_name.toLowerCase().includes('bw'))
