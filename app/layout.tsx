@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Rubik_Dirt } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { NavigationLoadingProvider } from "@/components/providers/navigation-loading-provider"
@@ -9,27 +9,90 @@ import "./globals.css"
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
 const rubikDirt = Rubik_Dirt({ weight: "400", subsets: ["latin"], variable: "--font-rubik-dirt" })
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0a1128",
+}
+
 export const metadata: Metadata = {
-  title: "Zaprint - Print Smarter. Skip the Queue.",
+  metadataBase: new URL("https://zaprint.in"),
+  title: {
+    default: "Zaprint | Online Printing & Remote Print Management",
+    template: "%s | Zaprint",
+  },
   description:
-    "Upload your documents, choose print settings, pay online, and pick up your prints exactly when they're ready. No more waiting in queues.",
-  generator: "v0.app",
-  icons: {
-    icon: [
+    "Zaprint is your ultimate platform for online printing and remote print management. Upload documents, choose your nearest print shop, manage prints, and skip the queue.",
+  keywords: [
+    "Zaprint",
+    "online printing",
+    "remote printing",
+    "manage prints",
+    "print shops",
+    "online printing service",
+    "print documents online",
+    "send print request online",
+    "print documents near me",
+    "printer shops near me",
+    "thesis printing online",
+    "bulk printing services",
+    "college printing services",
+    "document printing",
+    "print pickup service",
+    "bw printing online",
+    "color printing service",
+    "affordable printing near me",
+    "skip the queue printing",
+    "print pdf online",
+    "cheap online printing",
+    "cloud printing india"
+  ],
+  authors: [{ name: "Zaprint" }],
+  creator: "Zaprint",
+  publisher: "Zaprint",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://zaprint.in",
+    siteName: "Zaprint",
+    title: "Zaprint | Online Printing & Remote Print Management",
+    description:
+      "Zaprint is your ultimate platform for online printing and remote print management. Upload documents, choose your nearest print shop, manage prints, and skip the queue.",
+    images: [
       {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Zaprint — Smart Online Printing Service",
       },
     ],
-    apple: "/apple-icon.png",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zaprint | Online Printing & Remote Print Management",
+    description:
+      "Zaprint is your ultimate platform for online printing and remote print management. Upload documents, choose your nearest print shop, manage prints, and skip the queue.",
+    images: ["/og-image.png"],
+    creator: "@zaprint",
+  },
+  icons: {
+    icon: "/zaprint-favicon.png",
+    shortcut: "/zaprint-favicon.png",
+    apple: "/zaprint-favicon.png",
+  },
+  alternates: {
+    canonical: "https://zaprint.in",
   },
 }
 

@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const ADMIN_EMAIL = 'zaprint.official@gmail.com'
+
 export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -75,9 +77,23 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect admin routes
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    if (user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+  }
+
   // Redirect authenticated users away from login/signup
   if (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup') {
     if (user) {
+      // If admin, redirect to admin dashboard
+      if (user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        return NextResponse.redirect(new URL('/admin', request.url))
+      }
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
   }
@@ -86,5 +102,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/signup'],
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/login', '/signup'],
 }

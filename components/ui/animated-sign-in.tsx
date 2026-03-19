@@ -66,9 +66,10 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
 
       if (signInError) throw signInError;
 
+      const isAdmin = data.user?.email?.toLowerCase() === "zaprint.official@gmail.com";
       toast.success("Logged in successfully!");
       startLoading();
-      router.push("/dashboard");
+      router.push(isAdmin ? "/admin" : "/dashboard");
       router.refresh();
     } catch (err: any) {
       console.error("Login error:", err);
@@ -167,8 +168,8 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
 
       {/* Logo */}
       <Link href="/" className="auth-logo">
-        <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center">
-          <Printer className="w-6 h-6 text-white" />
+        <div className="w-10 h-10 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0 p-2 shadow-md">
+          <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
         </div>
         <span className="auth-logo-text">Zaprint</span>
       </Link>
@@ -278,22 +279,6 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
               )}
             </button>
           </form>
-
-          <div className="auth-separator">
-            <span>or continue with</span>
-          </div>
-
-          <div className="auth-social-login">
-            <button className="auth-social-button" type="button" aria-label="Sign in with Github">
-              <Github size={18} />
-            </button>
-            <button className="auth-social-button" type="button" aria-label="Sign in with Twitter">
-              <Twitter size={18} />
-            </button>
-            <button className="auth-social-button" type="button" aria-label="Sign in with LinkedIn">
-              <Linkedin size={18} />
-            </button>
-          </div>
 
           <p className="auth-switch-prompt">
             Don&apos;t have an account? <Link href="/signup">Sign up</Link>

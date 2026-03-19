@@ -16,6 +16,8 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
+import { DashboardMobileNav } from "./mobile-nav"
+
 export function DashboardTopBar() {
   const router = useRouter()
   const supabase = createClient()
@@ -28,10 +30,13 @@ export function DashboardTopBar() {
   }
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white/60 backdrop-blur-lg border-b border-black/5">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold text-[#0a1128]">Zaprint Dashboard</h1>
-        <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-0 gap-1.5 px-3">
+    <header className="flex items-center justify-between px-4 md:px-6 py-4 bg-white/60 backdrop-blur-lg border-b border-black/5 sticky top-0 z-30">
+      <div className="flex items-center gap-2 md:gap-4">
+        <DashboardMobileNav />
+        <h1 className="text-lg md:text-xl font-semibold text-[#0a1128] truncate max-w-[150px] sm:max-w-none">
+          Dashboard
+        </h1>
+        <Badge variant="secondary" className="hidden sm:flex bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-0 gap-1.5 px-3">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           Online
         </Badge>

@@ -24,8 +24,8 @@ export function MindfoldFooter() {
           {/* Column 1 - Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-6">
-              <div className="bg-[#0a1128] text-white p-2 rounded-xl">
-                <Printer className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-xl bg-[#0a1128] flex items-center justify-center shrink-0 p-1.5 shadow-sm">
+                <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className="text-base font-bold text-[#0a1128] leading-tight">Zaprint</span>
@@ -85,24 +85,24 @@ export function MindfoldFooter() {
             <h3 className="font-bold mb-6 text-[#0a1128]">Company</h3>
             <ul className="space-y-4 text-sm font-medium text-[#5b637a]">
               <li>
-                <a href="#" className="hover:text-black transition-colors block">
+                <Link href="/about" className="hover:text-black transition-colors block">
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-black transition-colors block">
+                <Link href="/privacy" className="hover:text-black transition-colors block">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-black transition-colors block">
+                <Link href="/terms" className="hover:text-black transition-colors block">
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-black transition-colors block">
+                <Link href="/contact" className="hover:text-black transition-colors block">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -112,17 +112,25 @@ export function MindfoldFooter() {
             <h3 className="font-bold mb-6 text-[#0a1128]">Support</h3>
             <ul className="space-y-4 text-sm font-medium text-[#5b637a]">
               <li>
-                <a href="#" className="hover:text-black transition-colors block">
+                <Link href="/contact" className="hover:text-black transition-colors block">
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-black transition-colors block">
+                <a
+                  href="#how-it-works"
+                  onClick={(e) => handleScroll(e, "#how-it-works")}
+                  className="hover:text-black transition-colors block"
+                >
                   Print Guidelines
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-black transition-colors block">
+                <a
+                  href="#features"
+                  onClick={(e) => handleScroll(e, "#features")}
+                  className="hover:text-black transition-colors block"
+                >
                   FAQ
                 </a>
               </li>

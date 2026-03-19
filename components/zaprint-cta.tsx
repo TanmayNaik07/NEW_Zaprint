@@ -93,8 +93,8 @@ export function ZaprintCTA() {
       </div>
 
       <div className="relative z-10 flex flex-col justify-start items-center gap-8 max-w-4xl mx-auto">
-        <div className="w-20 h-20 rounded-2xl bg-primary/20 flex items-center justify-center mb-2">
-          <Printer className="w-10 h-10 text-primary" />
+        <div className="w-20 h-20 rounded-2xl bg-[#0a1128] flex items-center justify-center mb-2 p-4 shadow-xl shadow-[#0a1128]/20">
+          <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
         </div>
 
         <div className="flex flex-col justify-start items-center gap-4 text-center">

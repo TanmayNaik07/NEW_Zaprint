@@ -81,11 +81,10 @@ export default function DashboardOverview() {
                 transform: `rotate(${i === 1 ? '-1.5deg' : i === 2 ? '0.8deg' : '-0.5deg'})`,
               }}
             >
-              {/* Masking tape at top center */}
               <img
                 src="/images/tape.svg"
                 alt=""
-                className="absolute top-0 left-1/2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+                className="absolute top-0 left-1/2 w-10 h-10 md:w-14 md:h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
                 style={{ transform: 'translateX(-50%) translateY(-40%)' }}
               />
               <div className="h-4 w-20 bg-[#3a3120]/10 rounded mb-4 mt-6" />
@@ -112,19 +111,17 @@ export default function DashboardOverview() {
             boxShadow: '2px 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
           }}
         >
-          {/* Masking tape at top-left corner */}
           <img
             src="/images/tape.svg"
             alt=""
-            className="absolute top-0 left-0 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
-            style={{ transform: 'rotate(-35deg) translateY(-50%) translateX(-30%)' }}
+            className="absolute top-0 left-0 w-8 h-8 md:w-14 md:h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+            style={{ transform: 'rotate(-35deg) translateY(-40%) translateX(-20%)' }}
           />
-          {/* Masking tape at top-right corner */}
           <img
             src="/images/tape.svg"
             alt=""
-            className="absolute top-0 right-2 w-14 h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
-            style={{ transform: 'rotate(25deg) translateY(-40%)' }}
+            className="absolute top-0 right-2 w-8 h-8 md:w-14 md:h-14 object-contain opacity-90 drop-shadow-sm pointer-events-none z-20"
+            style={{ transform: 'rotate(25deg) translateY(-30%)' }}
           />
           <div className="h-6 w-40 bg-[#3a3120]/10 rounded mb-6" />
           {[1, 2, 3].map((i) => (

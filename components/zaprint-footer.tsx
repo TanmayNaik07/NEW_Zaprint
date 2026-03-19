@@ -9,8 +9,8 @@ export function ZaprintFooter() {
       {/* Left Section */}
       <div className="flex flex-col justify-start items-start gap-6 p-4 md:p-8">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-            <Printer className="w-5 h-5 text-primary" />
+          <div className="w-8 h-8 rounded-lg bg-[#0a1128] flex items-center justify-center shrink-0 p-1.5">
+            <img src="/Zaprint_Logo.png" alt="Zaprint Logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-foreground text-xl font-semibold">Zaprint</span>
         </Link>
