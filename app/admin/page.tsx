@@ -73,13 +73,15 @@ export default function AdminOverview() {
         { event: '*', schema: 'public', table: 'orders' },
         async (payload) => {
           console.log('Overview: Order change received:', payload)
-          // For simplicity, we can just re-fetch everything to keep charts in sync
-          // but for a truly "fast" feel, we'd update specific stats local state.
-          // Let's re-fetch to ensure data integrity for complex charts.
           fetchStats()
         }
       )
-      .subscribe()
+      .subscribe((status, err) => {
+        if (err) {
+          console.error("Realtime subscription error for orders:", err)
+          toast.error("Failed to connect to real-time order updates.")
+        }
+      })
 
     // Realtime subscription for feedback
     const feedbackChannel = supabase
@@ -89,11 +91,39 @@ export default function AdminOverview() {
         { event: '*', schema: 'public', table: 'feedback' },
         () => fetchStats()
       )
-      .subscribe()
+      .subscribe((status, err) => {
+        if (err) console.error("Realtime subscription error for feedback:", err)
+      })
+
+    // Realtime subscription for shops
+    const shopsChannel = supabase
+      .channel('overview-shops-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'shops' },
+        () => fetchStats()
+      )
+      .subscribe((status, err) => {
+        if (err) console.error("Realtime subscription error for shops:", err)
+      })
+
+    // Realtime subscription for profiles
+    const profilesChannel = supabase
+      .channel('overview-profiles-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => fetchStats()
+      )
+      .subscribe((status, err) => {
+        if (err) console.error("Realtime subscription error for profiles:", err)
+      })
 
     return () => {
       supabase.removeChannel(ordersChannel)
       supabase.removeChannel(feedbackChannel)
+      supabase.removeChannel(shopsChannel)
+      supabase.removeChannel(profilesChannel)
     }
   }, [])
 

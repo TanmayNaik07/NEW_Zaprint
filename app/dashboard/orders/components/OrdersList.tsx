@@ -53,89 +53,84 @@ export function OrdersList({ initialOrders, userId }: OrdersListProps) {
 
   // Handle Realtime Updates
   useEffect(() => {
-    let channel: any
+    if (!userId) return
 
-    const setupRealtime = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+    console.log(`OrdersList: Setting up realtime for user ${userId}`)
 
-      console.log(`OrdersList: Setting up realtime for user ${user.id}`)
+    const channel = supabase
+      .channel(`orders-realtime-${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders',
+          filter: `user_id=eq.${userId}`,
+        },
+        async (payload) => {
+          console.log('Realtime change received:', payload)
 
-      channel = supabase
-        .channel('orders-realtime-main')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'orders',
-            filter: `user_id=eq.${user.id}`,
-          },
-          async (payload) => {
-            console.log('Realtime change received:', payload)
+          if (payload.eventType === 'INSERT') {
+            const { data: newOrder, error } = await supabase
+              .from('orders')
+              .select(`
+                      *,
+                      shops (
+                          shop_name,
+                          image_url
+                      ),
+                      order_items (
+                          *
+                      )
+                  `)
+              .eq('id', payload.new.id)
+              .single()
 
-            if (payload.eventType === 'INSERT') {
-              const { data: newOrder, error } = await supabase
-                .from('orders')
-                .select(`
-                        *,
-                        shops (
-                            shop_name,
-                            image_url
-                        ),
-                        order_items (
-                            *
-                        )
-                    `)
-                .eq('id', payload.new.id)
-                .single()
-
-              if (newOrder && !error) {
-                setOrders((prev) => [newOrder, ...prev])
-                toast.success("New order received!")
-                playNotificationSound()
-              }
-            } else if (payload.eventType === 'UPDATE') {
-              const updatedOrder = payload.new as Order
-
-              setOrders((prev) => prev.map((order) => {
-                if (order.id === updatedOrder.id) {
-                  const isNowCompleted = (updatedOrder.status === 'completed' || updatedOrder.status === 'done')
-                  const wasNotCompleted = (order.status !== 'completed' && order.status !== 'done')
-
-                  if (isNowCompleted && wasNotCompleted) {
-                    toast.success(`Order #${order.id.slice(0, 8)} is completed!`)
-                    playNotificationSound()
-                  }
-
-                  return {
-                    ...order,
-                    ...updatedOrder,
-                    shops: order.shops,
-                    order_items: order.order_items
-                  }
-                }
-                return order
-              }))
-            } else if (payload.eventType === 'DELETE') {
-              setOrders((prev) => prev.filter(order => order.id !== payload.old.id))
+            if (newOrder && !error) {
+              setOrders((prev) => [newOrder, ...prev])
+              toast.success("New order received!")
+              playNotificationSound()
             }
-          }
-        )
-        .subscribe((status) => {
-          console.log(`Realtime subscription status:`, status)
-        })
-    }
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedOrder = payload.new as Order
 
-    setupRealtime()
+            setOrders((prev) => prev.map((order) => {
+              if (order.id === updatedOrder.id) {
+                const isNowCompleted = (updatedOrder.status === 'completed' || updatedOrder.status === 'done')
+                const wasNotCompleted = (order.status !== 'completed' && order.status !== 'done')
+
+                if (isNowCompleted && wasNotCompleted) {
+                  toast.success(`Order #${order.id.slice(0, 8)} is completed!`)
+                  playNotificationSound()
+                }
+
+                return {
+                  ...order,
+                  ...updatedOrder,
+                  shops: order.shops,
+                  order_items: order.order_items
+                }
+              }
+              return order
+            }))
+          } else if (payload.eventType === 'DELETE') {
+            setOrders((prev) => prev.filter(order => order.id !== payload.old.id))
+          }
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) {
+          console.error('Realtime subscription error for orders:', err)
+          toast.error('Failed to connect to real-time order updates.')
+        }
+        console.log(`Realtime subscription status:`, status)
+      })
 
     return () => {
-      if (channel) {
-        console.log("Cleaning up realtime setup")
-        supabase.removeChannel(channel)
-      }
+      console.log("Cleaning up realtime setup")
+      supabase.removeChannel(channel)
     }
-  }, [userId])
+  }, [userId, supabase])
 
 
   const getStatusColor = (status: string) => {

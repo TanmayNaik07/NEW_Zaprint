@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { ShopCard } from "@/components/shop-card"
 import type { ShopWithDetails } from "@/lib/types/shop"
+import { isShopCurrentlyOpen } from "@/lib/types/shop"
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 
@@ -119,6 +120,15 @@ export function ShopsList({ initialShops, userCity, userPincode }: ShopsListProp
   } else {
     otherShops.push(...filteredShops)
   }
+
+  const sortShops = (a: ShopWithDetails, b: ShopWithDetails) => {
+    const aOpen = isShopCurrentlyOpen(a) ? 1 : 0
+    const bOpen = isShopCurrentlyOpen(b) ? 1 : 0
+    return bOpen - aOpen
+  }
+
+  nearbyShops.sort(sortShops)
+  otherShops.sort(sortShops)
 
   return (
     <div className="space-y-10">

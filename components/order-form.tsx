@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2, IndianRupee, Plus, Trash2, Upload, FileText, X, CheckCircle } from "lucide-react"
 import { toast } from "sonner"
 import type { ShopWithDetails } from "@/lib/types/shop"
+import { isShopCurrentlyOpen } from "@/lib/types/shop"
 import { usePrintStore } from "@/lib/print-store"
 import { getPDFPageCount, isPDF } from "@/lib/utils/pdf"
 import { motion, AnimatePresence } from "framer-motion"
@@ -23,6 +24,40 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   const { sections, addSection, removeSection, updateSection, calculateSubtotal, calculateGrandTotal, reset } = usePrintStore()
 
   const [loading, setLoading] = useState(false)
+  const [isShopOpen, setIsShopOpen] = useState(false)
+
+  // Initialize isShopOpen
+  useEffect(() => {
+    setIsShopOpen(isShopCurrentlyOpen(shop))
+
+    const shopChannel = supabase
+      .channel(`shop-status-${shop.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'shops',
+          filter: `id=eq.${shop.id}`
+        },
+        (payload) => {
+          const updatedShop = { ...shop, ...payload.new }
+          const open = isShopCurrentlyOpen(updatedShop)
+          setIsShopOpen(open)
+          if (!open) {
+            toast.error("Shop is closed. You cannot send files.")
+          }
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) console.error("Realtime subscription error for shop:", err)
+      })
+
+    return () => {
+      supabase.removeChannel(shopChannel)
+    }
+  }, [shop.id, shop, supabase])
+
 
   // Get pricing rates from shop services
   const bwService = shop.services.find(s => s.service_name.toLowerCase().includes('black') || s.service_name.toLowerCase().includes('b&w') || s.service_name.toLowerCase().includes('bw'))
@@ -57,6 +92,11 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   }
 
   const handleOrder = async () => {
+    if (!isShopOpen) {
+      toast.error("Shop is closed. You cannot send files.")
+      return
+    }
+
     // Validation
     const validSections = sections.filter(s => s.file !== null)
     if (validSections.length === 0) {
@@ -198,12 +238,13 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
                 <div className="space-y-2">
                   <Label className="text-[#1a1408] font-bold uppercase text-xs tracking-wider">Upload Document</Label>
                   {!section.file ? (
-                    <div className="relative border-2 border-dashed border-[#1a1408]/20 bg-[#fdfbf7] rounded-sm p-8 text-center hover:border-[#1a1408]/50 hover:bg-[#1a1408]/5 transition-colors cursor-pointer group">
+                    <div className={`relative border-2 border-dashed border-[#1a1408]/20 bg-[#fdfbf7] rounded-sm p-8 text-center transition-colors ${isShopOpen ? 'hover:border-[#1a1408]/50 hover:bg-[#1a1408]/5 cursor-pointer group' : 'opacity-50 cursor-not-allowed'}`}>
                       <input
                         type="file"
                         accept=".pdf,.png,.jpg,.jpeg,.webp"
+                        disabled={!isShopOpen}
                         onChange={(e) => handleFileSelect(section.id, e.target.files?.[0] || null)}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        className={`absolute inset-0 w-full h-full opacity-0 ${isShopOpen ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                       />
                       <Upload className="w-8 h-8 mx-auto mb-3 text-[#6b5d45] group-hover:text-[#1a1408] transition-colors" />
                       <p className="text-sm text-[#1a1408] font-medium">Click to upload or drag & drop</p>
@@ -346,8 +387,13 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
             {grandTotal.toFixed(2)}
           </div>
         </div>
+        {!isShopOpen && (
+          <div className="text-sm font-bold text-red-600 mb-3 text-center bg-red-50 p-2 rounded border border-red-200">
+            Shop is closed. You cannot send files.
+          </div>
+        )}
         <Button
-          disabled={loading || sections.filter(s => s.file).length === 0}
+          disabled={loading || !isShopOpen || sections.filter(s => s.file).length === 0}
           onClick={handleOrder}
           size="lg"
           className="w-full text-sm font-black tracking-widest uppercase h-14 bg-gradient-to-br from-[#1a1408] to-[#3a3120] hover:from-[#3a3120] hover:to-[#5a5140] text-[#fdfbf7] rounded-sm shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] transition-all"
