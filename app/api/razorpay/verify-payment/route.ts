@@ -1,9 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import crypto from 'crypto'
+import {
+  applyIPRateLimit,
+  applyUserRateLimit,
+  PAYMENT_LIMIT,
+} from '@/lib/security/rate-limit'
+import {
+  safeParseJSON,
+  validateBody,
+  validateUUID,
+  validateString,
+  isValidRazorpayOrderId,
+  isValidRazorpayPaymentId,
+  isValidRazorpaySignature,
+  validationErrorResponse,
+} from '@/lib/security/validation'
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Rate limit payment verification by IP
+    const ipLimited = applyIPRateLimit(request, PAYMENT_LIMIT)
+    if (ipLimited) return ipLimited
+
     const supabase = await createClient()
     
     // Verify authentication
@@ -12,17 +31,55 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json()
+    // SECURITY: Rate limit per user
+    const userLimited = applyUserRateLimit(user.id, PAYMENT_LIMIT)
+    if (userLimited) return userLimited
+
+    // SECURITY: Safe JSON parsing
+    const parseResult = await safeParseJSON(request)
+    if (!parseResult.success) {
+      return validationErrorResponse(parseResult.error)
+    }
+
+    // SECURITY: Schema-based validation with Razorpay-specific format checks
+    const validationResult = validateBody(parseResult.data, {
+      razorpay_order_id: (v) => {
+        const str = validateString(v, "Razorpay Order ID", { minLength: 10, maxLength: 40 })
+        if (!str.success) return str
+        if (!isValidRazorpayOrderId(str.data)) {
+          return { success: false as const, error: "Invalid Razorpay order ID format" }
+        }
+        return str
+      },
+      razorpay_payment_id: (v) => {
+        const str = validateString(v, "Razorpay Payment ID", { minLength: 10, maxLength: 40 })
+        if (!str.success) return str
+        if (!isValidRazorpayPaymentId(str.data)) {
+          return { success: false as const, error: "Invalid Razorpay payment ID format" }
+        }
+        return str
+      },
+      razorpay_signature: (v) => {
+        const str = validateString(v, "Razorpay Signature", { minLength: 64, maxLength: 64 })
+        if (!str.success) return str
+        if (!isValidRazorpaySignature(str.data)) {
+          return { success: false as const, error: "Invalid Razorpay signature format" }
+        }
+        return str
+      },
+      order_id: (v) => validateUUID(v, "Order ID"),
+    })
+
+    if (!validationResult.success) {
+      return validationErrorResponse(validationResult.error)
+    }
+
     const { 
       razorpay_order_id, 
       razorpay_payment_id, 
       razorpay_signature, 
       order_id 
-    } = body
-
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !order_id) {
-      return NextResponse.json({ error: 'Missing payment verification data' }, { status: 400 })
-    }
+    } = validationResult.data
 
     // Verify the Razorpay signature
     const keySecret = process.env.RAZORPAY_KEY_SECRET
@@ -30,13 +87,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
     }
 
+    // SECURITY: Use timing-safe comparison to prevent timing attacks
     const body_data = razorpay_order_id + '|' + razorpay_payment_id
     const expectedSignature = crypto
       .createHmac('sha256', keySecret)
       .update(body_data)
       .digest('hex')
 
-    if (expectedSignature !== razorpay_signature) {
+    const sigBuffer = new Uint8Array(Buffer.from(razorpay_signature, 'hex'))
+    const expectedBuffer = new Uint8Array(Buffer.from(expectedSignature, 'hex'))
+    
+    if (sigBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(sigBuffer, expectedBuffer)) {
       console.error('Payment signature verification failed')
       
       // Update order payment status to failed
@@ -97,8 +158,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error verifying payment:', error)
+    // SECURITY: Don't expose internal error details
     return NextResponse.json(
-      { error: error.message || 'Payment verification failed' },
+      { error: 'Payment verification failed' },
       { status: 500 }
     )
   }

@@ -1,8 +1,13 @@
 import { createClient } from "@/lib/supabase/server"
 import { isAdminEmail } from "@/lib/admin"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { applyIPRateLimit, ADMIN_LIMIT } from "@/lib/security/rate-limit"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // SECURITY: Rate limit by IP — admin stats can be expensive
+  const limited = applyIPRateLimit(request, ADMIN_LIMIT)
+  if (limited) return limited
+
   const supabase = await createClient()
 
   const {

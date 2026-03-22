@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server"
 import { OnboardingModal } from "@/components/dashboard/onboarding-modal"
 import { DashboardLoadingStop } from "@/components/dashboard/loading-stop"
 import { redirect } from "next/navigation"
-import { DashboardTopBar } from "@/components/dashboard/top-bar"
 
 export const metadata: Metadata = {
   title: "Dashboard — Zaprint",
@@ -53,7 +52,6 @@ export default async function DashboardLayout({
       />
       <DashboardSidebar />
       <main className="flex-1 flex flex-col min-h-screen overflow-hidden relative z-[1] md:pl-16">
-        <DashboardTopBar />
         <DashboardLoadingStop />
         <OnboardingModal isOpen={showOnboarding} />
         <div className="flex-1 overflow-auto p-4 md:p-8">

@@ -708,7 +708,9 @@
 }
 
 .auth-form-field.active label,
-.auth-form-field input:focus+label {
+.auth-form-field input:focus+label,
+.auth-form-field input:not(:placeholder-shown)+label,
+.auth-form-field input:-webkit-autofill+label {
   top: 0.75rem;
   transform: translateY(0);
   font-size: 0.75rem;

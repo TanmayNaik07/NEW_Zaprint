@@ -48,20 +48,25 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
   };
 
   // Handle form submission with Supabase auth
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setFormError(null);
 
-    if (!email || !password || !validateEmail(email)) {
+    const formData = new FormData(e.currentTarget);
+    const submittedEmail = (formData.get("email") as string) || email;
+    const submittedPassword = (formData.get("password") as string) || password;
+
+    if (!submittedEmail || !submittedPassword || !validateEmail(submittedEmail)) {
+      setFormError("Please enter a valid email and password.");
       setIsLoading(false);
       return;
     }
 
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
+        email: submittedEmail,
+        password: submittedPassword,
       });
 
       if (signInError) throw signInError;
@@ -207,6 +212,7 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
               <input
                 type="email"
                 id="signin-email"
+                name="email"
                 value={email}
                 onChange={handleEmailChange}
                 onFocus={() => setIsEmailFocused(true)}
@@ -224,6 +230,7 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
               <input
                 type={showPassword ? "text" : "password"}
                 id="signin-password"
+                name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setIsPasswordFocused(true)}
@@ -267,7 +274,7 @@ const AnimatedSignIn: React.FC<AnimatedSignInProps> = ({ className }) => {
             <button
               type="submit"
               className="auth-submit-button"
-              disabled={isLoading || !email || !password || !isEmailValid}
+              disabled={isLoading}
             >
               {isLoading ? (
                 <>

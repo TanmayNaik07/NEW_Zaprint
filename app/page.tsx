@@ -1,4 +1,3 @@
-import { MindfoldNavbar } from "@/components/mindfold-navbar"
 import { MindfoldHero } from "@/components/mindfold-hero"
 import { MindfoldScrollAnimation } from "@/components/mindfold-scroll-animation"
 import { MindfoldFeatures } from "@/components/mindfold-features"
@@ -156,9 +155,6 @@ export default function LandingPage() {
           mixBlendMode: "multiply",
         }}
       />
-
-      {/* Fixed Navbar */}
-      <MindfoldNavbar />
 
       {/* Hero Section */}
       <MindfoldHero />

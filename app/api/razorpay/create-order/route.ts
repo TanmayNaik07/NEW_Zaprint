@@ -2,9 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getRazorpayInstance } from '@/lib/razorpay'
 import { createClient } from '@/lib/supabase/server'
 import { calculatePlatformFee, toPaise } from '@/lib/platform-fee'
+import {
+  applyIPRateLimit,
+  applyUserRateLimit,
+  PAYMENT_LIMIT,
+} from '@/lib/security/rate-limit'
+import {
+  safeParseJSON,
+  validateBody,
+  validateUUID,
+  validationErrorResponse,
+} from '@/lib/security/validation'
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Rate limit payment endpoints by IP — strict limits
+    const ipLimited = applyIPRateLimit(request, PAYMENT_LIMIT)
+    if (ipLimited) return ipLimited
+
     const supabase = await createClient()
     
     // Verify authentication
@@ -13,12 +28,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const { orderId } = body
+    // SECURITY: Rate limit per user — prevent order-creation abuse
+    const userLimited = applyUserRateLimit(user.id, PAYMENT_LIMIT)
+    if (userLimited) return userLimited
 
-    if (!orderId) {
-      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 })
+    // SECURITY: Safe JSON parsing
+    const parseResult = await safeParseJSON(request)
+    if (!parseResult.success) {
+      return validationErrorResponse(parseResult.error)
     }
+
+    // SECURITY: Schema-based validation — only allow orderId field
+    const validationResult = validateBody(parseResult.data, {
+      orderId: (v) => validateUUID(v, "Order ID"),
+    })
+
+    if (!validationResult.success) {
+      return validationErrorResponse(validationResult.error)
+    }
+
+    const { orderId } = validationResult.data
 
     // Fetch the order and verify ownership
     const { data: order, error: orderError } = await supabase
@@ -97,8 +126,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error creating Razorpay order:', error)
+    // SECURITY: Don't expose internal error details to the client
     return NextResponse.json(
-      { error: error.message || 'Failed to create payment order' },
+      { error: 'Failed to create payment order' },
       { status: 500 }
     )
   }

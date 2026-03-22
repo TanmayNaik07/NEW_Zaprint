@@ -1,8 +1,26 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextRequest, NextResponse } from "next/server"
+import {
+  applyIPRateLimit,
+  applyUserRateLimit,
+  PUBLIC_READ_LIMIT,
+  PUBLIC_WRITE_LIMIT,
+} from "@/lib/security/rate-limit"
+import {
+  safeParseJSON,
+  validateBody,
+  validateInteger,
+  validateString,
+  validateEnum,
+  validationErrorResponse,
+} from "@/lib/security/validation"
 
 // GET: Fetch featured feedback for landing page (public)
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // SECURITY: Rate limit public reads by IP
+  const limited = applyIPRateLimit(request, PUBLIC_READ_LIMIT)
+  if (limited) return limited
+
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -22,6 +40,10 @@ export async function GET() {
 
 // POST: Submit new feedback (authenticated users)
 export async function POST(request: NextRequest) {
+  // SECURITY: Rate limit public writes by IP (before auth, to block brute-force)
+  const ipLimited = applyIPRateLimit(request, PUBLIC_WRITE_LIMIT)
+  if (ipLimited) return ipLimited
+
   const supabase = await createClient()
 
   const {
@@ -32,22 +54,37 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const body = await request.json()
-  const { rating, message, user_role } = body
+  // SECURITY: Rate limit by user to prevent spamming (5 feedback per minute)
+  const userLimited = applyUserRateLimit(user.id, {
+    maxRequests: 5,
+    windowMs: 60_000,
+    identifier: "feedback_submit",
+  })
+  if (userLimited) return userLimited
 
-  if (!rating || !message) {
-    return NextResponse.json(
-      { error: "Rating and message are required" },
-      { status: 400 }
-    )
+  // SECURITY: Parse and validate JSON body safely
+  const parseResult = await safeParseJSON(request)
+  if (!parseResult.success) {
+    return validationErrorResponse(parseResult.error)
   }
 
-  if (message.length < 10) {
-    return NextResponse.json(
-      { error: "Message must be at least 10 characters" },
-      { status: 400 }
-    )
+  // SECURITY: Schema-based validation — reject unexpected fields
+  const validationResult = validateBody(parseResult.data, {
+    rating: (v) => validateInteger(v, "Rating", { min: 1, max: 5 }),
+    message: (v) =>
+      validateString(v, "Message", { minLength: 10, maxLength: 2000 }),
+    user_role: (v) =>
+      validateString(v, "User role", {
+        required: false,
+        maxLength: 100,
+      }),
+  })
+
+  if (!validationResult.success) {
+    return validationErrorResponse(validationResult.error)
   }
+
+  const { rating, message, user_role } = validationResult.data
 
   // Get user name from profile
   const { data: profile } = await supabase
@@ -64,7 +101,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       user_name: userName,
       user_role: user_role || "",
-      rating: Math.min(5, Math.max(1, rating)),
+      rating,
       message,
     })
     .select()

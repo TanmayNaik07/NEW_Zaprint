@@ -1,9 +1,25 @@
 import { createClient } from "@/lib/supabase/server"
 import { isAdminEmail } from "@/lib/admin"
 import { NextRequest, NextResponse } from "next/server"
+import {
+  applyIPRateLimit,
+  applyUserRateLimit,
+  ADMIN_LIMIT,
+} from "@/lib/security/rate-limit"
+import {
+  safeParseJSON,
+  validateBody,
+  validateUUID,
+  validateBoolean,
+  validationErrorResponse,
+} from "@/lib/security/validation"
 
 // GET: Fetch all feedback for admin
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // SECURITY: Rate limit by IP first
+  const ipLimited = applyIPRateLimit(request, ADMIN_LIMIT)
+  if (ipLimited) return ipLimited
+
   const supabase = await createClient()
 
   const {
@@ -28,6 +44,10 @@ export async function GET() {
 
 // PATCH: Update feedback (approve/feature/unfeatured)
 export async function PATCH(request: NextRequest) {
+  // SECURITY: Rate limit by IP
+  const ipLimited = applyIPRateLimit(request, ADMIN_LIMIT)
+  if (ipLimited) return ipLimited
+
   const supabase = await createClient()
 
   const {
@@ -38,12 +58,28 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
-  const body = await request.json()
-  const { id, is_approved, is_featured } = body
+  // SECURITY: Rate limit admin actions per user
+  const userLimited = applyUserRateLimit(user.id, ADMIN_LIMIT)
+  if (userLimited) return userLimited
 
-  if (!id) {
-    return NextResponse.json({ error: "Feedback ID required" }, { status: 400 })
+  // SECURITY: Safe JSON parsing
+  const parseResult = await safeParseJSON(request)
+  if (!parseResult.success) {
+    return validationErrorResponse(parseResult.error)
   }
+
+  // SECURITY: Schema-based validation with UUID check
+  const validationResult = validateBody(parseResult.data, {
+    id: (v) => validateUUID(v, "Feedback ID"),
+    is_approved: (v) => validateBoolean(v, "is_approved", { required: false }),
+    is_featured: (v) => validateBoolean(v, "is_featured", { required: false }),
+  })
+
+  if (!validationResult.success) {
+    return validationErrorResponse(validationResult.error)
+  }
+
+  const { id, is_approved, is_featured } = validationResult.data
 
   const updates: Record<string, any> = { updated_at: new Date().toISOString() }
   if (typeof is_approved === "boolean") updates.is_approved = is_approved
@@ -65,6 +101,10 @@ export async function PATCH(request: NextRequest) {
 
 // DELETE: Delete feedback
 export async function DELETE(request: NextRequest) {
+  // SECURITY: Rate limit by IP
+  const ipLimited = applyIPRateLimit(request, ADMIN_LIMIT)
+  if (ipLimited) return ipLimited
+
   const supabase = await createClient()
 
   const {
@@ -75,14 +115,24 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
+  // SECURITY: Rate limit admin actions per user
+  const userLimited = applyUserRateLimit(user.id, ADMIN_LIMIT)
+  if (userLimited) return userLimited
+
   const { searchParams } = new URL(request.url)
   const id = searchParams.get("id")
 
+  // SECURITY: Validate the feedback ID is a proper UUID
   if (!id) {
-    return NextResponse.json({ error: "Feedback ID required" }, { status: 400 })
+    return validationErrorResponse("Feedback ID is required")
   }
 
-  const { error } = await supabase.from("feedback").delete().eq("id", id)
+  const uuidCheck = validateUUID(id, "Feedback ID")
+  if (!uuidCheck.success) {
+    return validationErrorResponse(uuidCheck.error)
+  }
+
+  const { error } = await supabase.from("feedback").delete().eq("id", uuidCheck.data)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
