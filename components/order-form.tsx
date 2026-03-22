@@ -77,11 +77,20 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
   }, [shop.id, shop])
 
   // Get pricing rates from shop services
-  const bwService = shop.services.find(s => s.service_name.toLowerCase().includes('black') || s.service_name.toLowerCase().includes('b&w') || s.service_name.toLowerCase().includes('bw'))
-  const colorService = shop.services.find(s => s.service_name.toLowerCase().includes('color'))
+  const bwService = shop.services?.find(s => s.service_name.toLowerCase().includes('black') || s.service_name.toLowerCase().includes('b&w') || s.service_name.toLowerCase().includes('bw'))
+  const colorService = shop.services?.find(s => s.service_name.toLowerCase().includes('color'))
 
   const bwRate = bwService?.price || 2
   const colorRate = colorService?.price || 5
+
+  // Determine available print types based on strictly online printers
+  const hasOnlineColorPrinter = shop.printers?.some(
+    p => p.status === 'online' && (p.printer_type === 'color' || p.printer_type === 'photo')
+  ) ?? true;
+
+  const hasOnlineBwPrinter = shop.printers?.some(
+    p => p.status === 'online' && (p.printer_type === 'bw' || p.printer_type === 'color' || p.printer_type === 'photo')
+  ) ?? true;
 
   const handleFileSelect = useCallback(async (sectionId: string, file: File | null) => {
     if (!file) {
@@ -400,15 +409,27 @@ export function OrderForm({ shop }: { shop: ShopWithDetails }) {
                     className="flex gap-6"
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="bw" id={`${section.id}-bw`} className="border-[#1a1408] focus:border-[#1a1408] data-[state=checked]:bg-[#1a1408] data-[state=checked]:text-[#fdfbf7]" />
-                      <Label htmlFor={`${section.id}-bw`} className="cursor-pointer text-sm font-semibold text-[#3a3120]">
+                      <RadioGroupItem 
+                        value="bw" 
+                        id={`${section.id}-bw`} 
+                        disabled={!hasOnlineBwPrinter}
+                        className="border-[#1a1408] focus:border-[#1a1408] data-[state=checked]:bg-[#1a1408] data-[state=checked]:text-[#fdfbf7] disabled:opacity-50" 
+                      />
+                      <Label htmlFor={`${section.id}-bw`} className={`cursor-pointer text-sm font-semibold text-[#3a3120] ${!hasOnlineBwPrinter ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         Black & White (₹{bwRate}/page)
+                        {!hasOnlineBwPrinter && <span className="ml-1 text-[#b91c1c] text-[10px] uppercase">(Offline)</span>}
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="color" id={`${section.id}-color`} className="border-[#2563eb] focus:border-[#2563eb] data-[state=checked]:bg-[#2563eb] data-[state=checked]:text-[#fdfbf7]" />
-                      <Label htmlFor={`${section.id}-color`} className="cursor-pointer text-sm font-semibold text-[#1e40af]">
+                      <RadioGroupItem 
+                        value="color" 
+                        id={`${section.id}-color`} 
+                        disabled={!hasOnlineColorPrinter}
+                        className="border-[#2563eb] focus:border-[#2563eb] data-[state=checked]:bg-[#2563eb] data-[state=checked]:text-[#fdfbf7] disabled:opacity-50" 
+                      />
+                      <Label htmlFor={`${section.id}-color`} className={`cursor-pointer text-sm font-semibold text-[#1e40af] ${!hasOnlineColorPrinter ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         Color (₹{colorRate}/page)
+                        {!hasOnlineColorPrinter && <span className="ml-1 text-[#b91c1c] text-[10px] uppercase">(Offline)</span>}
                       </Label>
                     </div>
                   </RadioGroup>
